@@ -1,8 +1,9 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-struct node
+class node
 {
+public:
     int data;
     node *link;
 };
