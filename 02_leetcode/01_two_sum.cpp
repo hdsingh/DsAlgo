@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// O(n^2): 532
+// O(n^2): 532ms
 class Solution1 {
 public:
     vector<int> twoSum(vector<int>& nums, int target) {
