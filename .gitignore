@@ -2,7 +2,7 @@
 !/**/
 !*.*
 vspace.code-workspace
-temp.cpp
+temp*.cpp
 .vscode
 input.in
 output.in
