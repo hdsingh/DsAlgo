@@ -4,5 +4,4 @@
 vspace.code-workspace
 temp*.cpp
 .vscode
-input.in
-output.in
+*.in
