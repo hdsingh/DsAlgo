@@ -79,3 +79,24 @@ string treeNodeToString(TreeNode* root) {
     }
     return "[" + output.substr(0, output.length() - 2) + "]";
 }
+
+string integerVectorToString(vector<int> list, int length = -1) {
+    if (length == -1) {
+        length = list.size();
+    }
+
+    if (length == 0) {
+        return "[]";
+    }
+
+    string result;
+    for(int index = 0; index < length; index++) {
+        int number = list[index];
+        result += to_string(number) + ", ";
+    }
+    return "[" + result.substr(0, result.length() - 2) + "]";
+}
+
+string boolToString(bool input) {
+    return input ? "True" : "False";
+}
