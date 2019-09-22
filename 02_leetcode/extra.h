@@ -100,3 +100,22 @@ string integerVectorToString(vector<int> list, int length = -1) {
 string boolToString(bool input) {
     return input ? "True" : "False";
 }
+
+vector<int> stringToIntegerVector(string input) {
+    vector<int> output;
+    trimLeftTrailingSpaces(input);
+    trimRightTrailingSpaces(input);
+    input = input.substr(1, input.length() - 2);
+    stringstream ss;
+    ss.str(input);
+    string item;
+    char delim = ',';
+    while (getline(ss, item, delim)) {
+        output.push_back(stoi(item));
+    }
+    return output;
+}
+
+int stringToInteger(string input) {
+    return stoi(input);
+}
