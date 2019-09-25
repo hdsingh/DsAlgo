@@ -88,8 +88,8 @@ public:
 
             if(j==m) return i-j;
 
-            else if(i<n && s[i]!=p[j]){
-                if(j!=0) j = lps[j-1];
+            else{
+                if(j) j = lps[j-1];
                 else i = i+1;
             }
         }

@@ -119,3 +119,32 @@ vector<int> stringToIntegerVector(string input) {
 int stringToInteger(string input) {
     return stoi(input);
 }
+
+string listNodeToString(ListNode* node) {
+    if (node == nullptr) {
+        return "[]";
+    }
+
+    string result;
+    while (node) {
+        result += to_string(node->val) + ", ";
+        node = node->next;
+    }
+    return "[" + result.substr(0, result.length() - 2) + "]";
+}
+
+ListNode* stringToListNode(string input) {
+    // Generate list from the input
+    vector<int> list = stringToIntegerVector(input);
+
+    // Now convert that list into linked list
+    ListNode* dummyRoot = new ListNode(0);
+    ListNode* ptr = dummyRoot;
+    for(int item : list) {
+        ptr->next = new ListNode(item);
+        ptr = ptr->next;
+    }
+    ptr = dummyRoot->next;
+    delete dummyRoot;
+    return ptr;
+}
