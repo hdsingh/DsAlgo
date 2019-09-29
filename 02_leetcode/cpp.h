@@ -12,3 +12,11 @@ void print(T v){
         std::cout<<*i<<" ";
     std::cout<<'\n'; 
 }
+
+template <typename T>
+void print1(T m){
+    for(auto i = m.begin(); i!=m.end(); i++){
+        cout<<i->first<<" : "<<i->second<<", ";
+    }
+    cout<<endl;
+}
