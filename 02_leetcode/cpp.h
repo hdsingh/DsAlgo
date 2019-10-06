@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
+// #include <unistd.h> //for usleep()
 
 #define deb(x) std::cout << #x <<  " " << x << '\n';
 #define fo(i,n) for(i=0;i<n;i++)
@@ -22,13 +23,15 @@ void print1(T m){
     cout<<endl;
 }
 
-void print_vvi(vector<vi> v){
+
+template <typename T>
+void print_vv(T v){
     for(auto i= 0; i<v.size(); i++){
         cout<<"{";
         for(auto j = 0; j!=v[i].size(); j++){
             cout<<v[i][j]<<",";
         }
-        cout<<"},";
+        cout<<"},"<<endl;
     }
     cout<<endl;
 }
