@@ -5,3 +5,9 @@ vspace.code-workspace
 temp*.cpp
 .vscode
 *.in
+
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
