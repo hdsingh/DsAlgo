@@ -1,24 +1,23 @@
 /*
- * @lc app=leetcode id=39 lang=cpp
+ * @lc app=leetcode id=40 lang=cpp
  *
- * [39] Combination Sum
+ * [40] Combination Sum II
  *
- * https://leetcode.com/problems/combination-sum/description/
+ * https://leetcode.com/problems/combination-sum-ii/description/
  *
  * algorithms
- * Medium (50.64%)
- * Likes:    2502
- * Dislikes: 75
- * Total Accepted:    403.6K
- * Total Submissions: 790.3K
- * Testcase Example:  '[2,3,6,7]\n7'
+ * Medium (43.39%)
+ * Likes:    1117
+ * Dislikes: 51
+ * Total Accepted:    255.8K
+ * Total Submissions: 583.5K
+ * Testcase Example:  '[10,1,2,7,6,1,5]\n8'
  *
- * Given a set of candidate numbers (candidates) (without duplicates) and a
- * target number (target), find all unique combinations in candidates where the
- * candidate numbers sums to target.
+ * Given a collection of candidate numbers (candidates) and a target number
+ * (target), find all unique combinations in candidates where the candidate
+ * numbers sums to target.
  * 
- * The same repeated number may be chosen from candidates unlimited number of
- * times.
+ * Each number in candidates may only be used once in the combination.
  * 
  * Note:
  * 
@@ -30,23 +29,24 @@
  * Example 1:
  * 
  * 
- * Input: candidates = [2,3,6,7], target = 7,
+ * Input: candidates = [10,1,2,7,6,1,5], target = 8,
  * A solution set is:
  * [
- * ⁠ [7],
- * ⁠ [2,2,3]
+ * ⁠ [1, 7],
+ * ⁠ [1, 2, 5],
+ * ⁠ [2, 6],
+ * ⁠ [1, 1, 6]
  * ]
  * 
  * 
  * Example 2:
  * 
  * 
- * Input: candidates = [2,3,5], target = 8,
+ * Input: candidates = [2,5,2,1,2], target = 5,
  * A solution set is:
  * [
- * [2,2,2,2],
- * [2,3,3],
- * [3,5]
+ * [1,2,2],
+ * [5]
  * ]
  * 
  * 
@@ -58,7 +58,7 @@ using namespace std;
 // @lc code=start
 class Solution {
 public:
-    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
         vector<int> sub = {};
         vector<vector<int>> sol;
         sort(candidates.begin(), candidates.end());
@@ -74,14 +74,11 @@ public:
         // explore + recurse
         for(int i=begin; i<candidates.size(); i++){
             int selected = candidates[i];
-            std::system("clear");
-            print(sub);
-            print_vv(sol);
-            cout<<"target: "<<target<<endl;;
-            usleep(500000);
+
             if(selected<=target){
+                if(i && candidates[i-1]==candidates[i] && i>begin) continue;
                 sub.push_back(selected);
-                csHelper(candidates, target-selected, sub, sol, i);
+                csHelper(candidates, target-selected, sub, sol, i+1);
                 sub.pop_back();
             }
         }
@@ -94,8 +91,10 @@ int main(){
     Solution s;
     vi candidates;
     int target;
-    // candidates = {2,3,6,7}; target = 7;
-    candidates = {2,3,5}; target = 8;
-    auto sol = s.combinationSum(candidates,target);
+    // candidates = {10,1,2,7,6,1,5}; target = 8;
+    candidates = {2,5,2,1,2}; target = 5;
+    auto sol = s.combinationSum2(candidates,target);
     print_vv(sol);
+    vi a;
+    cout<<a.size();
 }

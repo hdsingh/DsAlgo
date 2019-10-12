@@ -44,57 +44,65 @@
  * 
  * 
  */
-
-// @lc code=start
 #include "cpp.h"
 #include "extra.h"
 using namespace std;
 
+        // To visualze the process
+        // usleep(10000);
+        // std::system("clear");
+        // print_vv(board);
+        // usleep(10000);
+
+// @lc code=start
 class Solution {
 public:
     vector<vector<string>> solveNQueens(int n) {
         vector<vector<string>> res;
-        vector<string> nqueens(n, string(n, '.'));
-        solveNQueens(res, nqueens, 0, n);
+        vector<string> nqueen(n, string(n, '.'));
+        nq_helper(res, nqueen, n , 0);
         return res;
     }
 
-private:
-    void solveNQueens(vector<vector<string>> &res, vector<string> &nqueens, int row, int &n){
-        
-        if(row==n) res.push_back(nqueens);
+    void nq_helper(vector<vector<string>> &res, vector<string> &nqueen, int &n, int row){
+        // terminating condition
+        if(row==n) res.push_back(nqueen);
+        if(row>=n) return;
 
+        // exploration
         for(int col = 0; col<n; col++){
-            if(isValid(nqueens, row, col, n)){
-                nqueens[row][col] = 'Q';
-                solveNQueens(res, nqueens, row+1, n);
-                nqueens[row][col] = '.';
+            if(is_valid(nqueen, row, col, n)){
+                nqueen[row][col] = 'Q';
+                nq_helper(res, nqueen, n, row+1);
+                nqueen[row][col] = '.';
             }
         }
     }
 
-    bool isValid(vector<string> &nqueens,  int row, int col, int &n){
-        // check if this col has a queen before
-        for(int i=0; i<row; i++)
-            if(nqueens[i][col]=='Q') return false;
-        
-        // Check the 45 deg diagonal
-        for(int i=row-1, j= col+1; i>=0 && j<n; i--, j++)
-            if(nqueens[i][j]=='Q') return false;
+    bool is_valid(vector<string> &board, int row, int col, int n){
+        // All the prev row of const col cell
+        for(int i= row; i>=0; i--) if(board[i][col]=='Q') return false;
 
-        // Check the 135 deg diagonal
-        for(int i=row-1, j= col-1; i>=0 && j>=0; i--, j--)
-            if(nqueens[i][j]=='Q') return false;   
-        
+        // check 45 deg diagonally
+        int i(row-1), j(col-1);
+        while(i>=0 && j>=0){
+            if(board[i--][j--]=='Q') return false;
+        }
+
+        // check 135 deg diagonally
+        i= row-1; j=col+1;
+        while(i>=0 && j<n){
+            if(board[i--][j++]=='Q') return false;
+        }
+
         return true;
     }
 };
-
-
 // @lc code=end
 
-int main(int argc, char const *argv[])
-{
-	cout<<"HEllo";
-	return 0;
+int main(){
+    int n = 4;
+    Solution s;
+    vector<vector<string>> out = s.solveNQueens(n);
+    print_vv(out);
 }
