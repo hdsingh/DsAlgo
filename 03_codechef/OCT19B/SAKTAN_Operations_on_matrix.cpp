@@ -16,7 +16,7 @@ int main(){
         scanf("%d ", &q);
 
         // initialize to 0
-        int mat[n][m] = { };
+        vector<vector<int>> mat(n, vector<int> (m,0));
 
         map<int, int> row_times; // row_times[1] = 5 i.e row 1 has appeared 5 times
         map<int, int> col_times;
