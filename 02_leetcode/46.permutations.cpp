@@ -36,7 +36,7 @@
 using namespace std;
 
 // @lc code=start
-class Solution1 {
+class Solution1 { // to get permutations in correct order
 public:
     vector<vector<int>> permute(vector<int>& nums) {
         vector<vector<int>> sol;
@@ -69,13 +69,15 @@ public:
 
 class Solution {
 public:
-    vector<vector<int>> permute(vector<int>& nums) {
-        vector<vector<int>> sol;
+    template <typename T>
+    vector<vector<T>> permute(vector<T>& nums) {
+        vector<vector<T>> sol;
         perHelper(nums, 0, sol);
         return sol;
     }
 
-    void perHelper(vector<int>& nums, int begin,  vector<vector<int>> &sol){
+    template <typename T>
+    void perHelper(vector<T>& nums, int begin,  vector<vector<T>> &sol){
         int n = nums.size();
         // termination
         if(begin==n){
@@ -97,8 +99,9 @@ public:
 // @lc code=end
 int main(){
     Solution s;
-    vi nums = {1,2,3};
-    auto out = s.permute(nums);
+    vi ss = {1,2,3};
+    // vs ss = {"abc", "def", "ghi"};
+    auto out = s.permute(ss);
     print_vv(out);
 
 }
