@@ -62,6 +62,7 @@ void MinHeap::insertKey(int k){
 
     while(i!=0 && harr[parent(i)]>harr[i]){
         swap(harr[parent(i)], harr[i]);
+        i = parent(i);
     }
     heap_size++;
 }
