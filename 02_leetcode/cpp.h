@@ -7,6 +7,7 @@ using namespace std;
 #define REP(i, a, b) for (int i = int(a); i <=int(b); i++)
 #define all(x) x.begin(), x.end()
 typedef std::vector<int> vi;
+typedef std::vector<vector<int>> vvi;
 typedef std::vector<string> vs;
 
 template <typename T>

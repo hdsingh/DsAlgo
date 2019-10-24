@@ -4,6 +4,7 @@
 using namespace std;
 
 int main(){
+    // DisjointSet1 ds(7);
     DisjointSet ds;
     ds.makeSet(1);
     ds.makeSet(2);
