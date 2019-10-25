@@ -5,7 +5,7 @@ using namespace std;
 // Number of vertices in the graph 
 #define V 9 
 
-void printDist(int dist[]){
+void printDist(vector<int> &dist){
     cout<<"Edge\tDistance\n";
     for(int i=0; i<V; i++){
         cout<<i<<" \t "<<dist[i]<<endl;
@@ -15,7 +15,7 @@ void printDist(int dist[]){
 // A utility function to find the vertex with  
 // minimum Distance value, from the set of vertices  
 // not yet included in MST
-int minDistance(int dist[], bool visited[]){
+int minDistance(vector<int> &dist, vector<bool> &visited){
     int min = INT_MAX, min_index;
 
     for(int v=0; v<V; v++){
@@ -29,18 +29,13 @@ int minDistance(int dist[], bool visited[]){
 // Dijkstra's single source shortest path - Greedy approach
 // repeat for V times, each time find a vertex with 
 // min Distance and perform reduction over all its adjacent edges
-void dijkstra(int graph[V][V], int src){
+void dijkstra(vector<vector<int>> &graph, int src){
 
     // To save minmimum Distance of an egde
-    int dist[V];
+    vector<int> dist(V, INT_MAX);
 
     // To record vertices which have been included
-    bool visited[V];
-
-    // Initialize all Distance as infinite
-    for(int i=0; i<V; i++){
-        dist[i]=INT_MAX; visited[i]=false;
-    }
+    vector<bool> visited(V, false);
 
     // initialize starting vertex with weigth 0
     dist[src]=0;
@@ -73,9 +68,51 @@ void dijkstra(int graph[V][V], int src){
 // Difference : Reduction is performed here, while only weight/dist
 //              initialisation happens in prim
 
+typedef pair<int, int> pii;
+const int inf = 1e9;
+
+int Dijkstra_for_adjList(vector<vector<int>>& edges, int n, int src) {
+    // n starting from 1
+    vector<vector<pii> >adj(n+1);
+    // e : {u, v, w}
+    for(auto &e: edges){
+        adj[e[0]].push_back({e[1], e[2]});
+    }
+    
+    vector<int> dist(n+1, inf);
+    dist[src]=0;
+    // use pq to get minimum weight node/vertex
+    priority_queue<pii, vector<pii>, greater<pii>> pq; //weight, v
+    pq.push({0, src});
+
+    int u, v, w;
+    vector<bool> visited(n+1, false);
+
+    // explore aj vertices of u, and change their weight
+    while(!pq.empty()){
+        pii p = pq.top(); pq.pop();
+        u = p.second;
+
+        if(visited[u]) continue;
+
+        for(auto to: adj[u]){
+            v = to.first, w = to.second;
+            if(dist[u]+w < dist[v]){
+                dist[v] = dist[u]+w;
+                pq.push({dist[v], v});
+            }
+        }
+
+    }
+
+    for(int i=1; i<=n; i++){
+        cout<<i<<"  "<<dist[i]<<endl;
+    }
+}
+
 int main(){
 
-    int graph[V][V] = { { 0, 4, 0, 0, 0, 0, 0, 8, 0 }, 
+    vector<vector<int>> graph = { { 0, 4, 0, 0, 0, 0, 0, 8, 0 }, 
                         { 4, 0, 8, 0, 0, 0, 0, 11, 0 }, 
                         { 0, 8, 0, 7, 0, 4, 0, 0, 2 }, 
                         { 0, 0, 7, 0, 9, 14, 0, 0, 0 }, 
@@ -86,6 +123,11 @@ int main(){
                         { 0, 0, 2, 0, 0, 0, 6, 7, 0 } }; 
   
     dijkstra(graph, 0); 
+    cout<<endl;
+
+    vector<vector<int>> edges = {{2,1,1}, {2,3,1}, {3,4,1}}; //{u, v, w}
+    Dijkstra_for_adjList(edges, 4, 2);
+
 
 
     return 0;   
