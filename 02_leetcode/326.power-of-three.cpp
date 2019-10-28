@@ -51,7 +51,14 @@ using namespace std;
 class Solution {
 public:
     bool isPowerOfThree(int n) {
-        
+        // int max_pow3 = pow(3, 19);
+        // return n>0 && max_pow3%n==0;
+        return n>0 && 1162261467%n==0;
+    }
+
+    bool isPowerOfThree1(int n) {
+        if(n>1) while(n%3==0) n/=3;
+        return n==1;
     }
 };
 // @lc code=end
@@ -61,11 +68,15 @@ unsigned long bin(int n){
 };
 
 string bins(int n){
-    return bitset<20>(n).to_string();
+    return bitset<32>(n).to_string();
 }
 
 int main(){
-    for(int i=1; i<10; i++){
-        cout<<i<<": "<<bins(pow(3, i))<<endl;
+    Solution s;
+    vi tests = {27, 0, 9, 45, -3, 337};
+    for(int test: tests){
+        cout<<s.isPowerOfThree(test)<<endl;
     }
+    cout<<std::setprecision(32)<<pow(3, 19)<<endl;
+    // cout<<INT_MAX;
 }
