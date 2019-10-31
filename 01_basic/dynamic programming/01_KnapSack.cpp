@@ -37,20 +37,50 @@ int knapSack(int W, int wt[], int val[], int n){
 int knapSackwithSTL(int W, vi &wt, vi &val, int n){
 
     int i,w;
-    vector<vi> K(n+1, vi(W+1, 0));
+    vector<vi> dp(n+1, vi(W+1, 0));
     // int K[n+1][W+1]; //KnapSack table
 
     for(i=0; i<=n; i++){
         for(w=0; w<=W; w++){
             if(i==0 || w==0)
-                K[i][w]=0;
+                dp[i][w]=0;
             else if(wt[i-1]<=w)
-                K[i][w] = max(K[i-1][w], val[i-1] + K[i-1][ w - wt[i-1] ]);
+                dp[i][w] = max(dp[i-1][w], val[i-1] + dp[i-1][ w - wt[i-1] ]);
             else
-                K[i][w] = K[i-1][w];
+                dp[i][w] = dp[i-1][w];
         }
     }
-    return K[n][W];
+    return dp[n][W];
+}
+
+// O(nW) time, O(nW) space
+int knapSackwithSTL2(int W, vi &wt, vi &val, int n){
+
+    int i,w;
+    vector<vi> dp(n+1, vi(W+1, 0));
+
+    for(i=1; i<=n; i++){
+        for(w=1; w<=W; w++){
+            dp[i][w] = dp[i-1][w];
+            if(wt[i-1]<=w)
+                dp[i][w] = max(dp[i][w], val[i-1] + dp[i-1][ w - wt[i-1] ]);                
+        }
+    }
+    return dp[n][W];
+}
+
+// O(nW) time, O(W) space
+int knapSackwithSTL3(int W, vi &wt, vi &val, int n){
+
+    int i,w;
+    vi dp(W+1, 0);
+
+    for(i=0; i<n; i++){
+        for(w=W; w>=wt[i]; w--){
+            dp[w] = max(dp[w], val[i] + dp[ w - wt[i] ]);                
+        }
+    }
+    return dp[W];
 }
 
 int main(){
@@ -68,6 +98,6 @@ int main(){
     int W = 8;
 
     // int n = sizeof(val)/sizeof(val[0]);
-    cout<<knapSackwithSTL(W, wts, val, n)<<endl;
+    cout<<knapSackwithSTL3(W, wts, val, n)<<endl;
     return 0;
 }

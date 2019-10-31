@@ -66,21 +66,20 @@ using namespace std;
 
 class Solution {
 public:
-    int longestCommonSubsequence(string t1, string t2) {
-        int a = t1.size();
-        int b = t2.size();
-        vector<vector<int>> T(a+1, vector<int>(b+1));
-        
-        for(int i = 1; i<=a; i++){
-            for(int j =1; j<=b; j++){
+    int longestCommonSubsequence(string a, string b) {
+        int a_size = a.size();
+        int b_size = b.size();
 
-                if(t1[i-1]==t2[j-1])
-                    T[i][j] = 1 + T[i-1][j-1];
+        vector<vector<int>> dp(a_size+1, vector<int>(b_size+1, 0));
+
+        for(int i=1; i<=a_size; i++)
+            for(int j=1; j<=b_size; j++)
+                if(a[i-1]==b[j-1])
+                    dp[i][j] = 1 + dp[i-1][j-1];
                 else
-                    T[i][j] = max(T[i-1][j], T[i][j-1]);
-            }
-        }
-        return T[a][b];
+                    dp[i][j] = max(dp[i-1][j], dp[i][j-1]);
+            
+        return dp[a_size][b_size]; 
     }
 
 
@@ -103,10 +102,10 @@ int main(){
     Solution sol;
     int t;
     string a, b;
-    scanf("%d\n", &t);
-    while(t--){
-        getline(cin,a);
-        getline(cin,b);
-        cout<<sol.longestCommonSubsequence(a, b)<<endl;
-    }
+    a = "abcde"; b = "ace";
+    cout<<sol.longestCommonSubsequence(a, b)<<endl;
+
+    a = "abc"; b = "def";
+    cout<<sol.longestCommonSubsequence(a, b)<<endl;
+    
 }

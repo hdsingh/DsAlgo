@@ -1,10 +1,3 @@
-void print_pq(priority_queue<int> pq){
-    while(pq.size()){
-        cout<<pq.top()<<" ";
-        pq.pop();
-    }
-    cout<<endl;
-}
 
 void trimLeftTrailingSpaces(string &input) {
     input.erase(input.begin(), find_if(input.begin(), input.end(), [](int ch) {

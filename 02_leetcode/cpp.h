@@ -34,10 +34,18 @@ void print_vv(T v, bool same_line=true){
     for(auto i= 0; i<v.size(); i++){
         cout<<"{";
         for(auto j = 0; j!=v[i].size(); j++){
-            cout<<v[i][j]<<",";
+            cout<<setw(3)<<v[i][j]<<",";
         }
         cout<<"},";
         if(same_line) cout<<endl;
+    }
+    cout<<endl;
+}
+
+void print_pq(priority_queue<int> pq){
+    while(pq.size()){
+        cout<<pq.top()<<" ";
+        pq.pop();
     }
     cout<<endl;
 }
