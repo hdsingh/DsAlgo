@@ -3,8 +3,8 @@ using namespace std;
 #include <unistd.h> //for usleep()
 
 #define deb(x) std::cout << #x <<  " " << x << '\n';
-#define fo(i,n) for(i=0;i<n;i++)
-#define REP(i, a, b) for (int i = int(a); i <=int(b); i++)
+#define fo(i,n) for(int i=0;i<n;i++)
+#define rep(i, a, b) for (int i = int(a); i <=int(b); i++)
 #define all(x) x.begin(), x.end()
 typedef std::vector<int> vi;
 typedef std::vector<vector<int>> vvi;
