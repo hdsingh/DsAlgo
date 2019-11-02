@@ -9,6 +9,7 @@ using namespace std;
 typedef std::vector<int> vi;
 typedef std::vector<vector<int>> vvi;
 typedef std::vector<string> vs;
+typedef std::vector<vector<string>> vvs;
 typedef std::vector<bool> vb;
 typedef std::pair<int, int> pii;
 const int inf = 1e9;
