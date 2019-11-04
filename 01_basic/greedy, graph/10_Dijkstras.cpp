@@ -76,13 +76,14 @@ const int inf = 1e9;
 //    and explore its adj(neighbours)
 // 3. Explore: if relaxation occurs then push these into q and repeat
 // 4. If we get an edge with weight as INF, break
-int Dijkstra_for_adjList(vector<vector<int>>& edges, int n, int src) {
+void Dijkstra_for_adjList(vector<vector<int>>& edges, int n, int src) {
     // n starting from 1
     vector<vector<pii> >adj(n+1);
     // e : {u, v, w}
     for(auto &e: edges){
-        adj[e[0]].push_back({e[1], e[2]});
-        adj[e[1]].push_back({e[0], e[2]}); // acc to graph
+        adj[e[0]].push_back({e[2], e[1]});
+        adj[e[1]].push_back({e[2], e[0]}); // acc to graph
+        // adj(node) = {u, w, v} // to be in same format as of pq, to get node by min weight
     }
     
     vector<int> dist(n+1, inf);
@@ -108,7 +109,7 @@ int Dijkstra_for_adjList(vector<vector<int>>& edges, int n, int src) {
         visited[u]=true;
 
         for(auto to: adj[u]){
-            v = to.first, w = to.second;
+            w = to.first, v = to.second;
             if(dist[u]+w < dist[v]){
                 dist[v] = dist[u]+w;
                 pq.push({dist[v], v});
@@ -134,7 +135,7 @@ int main(){
                         { 8, 11, 0, 0, 0, 0, 1, 0, 7 }, 
                         { 0, 0, 2, 0, 0, 0, 6, 7, 0 } }; 
   
-    dijkstra(graph, 3); 
+    // dijkstra(graph, 3); 
     // cout<<endl;
 
     vector<vector<int>> edges = {{2,1,1}, {2,3,1}, {3,4,1}}; //{u, v, w}
