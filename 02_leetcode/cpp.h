@@ -16,6 +16,10 @@ const int inf = 1e9;
 
 template <typename T>
 void print(T v){
+    if(!v.size()) {
+        cout<<"Empty"<<endl;
+        return;
+    }
     for(auto i= v.begin(); i!=v.end(); i++)
         std::cout<<*i<<" ";
     std::cout<<'\n'; 
