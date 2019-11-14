@@ -5,7 +5,7 @@ using namespace std;
 
 
 // Whenever we find a new min, reset the min. Also reset the max to 0
-class Solution {
+class Solution1 {
 public:
     int maxProfit(vector<int>& a) {
         int n = a.size();
@@ -23,6 +23,23 @@ public:
         }
         profit = max_v - min_v;
         return max(profit,max_profit);
+    }
+};
+
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        if(prices.size()==0) return 0;
+        
+        int min_price = prices[0];
+        int max_profit = 0;
+        
+        for(int i=1; i<prices.size(); i++){
+            min_price = min(prices[i], min_price);
+            max_profit = max(max_profit, prices[i]-min_price);
+        }
+        
+        return max_profit;
     }
 };
 
