@@ -22,7 +22,7 @@ void print(T v){
 template <typename T>
 void print_vv(T v, bool same_line=true){
     for(auto i= 0; i<v.size(); i++){
-        cout<<i<<": {";
+        cout<<"{";
         for(auto j = 0; j!=v[i].size(); j++){
             cout<<setw(3)<<v[i][j]<<",";
         }
@@ -32,49 +32,40 @@ void print_vv(T v, bool same_line=true){
     cout<<endl;
 }
 
-const int N = 100005;
-vi dp(N); // dp[x]: max len of seq at x
-
-
-// instead of updating every divisor,
-// just update the prime factors, with the maximum val obatined 
-// at dp[x], this would also help maintaing easy updating bw
-// the elements which are not co-prime.
 int main(){
-    vvi fact(N+1); //prime factors
-
-    for(int i=2; i<N; i++){
-        if(fact[i].empty()){
-            for(int j=i; j<N; j+=i)
-                fact[j].push_back(i);
-        }
-    }
-    
-    int n; cin>>n;
-    vi arr(n);
+    int n, k;
+    cin>>n>>k;
+    vi a(n);
     for(int i=0; i<n; i++)
-        cin>>arr[i];
+        cin>>a[i];
     
+    int cnt = 0; int j=0, ansl=0, ansr=0;
 
-    int out = 1;
-    // dp[arr[0]] = 0;
     for(int i=0; i<n; i++){
-        int x = arr[i];
-        int m = 1;
-        for(auto j: fact[x]){
-            m = max(dp[j]+1,m);
+        if(j<i){
+            cnt = 0; j=i;
         }
-        dp[x] = m;
-        out = max(out, m);
 
-        // Update divisors
-        for(auto j: fact[x])
-            dp[j] = max(dp[j], dp[x]);
+        while(j<n){
+            int ncnt = cnt + !a[j];
+            if(ncnt>k) break;
+            cnt += !a[j];
+            j++;
+        }
+
+        if(j-i > ansr - ansl){
+            ansl = i; ansr = j;
+        }
+
+        if(cnt>0) cnt-= !a[i];
     }
 
-    // print(dp);
-    cout<<out;
+    cout<<ansr-ansl<<endl;
 
-    
+    for(int i=ansl; i<ansr; i++)
+        a[i] = 1;
+
+    print(a);
+
     return 0;
 }

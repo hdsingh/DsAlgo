@@ -22,7 +22,7 @@ void print(T v){
 template <typename T>
 void print_vv(T v, bool same_line=true){
     for(auto i= 0; i<v.size(); i++){
-        cout<<i<<": {";
+        cout<<"{";
         for(auto j = 0; j!=v[i].size(); j++){
             cout<<setw(3)<<v[i][j]<<",";
         }
@@ -32,49 +32,52 @@ void print_vv(T v, bool same_line=true){
     cout<<endl;
 }
 
-const int N = 100005;
-vi dp(N); // dp[x]: max len of seq at x
+int type(const char &c){
+    if(isdigit(c)) return 0;
+    if(isalpha(c)) return 1;
+    return 2;
+}
 
-
-// instead of updating every divisor,
-// just update the prime factors, with the maximum val obatined 
-// at dp[x], this would also help maintaing easy updating bw
-// the elements which are not co-prime.
 int main(){
-    vvi fact(N+1); //prime factors
+    int n, m; cin>>n>>m;
 
-    for(int i=2; i<N; i++){
-        if(fact[i].empty()){
-            for(int j=i; j<N; j+=i)
-                fact[j].push_back(i);
-        }
-    }
+    char s[55][55];
     
-    int n; cin>>n;
-    vi arr(n);
-    for(int i=0; i<n; i++)
-        cin>>arr[i];
-    
-
-    int out = 1;
-    // dp[arr[0]] = 0;
     for(int i=0; i<n; i++){
-        int x = arr[i];
-        int m = 1;
-        for(auto j: fact[x]){
-            m = max(dp[j]+1,m);
-        }
-        dp[x] = m;
-        out = max(out, m);
-
-        // Update divisors
-        for(auto j: fact[x])
-            dp[j] = max(dp[j], dp[x]);
+        for(int j=0; j<m; j++)
+            cin>>s[i][j];
     }
 
-    // print(dp);
-    cout<<out;
+    vector<int> di, ch, sy;
+    for(int i=0; i<n; i++){
+        int d=1e5, c=1e5, y=1e5;
+        for(int j=0; j<m; j++){
+            int t = type(s[i][j]);
+            int pos = min(j, m-j);
+            if(t==0)
+                d = min(d, pos);
+            else if(t==1) 
+                c = min(c, pos);
+            else
+                y = min(y, pos);
+        }
+        di.push_back(d);
+        ch.push_back(c);
+        sy.push_back(y);
+    }
 
+    int ans = 1e8;
+    for(int i=0; i<n; i++)
+        for(int j=0; j<n; j++)
+            for(int k=0; k<n; k++)
+                if(i!=j && j!=k && k!=i)
+                    ans = min(ans, di[i]+ch[j]+sy[k]);
+    
+
+    cout<<ans;
+    
+
+    
     
     return 0;
 }
