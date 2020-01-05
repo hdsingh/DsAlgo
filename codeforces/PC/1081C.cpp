@@ -18,27 +18,48 @@ const int inf = 1e9 + 5;
 template <typename T>void print(T v){ for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(2)<<*i<<" ";cout<<endl; }
 template <typename T>void print_vv(T v, bool same_line=true){for(auto i= 0; i<v.size(); i++){cout<<"{";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(3)<<v[i][j]<<",";}cout<<"},";if(same_line) cout<<endl;}cout<<endl;}
 
-const int MAXN = 10;
-ll C[MAXN+1][MAXN+1];
-// vvl C(MAXN+1, vl(MAXN+1));
+const int MAXN = 2005;
+const int mod = 998244353;
+vl fact(MAXN), inv(MAXN), finv(MAXN);
 
 void precalc(){
+    int n = MAXN;
+    
+    fact[0] = finv[0] = inv[1] = 1;
 
-    C[0][0] = 1;
-    for(int i=1; i<=MAXN; i++){
-        C[i][0] = C[i][i] =1;
+    fore(i, 2, n)
+        inv[i] = (mod - (mod/i) * inv[mod%i] % mod) % mod;
 
-        for(int j=1; j<=i/2; j++)
-            C[i][j] = C[i][i-j] = C[i-1][j-1] + C[i-1][j];
+    fore(i, 1, n){
+        fact[i] = fact[i-1] * i % mod;
+        finv[i] = finv[i-1] * inv[i] % mod;
     }
+    
+}
 
+ll C(int n, int r){
+    if(n<r || r<0) return 0;
+    return fact[n] * finv[r]%mod * finv[n-r]%mod;
+}
+
+// ll powMod(ll n, ll p, ll mod)
+ll powMod(ll n, ll p) { 
+	ll res = 1;
+	while (p) {
+		if (p & 1) (res *= n) %= mod;
+		(n *= n) %= mod;
+		p >>= 1;
+	}
+	return res;
 }
 
 int main(){
+    ll n, m, k;
     precalc();
-    
-    deb(C[10][2]);
+    while(cin>>n>>m>>k){
+        ll ans = (C(n-1, k)%mod * m%mod * powMod(m-1, k)%mod)%mod;
+        printf("%lld\n", ans);
+    }
 
-    // print_vv(C);
     return 0;
 }

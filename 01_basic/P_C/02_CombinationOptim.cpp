@@ -22,16 +22,6 @@ const int MAXN = 20;
 const int mod = 1e9+7;
 vl fact(MAXN), inv(MAXN), finv(MAXN);
 
-ll powMod(ll n, ll p, ll mod) {
-	ll res = 1;
-	while (p) {
-		if (p & 1) (res *= n) %= mod;
-		(n *= n) %= mod;
-		p >>= 1;
-	}
-	return res;
-}
-
 void precalc(){
     int n = MAXN;
     
@@ -50,6 +40,17 @@ void precalc(){
 ll C(int n, int r){
     if(n<r || r<0) return 0;
     return fact[n] * finv[r]%mod * finv[n-r]%mod;
+}
+
+// ll powMod(ll n, ll p, ll mod)
+ll powMod(ll n, ll p) { 
+	ll res = 1;
+	while (p) {
+		if (p & 1) (res *= n) %= mod;
+		(n *= n) %= mod;
+		p >>= 1;
+	}
+	return res;
 }
 
 int main(){

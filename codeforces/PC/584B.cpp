@@ -18,27 +18,23 @@ const int inf = 1e9 + 5;
 template <typename T>void print(T v){ for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(2)<<*i<<" ";cout<<endl; }
 template <typename T>void print_vv(T v, bool same_line=true){for(auto i= 0; i<v.size(); i++){cout<<"{";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(3)<<v[i][j]<<",";}cout<<"},";if(same_line) cout<<endl;}cout<<endl;}
 
-const int MAXN = 10;
-ll C[MAXN+1][MAXN+1];
-// vvl C(MAXN+1, vl(MAXN+1));
-
-void precalc(){
-
-    C[0][0] = 1;
-    for(int i=1; i<=MAXN; i++){
-        C[i][0] = C[i][i] =1;
-
-        for(int j=1; j<=i/2; j++)
-            C[i][j] = C[i][i-j] = C[i-1][j-1] + C[i-1][j];
-    }
-
+const int mod = 1e9+7;
+ 
+ll powMod(ll n, ll p, ll mod) {
+	ll res = 1;
+	while (p) {
+		if (p & 1) (res *= n) %= mod;
+		(n *= n) %= mod;
+		p >>= 1;
+	}
+	return res;
 }
 
 int main(){
-    precalc();
-    
-    deb(C[10][2]);
-
-    // print_vv(C);
+    ll n, ans;
+    while(cin>>n){
+        ans = (powMod(27,n, mod) - powMod(7, n, mod) + mod)%mod;
+        printf("%lld\n", ans);
+    }
     return 0;
 }
