@@ -23,47 +23,25 @@ inline ll fpow(ll n, ll k, int p = mod) {ll r = 1; for (; k; k >>= 1) {if (k & 1
 inline void addmod(int& a, int val, int p = mod) {if ((a = (a + val)) >= p) a -= p;}
 inline void submod(int& a, int val, int p = mod) {if ((a = (a - val)) < 0) a += p;}
 inline int mult(int a, int b, int p = mod) {return (ll) a * b % p;}
-// inline int inv(int a, int p = mod) {return fpow(a, p - 2, p);}
-
-
-const int MAXN = 20;
-// const int mod = 1e9+7;w
-vl fact(MAXN), inv(MAXN), finv(MAXN);
-
-void precalc(){
-    int n = MAXN;
-    
-    fact[0] = finv[0] = inv[1] = 1;
-
-    fore(i, 2, n)
-        inv[i] = (mod - (mod/i) * inv[mod%i] % mod) % mod;
-
-    fore(i, 1, n){
-        fact[i] = fact[i-1] * i % mod;
-        finv[i] = finv[i-1] * inv[i] % mod;
-    }
-    
-}
-
-ll C(int n, int r){
-    if(n<r || r<0) return 0;
-    return fact[n] * finv[r]%mod * finv[n-r]%mod;
-}
-
-// ll powMod(ll n, ll p, ll mod)
-ll powMod(ll n, ll p) { 
-	ll res = 1;
-	while (p) {
-		if (p & 1) (res *= n) %= mod;
-		(n *= n) %= mod;
-		p >>= 1;
-	}
-	return res;
-}
+inline int inv(int a, int p = mod) {return fpow(a, p - 2, p);}
 
 int main(){
-    precalc();
-    cout<<C(10,8)<<endl;
-    
+    string s; 
+    int k;
+    while(cin>>s){
+        cin>>k;
+        int n = s.size();
+
+        int ans = 0;
+        for(int i=0; i<n; i++){
+            if(s[i]=='0' || s[i]=='5'){
+                addmod(ans, fpow(2, i));
+            }
+        }
+        ans = mult(ans, fpow(2, (ll) n*k % (mod-1)) -1);
+        ans = mult(ans, inv( fpow(2, n) - 1));
+
+        cout<<ans<<endl;
+    }
     return 0;
 }
