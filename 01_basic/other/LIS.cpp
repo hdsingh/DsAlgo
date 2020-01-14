@@ -31,7 +31,7 @@ int ceilIndex(vi &tail, int l, int r, int key){
 }
 
 
-int LIS(vi &v){
+int LIS_simple(vi &v){
     int n = v.size();
     if(n==0) return 0;
     
@@ -58,7 +58,7 @@ int LIS(vi &v){
         else 
             tail[ceilIndex(tail, 0, len-1, v[i])] = v[i];
         
-        print(tail);
+        // print(tail);
     }
     
     // forn(i, len)
@@ -67,9 +67,124 @@ int LIS(vi &v){
     return len;    
 }
 
+// with STL
+int LIS1(vi &a){
+    int n = a.size();
+    vi tail(n);
+
+    tail[0] = a[0];
+    int len = 1;
+    fore(i, 1, n){
+        auto b = tail.begin(), e = tail.begin()+len;
+        auto it = lower_bound(b, e, a[i]); //first eq or greater than
+                // upper_bound for longet non decreaing sub seq
+
+        
+        if(it==e) // if not found inc len and insert at end
+            tail[len++] = a[i];
+        else 
+            *it = a[i]; // change to new lesser element a[i]       
+    }
+
+    return len;
+}
+
+// With better implementation using vector
+int LIS(vi &a){
+    int n = a.size();
+    vi tail;
+
+    fore(i, 0, n){
+        auto it = lower_bound(all(tail), a[i]);
+        if(it==tail.end())
+            tail.pb(a[i]);
+        else 
+            *it = a[i];
+    }
+    print(tail);
+    return tail.size();
+}
+
+int LIS2(vi &a){
+    int n = a.size();
+
+    multiset<int> S;
+    fore(i, 0, n){
+        S.insert(a[i]);
+        auto it = S.lower_bound(a[i]); // will point to inserted element
+        it++;
+        if(it!=S.end())
+            S.erase(it);
+    }
+    for(auto x: S)
+        cout<<x<<" ";
+    cout<<endl;
+    return S.size();
+}
+
+
+int LIS3(vi &a){
+    int n = a.size();
+
+    multiset<int> S;
+    fore(i, 0, n){
+        auto it = S.lower_bound(a[i]); // will point to inserted element
+        if(it==S.end()){
+            S.insert(a[i]);
+        }else{
+
+        }
+
+    }
+    for(auto x: S)
+        cout<<x<<" ";
+    cout<<endl;
+    return S.size();
+}
+
+
+// With better implementation using vector
+int LISwithSeq(vi &a){
+    int n = a.size();
+    vi tail;
+    vvi history;
+
+    for(auto x: a){
+        auto it = lower_bound(all(tail), x);
+        if(it==tail.end()){
+            tail.pb(x);
+            history.pb(vi(1, x)); // opt
+        }
+        else{
+            *it = x;
+            history[it - tail.begin()].push_back(x); //opt
+        }
+    }
+    // print(tail);
+
+    int llen = tail.size(); //longest length
+
+    print_vv(history);
+    // Optional to find seq;
+    if(true){
+        a.resize(llen);
+        a.back() = tail.back();
+        for (int i=llen-2; i>=0; i--) {
+            auto it = lower_bound(history[i].rbegin(), history[i].rend(), a[i+1]);
+            it --;
+            a[i] = *it;
+        }
+        
+        print(a); // longest inc sub seq
+    }
+    return llen;
+}
+
 int main(){
-    // vi seq = {2, 5, 3, 7, 11, 8, 10, 13, 6 };
-    vi seq = {4,2,5,8,3,6,1,7,9};
-    cout<<LIS(seq)<<endl;
+    vi seq;
+    // seq = {2, 5, 3, 7, 11, 8, 10, 13, 6 };
+    seq = {4,2,5,8,3,6,1,7,9};
+    // seq = {0, 30, 16};
+    cout<<LISwithSeq(seq)<<endl;
     return 0;
 }
