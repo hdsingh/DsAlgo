@@ -67,7 +67,7 @@ vl primeFactorization(ll n){
             fact.pb(d);
             n/=d;
         }
-        if(i=8) i =0;
+        if(i==8) i =0;
     }
 
     if(n>1)

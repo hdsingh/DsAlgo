@@ -20,26 +20,58 @@ template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
 
 template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<v.size(); i++)cout<<setw(w)<<i<<" ";}cout<<endl;for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(w)<<*i<<" ";cout<<endl;}
 template <typename T>void print_vv(T v){int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
+template<class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
-// Ex: 1114C Codeforces
+// Q: Find the trailing 0s in B-ary representation of n!
+// If B = 10 , then depends upon the highest pow of 10;
+// if B = x, then x will be represented as 10 in B-ary representation,
+// So it reduces to find the highest pow of B in n!
 
-// Works for pime numbers
-// ans = n/k+ n/(k^2) + n/(k^3) ....
-int fact_deg(int n, int k){
-    int exp = 0;
+// exp = n/x + n/(x^2) + n/(x^3)
+ll ExpOfXinFact(ll n, ll x){
+    ll exp = 0;
+    
     while(n){
-        n/=k;
+        n/=x;
         exp+=n;
     }
+
     return exp;
 }
 
-// To find for composite find exp for each factor and take min.
+map<ll,ll> primeFact(ll n){
+    map<ll, ll> m;
+    for(ll d=2; d*d<=n; d++){
+        if(n%d==0){
+            while(n%d==0){
+                m[d]++;
+                n/=d;
+            }
+        }
+    }
+
+    if(n>1)    
+        m[n]++;
+
+    return m;
+} 
 
 int main(){
-    int n = 10;
-    int k = 3;
-    int exp = fact_deg(n,k);
-    cout<<exp<<endl;
+    ll n, b;
+    while(cin>>n>>b){
+        auto primes_b = primeFact(b);
+    
+        ll ans = LONG_LONG_MAX;
+        for(auto pc: primes_b){
+            ll p = pc.first;
+            ll c = pc.second;
+            ll exp = ExpOfXinFact(n, p);
+            exp/=c;
+            ans = min(ans, exp);
+        }
+
+        cout<<ans<<endl;
+    }
+
     return 0;
 }
