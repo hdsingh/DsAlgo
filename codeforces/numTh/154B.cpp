@@ -22,50 +22,74 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
-const int N = 1000;
-vl lp(N+1);
+const int N = 1e5+1;
+vi lp(N+1);
 
-void calcLp(){ //lowest prime
-    for(int i=2; i<=N; i++){
-        if(!lp[i]){
+void calcLp(){
+    for(int i=2; i<=N; i++)
+        if(!lp[i])
             for(int j=i; j<=N; j+=i)
-                if(!lp[j]) // comment this line to find Largest Prime factor
+                if(!lp[j])
                     lp[j] = i;
-        }
-    }
+
 }
 
-// O(n) approach
-vector<int> pr;
-void calcLpLinear(){
-    for (int i=2; i<=N; ++i) {
-        if (lp[i] == 0) {
-            lp[i] = i;
-            pr.push_back (i);
-        }
-        for (int j=0; j<(int)pr.size() && pr[j]<=lp[i] && i*pr[j]<=N; ++j)
-            lp[i * pr[j]] = pr[j];
-    }
-}
-
-vi primeFacts(int n){
-    vi out;
+vi findFact(int n){
+    vi facts;
     while(n>1){
         int p = lp[n];
-        while(n%p==0){
+        while(n%p==0)
             n/=p;
-            out.pb(p); // to get proper prime factorisation
-        }
-        // out.pb(p); // to get only single facts
+        facts.pb(p);
     }
-    return out;
+    return facts;
 }
 
 int main(){
-    calcLpLinear();
-    vi facts = primeFacts(100);
-    print(facts);  
-    
-    
+    calcLp();
+    int n,m;
+    scanf("%d %d\n", &n, &m);
+    char c; int x;
+    map<int, bool> on;
+    map<int, int> factInUse;
+    while(m--){
+        scanf("%c %d\n", &c, &x);
+        
+        if(c=='+'){
+            if(on[x]){
+                printf("Already on\n");
+            }else{
+                // turn on
+                bool possible = true;
+                vi facts = findFact(x);
+
+                for(int f: facts){
+                    if(factInUse[f]){
+                        possible = false;
+                        printf("Conflict with %d\n", factInUse[f]);
+                        break;
+                    }
+                }
+                if(possible){
+                    on[x] = true;
+                    for(int f: facts){
+                        factInUse[f] = x;
+                    }
+                    printf("Success\n");
+                }
+            }
+        }else{ //off -
+            if(!on[x]){
+               printf("Already off\n"); 
+            }else{ //turn off
+                on[x] = false;
+                vi facts = findFact(x);
+                for(int f: facts)
+                    factInUse[f] = 0;                
+
+                printf("Success\n");
+            }
+        }
+    }
     return 0;
 }
