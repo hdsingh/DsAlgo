@@ -44,9 +44,10 @@ using namespace std;
 
 typedef std::vector<int> vi;
 typedef std::vector<vector<int>> vvi;
+template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
 
 // @lc code=start
-class Solution {
+class Solution2 {
 public:
     int maxCoins(vector<int>& dims) {
         // insert 1 at begin and end
@@ -105,6 +106,32 @@ public:
         
     }
 };
+
+// dp[L]R] = maximum coins gained by bursting from L to R
+//  xaL.....i.......Rbxxxxxxxx
+//  if we burst baloon i(by trying for all i in L to R) and max,
+// dp[L][R] = max( A[L-1]*a[i]*a[R+1] + dp[L][i-1] + dp[i+1][R])
+class Solution {
+public:
+    int maxCoins(vector<int>& a) {
+        int n = a.size();
+
+        vvi dp(n, vi(n));
+        for(int l=n-1; l>=0; l--){
+            for(int r=l; r<n; r++){
+                for(int i=l; i<=r; i++){
+                    max_self(dp[l][r], (i ? dp[l][i-1] : 0) + (i+1<n ? dp[i+1][r] : 0) 
+                             + (l ? a[l-1] : 1)  * a[i] * (r+1<n ? a[r+1] : 1) );
+                }
+            }
+        }
+
+        // print_vv(dp);
+
+        return dp[0][n-1];
+    }
+};
+
 // @lc code=end
 int main(){
     Solution sol;
