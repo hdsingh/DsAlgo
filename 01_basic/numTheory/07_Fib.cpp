@@ -48,11 +48,25 @@ vl linearFib(int n){
     return fib;    
 }
 
+// linear with mod
+vl calcFib(int n, int mod = mod){
+    vl fib(n+1);
+    fib[0] = 0;
+    fib[1] = 1;
+    for(int i=2; i<=n; i++){
+        fib[i] = (fib[i-1] + fib[i-2])%mod;
+    }
+    return fib;
+}
+
+
 int main(){
     int n  = 10;
     vl fib = linearFib(n);
     forn(i, n+1)
         cout<<i<<" : "<<fib[i]<<endl;
+    vl fib2 = calcFib(10);
+    print(fib);
     
     return 0;
 }
