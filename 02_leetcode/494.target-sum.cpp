@@ -62,7 +62,7 @@ typedef std::vector<vector<int>> vvi;
 //                           2 sum(P) = sum(nums) + Target
 //                             sum(P) = (sum(nums) + Target)/2
 // So we need to find num of ways a subset could have sum(P) = (sum(nums) + Target)/2
-class Solution {
+class Solution3 {
 public:
     int findTargetSumWays(vector<int>& nums, int target) {
         int n = nums.size();
@@ -135,6 +135,86 @@ public:
         calculate(i+1, sum - nums[i], nums, S, count);
     }
 };
+
+// 2d dp
+class Solution4 {
+public:
+    int findTargetSumWays(vector<int>& a, int t) {
+        int n = a.size();
+        int nax = 2001;
+        int sum = accumulate(a.begin(), a.end(), 0);
+        if(t>sum) return 0;
+        
+        vvi dp(n, vi(nax));
+        // total number of ways to create sum t using first i stones
+        
+        dp[0][a[0]+1000] = 1;
+        dp[0][-a[0]+1000] += 1; // be careful to do +=1, because in case of 0, this should be 2
+        for(int i=1; i<n; i++){
+            for(int j=-1000; j<=1000; j++){
+                if(dp[i-1][j+1000]){
+                    dp[i][a[i] + j + 1000] += dp[i-1][j+1000];
+                    dp[i][-a[i] + j + 1000] += dp[i-1][j+1000];
+                }
+            }
+        }
+
+        return dp[n-1][t+1000];
+    }
+};
+
+// 1d dp
+class Solution5 {
+public:
+    int findTargetSumWays(vector<int>& a, int t) {
+        int n = a.size();
+        int nax = 2001;
+        int sum = accumulate(a.begin(), a.end(), 0);
+        if(t>sum) return 0;
+        
+        vi dp(nax);
+        // total number of ways to create sum t using first i stones
+        
+        dp[a[0]+1000] = 1;
+        dp[-a[0]+1000] += 1; // be careful to do +=1, because in case of 0, this should be 2
+        for(int i=1; i<n; i++){
+            vi ndp(nax);
+            for(int j=-1000; j<=1000; j++){
+                if(dp[j+1000]){
+                    ndp[a[i] + j + 1000] += dp[j+1000];
+                    ndp[-a[i] + j + 1000] += dp[j+1000];
+                }
+            }
+            dp = ndp;
+        }
+
+        return dp[t+1000];
+    }
+};
+
+class Solution {
+public:
+    int findTargetSumWays(vector<int>& a, int t) {
+        int n = a.size();
+        int sum = accumulate(a.begin(), a.end(), 0);
+        if(t>sum) return 0;
+
+        vi dp(2*sum+1);
+        dp[0+sum] = 1;
+        for(int i=0; i<n; i++){
+            vi ndp(2*sum+1);
+            for(int k=0; k<2*sum+1; k++){
+                if(dp[k]!=0){
+                    ndp[k+a[i]]+=dp[k];
+                    ndp[k-a[i]]+=dp[k];
+                }
+            }
+            dp = ndp;
+        }
+        return dp[sum+t];
+    }
+};
+
 // @lc code=end
 int main(){
     Solution sol;
@@ -143,4 +223,7 @@ int main(){
 
     nums = {1,1,1,4,1};
     cout<<sol.findTargetSumWays(nums,3)<<endl;
+
+    nums = { 0,0,0,0,0,0,0,0,1 };
+    cout<<sol.findTargetSumWays(nums,1)<<endl;
 }
