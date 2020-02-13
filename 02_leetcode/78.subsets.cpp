@@ -83,7 +83,7 @@ public:
     }
 };
 
-class Solution {
+class Solution2 {
 public:
     vector<vector<int>> subsets(vector<int>& nums) {
         sort(nums.begin(), nums.end());
@@ -103,6 +103,42 @@ public:
             subsetHelper(nums, i+1, sub, sol);
             sub.pop_back();
         }
+    }
+};
+
+// Bitmasks
+class Solution3 {
+public:
+    vector<vector<int>> subsets(vector<int>& a) {
+        int n = a.size();
+
+        vvi out;
+        for(int mask=0; mask<(1<<n); mask++){
+            vi cur;
+            for(int i=0; i<n; i++){
+                if( mask & (1<<i) )
+                    cur.push_back(a[i]);
+            }
+            out.push_back(cur);
+        }
+        return out;
+    }
+};
+
+// Simple iteration
+class Solution {
+public:
+    vector<vector<int>> subsets(vector<int>& a) {
+        int n = a.size();
+        vvi out = {{}};
+        for(int x: a){
+            vvi cur = out;
+            for(auto &c: cur){
+                c.push_back(x);
+                out.push_back(c);
+            }
+        }
+        return out;
     }
 };
 // @lc code=end
