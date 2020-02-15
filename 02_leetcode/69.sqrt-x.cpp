@@ -1,50 +1,40 @@
 /*
- * @lc app=leetcode id=852 lang=cpp
+ * @lc app=leetcode id=69 lang=cpp
  *
- * [852] Peak Index in a Mountain Array
+ * [69] Sqrt(x)
  *
- * https://leetcode.com/problems/peak-index-in-a-mountain-array/description/
+ * https://leetcode.com/problems/sqrtx/description/
  *
  * algorithms
- * Easy (70.08%)
- * Likes:    348
- * Dislikes: 766
- * Total Accepted:    96.1K
- * Total Submissions: 137.1K
- * Testcase Example:  '[0,1,0]'
+ * Easy (32.78%)
+ * Likes:    1050
+ * Dislikes: 1684
+ * Total Accepted:    476.5K
+ * Total Submissions: 1.5M
+ * Testcase Example:  '4'
  *
- * Let's call an array A a mountain if the following properties hold:
+ * Implement int sqrt(int x).
  * 
+ * Compute and return the square root of x, where x is guaranteed to be a
+ * non-negative integer.
  * 
- * A.length >= 3
- * There exists some 0 < i < A.length - 1 such that A[0] < A[1] < ... A[i-1] <
- * A[i] > A[i+1] > ... > A[A.length - 1]
- * 
- * 
- * Given an array that is definitely a mountain, return any i such that A[0] <
- * A[1] < ... A[i-1] < A[i] > A[i+1] > ... > A[A.length - 1].
+ * Since the return type is an integer, the decimal digits are truncated and
+ * only the integer part of the result is returned.
  * 
  * Example 1:
  * 
  * 
- * Input: [0,1,0]
- * Output: 1
- * 
+ * Input: 4
+ * Output: 2
  * 
  * 
  * Example 2:
  * 
  * 
- * Input: [0,2,1,0]
- * Output: 1
- * 
- * 
- * Note:
- * 
- * 
- * 3 <= A.length <= 10000
- * 0 <= A[i] <= 10^6
- * A is a mountain, as defined above.
+ * Input: 8
+ * Output: 2
+ * Explanation: The square root of 8 is 2.82842..., and since 
+ * the decimal part is truncated, 2 is returned.
  * 
  * 
  */
@@ -78,36 +68,36 @@ template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout
 
 class Solution {
 public:
-    int peakIndexInMountainArray(vector<int>& a) {
-        int n = a.size();
-        int peak = 0;
-        int l = 0; int r = n-1;
+    int mySqrt(int x) {
+        int l(0), r(x), root;
         while(l<=r){
-            int mid = l + (r-l)/2;
-            
-            // we can assume 0th element to be peak if there is no element on its left
-            if(mid==0 || a[mid-1] < a[mid]){
-                peak = mid;
-                // if peak a better peak exists, it will be preent on right of mid
-                l = mid + 1;
+            int m = l + (r-l)/2;
+            ll prod = m*1ll*m;
+            if(prod==x)
+                return m;
+            else if(prod<x){
+                // Save here because we need floor
+                root = m;
+                l = m + 1;
             }else 
-                r = mid - 1;
+                r = m - 1;
         }
-        return peak;
+        return root;
     }
 };
 // @lc code=end
 
-
 int main(){
-    Solution ol; vi a; int out;
-    a = {0,1,0};
-    out = ol.peakIndexInMountainArray(a); deb(out);
+    Solution sol; int n, rt;
+    n = 1;
+    rt = sol.mySqrt(n); deb(rt);
+    n = INT_MAX;
+    rt = sol.mySqrt(n); deb(rt);
 
-    a = {0,2,1,0};
-    out = ol.peakIndexInMountainArray(a); deb(out);
-
-    a = {1,3,4,9,1,3};
-    out = ol.peakIndexInMountainArray(a); deb(out);
+    // forn(i, 30){
+    //     // int i= 9;
+    //     int rt = sol.mySqrt(i);
+    //     deb2(i, rt); 
+    // }
     return 0;
 }

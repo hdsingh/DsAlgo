@@ -1,50 +1,45 @@
 /*
- * @lc app=leetcode id=852 lang=cpp
+ * @lc app=leetcode id=81 lang=cpp
  *
- * [852] Peak Index in a Mountain Array
+ * [81] Search in Rotated Sorted Array II
  *
- * https://leetcode.com/problems/peak-index-in-a-mountain-array/description/
+ * https://leetcode.com/problems/search-in-rotated-sorted-array-ii/description/
  *
  * algorithms
- * Easy (70.08%)
- * Likes:    348
- * Dislikes: 766
- * Total Accepted:    96.1K
- * Total Submissions: 137.1K
- * Testcase Example:  '[0,1,0]'
+ * Medium (32.91%)
+ * Likes:    964
+ * Dislikes: 406
+ * Total Accepted:    209.6K
+ * Total Submissions: 637.1K
+ * Testcase Example:  '[2,5,6,0,0,1,2]\n0'
  *
- * Let's call an array A a mountain if the following properties hold:
+ * Suppose an array sorted in ascending order is rotated at some pivot unknown
+ * to you beforehand.
  * 
+ * (i.e., [0,0,1,2,2,5,6] might become [2,5,6,0,0,1,2]).
  * 
- * A.length >= 3
- * There exists some 0 < i < A.length - 1 such that A[0] < A[1] < ... A[i-1] <
- * A[i] > A[i+1] > ... > A[A.length - 1]
- * 
- * 
- * Given an array that is definitely a mountain, return any i such that A[0] <
- * A[1] < ... A[i-1] < A[i] > A[i+1] > ... > A[A.length - 1].
+ * You are given a target value to search. If found in the array return true,
+ * otherwise return false.
  * 
  * Example 1:
  * 
  * 
- * Input: [0,1,0]
- * Output: 1
- * 
+ * Input: nums = [2,5,6,0,0,1,2], target = 0
+ * Output: true
  * 
  * 
  * Example 2:
  * 
  * 
- * Input: [0,2,1,0]
- * Output: 1
+ * Input: nums = [2,5,6,0,0,1,2], target = 3
+ * Output: false
+ * 
+ * Follow up:
  * 
  * 
- * Note:
- * 
- * 
- * 3 <= A.length <= 10000
- * 0 <= A[i] <= 10^6
- * A is a mountain, as defined above.
+ * This is a follow up problem to Search in Rotated Sorted Array, where nums
+ * may contain duplicates.
+ * Would this affect the run-time complexity? How and why?
  * 
  * 
  */
@@ -76,38 +71,61 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
-class Solution {
+// Referenced
+class Solution{
 public:
-    int peakIndexInMountainArray(vector<int>& a) {
-        int n = a.size();
-        int peak = 0;
-        int l = 0; int r = n-1;
-        while(l<=r){
-            int mid = l + (r-l)/2;
-            
-            // we can assume 0th element to be peak if there is no element on its left
-            if(mid==0 || a[mid-1] < a[mid]){
-                peak = mid;
-                // if peak a better peak exists, it will be preent on right of mid
-                l = mid + 1;
-            }else 
-                r = mid - 1;
-        }
-        return peak;
-    }
+  bool search(vi a, int x) {
+		int n = a.size();
+		int l = 0; int r = n-1;
+		int mid=0;
+		while(l<r){
+			mid = l + (r-l)/2;
+			if(a[mid]==x){
+				return true;
+			}
+			// not rotated
+			else if(a[mid]<a[r]){
+				// locate the pos of x
+				if(a[mid]<=x && x<=a[r])
+					l = mid+1;
+				else 
+					r = mid-1;
+			}
+			// rotated
+			else if(a[mid]>a[r]){
+				if(a[l]<= x && x<=a[mid])
+					r = mid-1;
+				else 
+					l = mid+1;
+			}
+			else {
+				--r;
+			}
+		}
+
+		return a[l]==x;
+  }
+
 };
+
 // @lc code=end
-
-
 int main(){
-    Solution ol; vi a; int out;
-    a = {0,1,0};
-    out = ol.peakIndexInMountainArray(a); deb(out);
+    Solution sol;
+    vi nums; int target;
 
-    a = {0,2,1,0};
-    out = ol.peakIndexInMountainArray(a); deb(out);
+    nums = {3,4,5,6,0,1,2};
+	print(nums, 1);
+    target = 4;
+    cout<<sol.search(nums,target)<<endl;
 
-    a = {1,3,4,9,1,3};
-    out = ol.peakIndexInMountainArray(a); deb(out);
+    // nums = {4,5,6,7,0,1,2};
+    // target = 3;
+    // cout<<sol.search(nums,target)<<endl;
+
+    // // nums = {2,5,6,0,0,1,2};
+    // nums = {3,1};
+    // target = 3;
+    // cout<<sol.search(nums,target)<<endl;
+
     return 0;
 }

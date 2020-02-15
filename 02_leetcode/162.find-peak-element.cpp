@@ -1,51 +1,49 @@
 /*
- * @lc app=leetcode id=852 lang=cpp
+ * @lc app=leetcode id=162 lang=cpp
  *
- * [852] Peak Index in a Mountain Array
+ * [162] Find Peak Element
  *
- * https://leetcode.com/problems/peak-index-in-a-mountain-array/description/
+ * https://leetcode.com/problems/find-peak-element/description/
  *
  * algorithms
- * Easy (70.08%)
- * Likes:    348
- * Dislikes: 766
- * Total Accepted:    96.1K
- * Total Submissions: 137.1K
- * Testcase Example:  '[0,1,0]'
+ * Medium (41.80%)
+ * Likes:    1005
+ * Dislikes: 1506
+ * Total Accepted:    265.7K
+ * Total Submissions: 635.6K
+ * Testcase Example:  '[1,2,3,1]'
  *
- * Let's call an array A a mountain if the following properties hold:
+ * A peak element is an element that is greater than its neighbors.
  * 
+ * Given an input array nums, where nums[i] ≠ nums[i+1], find a peak element
+ * and return its index.
  * 
- * A.length >= 3
- * There exists some 0 < i < A.length - 1 such that A[0] < A[1] < ... A[i-1] <
- * A[i] > A[i+1] > ... > A[A.length - 1]
+ * The array may contain multiple peaks, in that case return the index to any
+ * one of the peaks is fine.
  * 
- * 
- * Given an array that is definitely a mountain, return any i such that A[0] <
- * A[1] < ... A[i-1] < A[i] > A[i+1] > ... > A[A.length - 1].
+ * You may imagine that nums[-1] = nums[n] = -∞.
  * 
  * Example 1:
  * 
  * 
- * Input: [0,1,0]
- * Output: 1
- * 
- * 
+ * Input: nums = [1,2,3,1]
+ * Output: 2
+ * Explanation: 3 is a peak element and your function should return the index
+ * number 2.
  * 
  * Example 2:
  * 
  * 
- * Input: [0,2,1,0]
- * Output: 1
+ * Input: nums = [1,2,1,3,5,6,4]
+ * Output: 1 or 5 
+ * Explanation: Your function can return either index number 1 where the peak
+ * element is 2, 
+ * or index number 5 where the peak element is 6.
  * 
  * 
  * Note:
  * 
- * 
- * 3 <= A.length <= 10000
- * 0 <= A[i] <= 10^6
- * A is a mountain, as defined above.
- * 
+ * Your solution should be in logarithmic complexity.
  * 
  */
 
@@ -77,18 +75,23 @@ template <typename T>void print_vv(T v){int w = 3;cout<<setw(w)<<" ";for(int j=0
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
 class Solution {
+    int z = 1;
+    int arr[10];
 public:
-    int peakIndexInMountainArray(vector<int>& a) {
+    int findPeakElement(vector<int>& a) {
+        // print(a, 1);
         int n = a.size();
         int peak = 0;
         int l = 0; int r = n-1;
         while(l<=r){
             int mid = l + (r-l)/2;
-            
+            // deb3(l,r,mid);
+            // deb3(a[l], a[r], a[mid]);
+            // cout<<endl;
             // we can assume 0th element to be peak if there is no element on its left
             if(mid==0 || a[mid-1] < a[mid]){
                 peak = mid;
-                // if peak a better peak exists, it will be preent on right of mid
+                // if peak a better peak exists, it will be present on right of mid
                 l = mid + 1;
             }else 
                 r = mid - 1;
@@ -98,16 +101,13 @@ public:
 };
 // @lc code=end
 
-
 int main(){
-    Solution ol; vi a; int out;
-    a = {0,1,0};
-    out = ol.peakIndexInMountainArray(a); deb(out);
-
-    a = {0,2,1,0};
-    out = ol.peakIndexInMountainArray(a); deb(out);
-
-    a = {1,3,4,9,1,3};
-    out = ol.peakIndexInMountainArray(a); deb(out);
+    Solution sol; vi nums; int out;
+    nums = { 1,2,3,1 };
+    // out = sol.findPeakElement(nums); deb2(out,nums[out]);
+    // nums = { 1,2,1,3,5,6,4 };
+    // out = sol.findPeakElement(nums); deb2(out,nums[out]);
+    nums = { 1,6,3,2,1,7,1 };
+    out = sol.findPeakElement(nums); deb2(out,nums[out]);
     return 0;
 }

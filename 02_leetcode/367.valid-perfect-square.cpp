@@ -1,50 +1,38 @@
 /*
- * @lc app=leetcode id=852 lang=cpp
+ * @lc app=leetcode id=367 lang=cpp
  *
- * [852] Peak Index in a Mountain Array
+ * [367] Valid Perfect Square
  *
- * https://leetcode.com/problems/peak-index-in-a-mountain-array/description/
+ * https://leetcode.com/problems/valid-perfect-square/description/
  *
  * algorithms
- * Easy (70.08%)
- * Likes:    348
- * Dislikes: 766
- * Total Accepted:    96.1K
- * Total Submissions: 137.1K
- * Testcase Example:  '[0,1,0]'
+ * Easy (40.83%)
+ * Likes:    597
+ * Dislikes: 134
+ * Total Accepted:    142.6K
+ * Total Submissions: 348.9K
+ * Testcase Example:  '16'
  *
- * Let's call an array A a mountain if the following properties hold:
+ * Given a positive integer num, write a function which returns True if num is
+ * a perfect square else False.
  * 
- * 
- * A.length >= 3
- * There exists some 0 < i < A.length - 1 such that A[0] < A[1] < ... A[i-1] <
- * A[i] > A[i+1] > ... > A[A.length - 1]
- * 
- * 
- * Given an array that is definitely a mountain, return any i such that A[0] <
- * A[1] < ... A[i-1] < A[i] > A[i+1] > ... > A[A.length - 1].
+ * Note: Do not use any built-in library function such as sqrt.
  * 
  * Example 1:
  * 
  * 
- * Input: [0,1,0]
- * Output: 1
+ * 
+ * Input: 16
+ * Output: true
  * 
  * 
  * 
  * Example 2:
  * 
  * 
- * Input: [0,2,1,0]
- * Output: 1
+ * Input: 14
+ * Output: false
  * 
- * 
- * Note:
- * 
- * 
- * 3 <= A.length <= 10000
- * 0 <= A[i] <= 10^6
- * A is a mountain, as defined above.
  * 
  * 
  */
@@ -78,36 +66,29 @@ template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout
 
 class Solution {
 public:
-    int peakIndexInMountainArray(vector<int>& a) {
-        int n = a.size();
-        int peak = 0;
-        int l = 0; int r = n-1;
-        while(l<=r){
-            int mid = l + (r-l)/2;
-            
-            // we can assume 0th element to be peak if there is no element on its left
-            if(mid==0 || a[mid-1] < a[mid]){
-                peak = mid;
-                // if peak a better peak exists, it will be preent on right of mid
-                l = mid + 1;
-            }else 
-                r = mid - 1;
+    bool isPerfectSquare(int n) {
+        double l=0; double r = n; 
+        double eps = 0.01;
+        while(r-l>eps){
+            double mid = l + (r-l)/2;
+            if(mid*mid<n)
+                l = mid;
+            else 
+                r = mid;
         }
-        return peak;
+        double rt = l + (r-l)/2;
+        // deb(rt);
+        // deb(round(rt))
+        return ( abs(round(rt)-rt)  < eps ? true : false);
     }
 };
+
 // @lc code=end
 
-
 int main(){
-    Solution ol; vi a; int out;
-    a = {0,1,0};
-    out = ol.peakIndexInMountainArray(a); deb(out);
-
-    a = {0,2,1,0};
-    out = ol.peakIndexInMountainArray(a); deb(out);
-
-    a = {1,3,4,9,1,3};
-    out = ol.peakIndexInMountainArray(a); deb(out);
+    Solution sol; int n; bool out;
+    n = INT_MAX;
+    out = sol.isPerfectSquare(n); deb(out);
+    // cout<<findRt(16);
     return 0;
 }

@@ -39,14 +39,34 @@
  * Output: -1
  * 
  */
-#include "cpp.h"
+#include <bits/stdc++.h>
 using namespace std;
+#define forn(i, n) for(int i = 0; i < int(n); i++)
+#define fore(i, l, r) for(int i = int(l); i < int(r); i++)
+#define pb push_back
+#define deb(x) cout<<#x<<" "<<x<<endl;
+#define deb2(x, y) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<endl;
+#define deb3(x, y, z) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<" "<<#z<<" "<<z<<endl;
+#define all(x) x.begin(), x.end()
+typedef long long ll;
+typedef vector<int> vi;
+typedef vector<vector<int>> vvi;
+typedef vector<ll> vl;
+typedef vector<vector<ll>> vvl;
+typedef vector<string> vs;
+typedef vector<bool> vb;
+typedef pair<int, int> pii;
+const int mod = 1e9 + 7;
+template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
+template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
+template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
 
-typedef std::vector<int> vi;
-typedef std::vector<vector<int>> vvi;
+template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<v.size(); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(w)<<*i<<" ";cout<<endl;}
+template <typename T>void print_vv(T v){int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
+template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
 // @lc code=start
-class Solution {
+class Solution1 {
 public:
     int search(vector<int>& nums, int target) {
         int n = nums.size();
@@ -84,9 +104,102 @@ public:
         }     
 
         return -1;
-        
     }
 };
+
+// Find the piviot element : by comparing with lat element
+// ex 1: 
+//   3, 4, 5, 6, 7, 1, 2
+//   T  T  T  T  T  F  F 
+// if we find a_mid > a_last, there is a possibility of even bigger element on right
+//   1 2 3 4 5 6 7 8   and    10, 30, 3 , 4, 5, 8
+//   F F F F F F F F          T   T   F   F  F  F
+// else move left
+class Solution2 {
+public:
+    int search(vector<int>& a, int x) {
+        // print(a, 1);
+        int n = a.size();
+        if(!n) return -1;
+        int pv = 0; //pivot
+
+        int l(0), r(n-1), mid;
+        while(l<=r){
+            mid = l + (r-l)/2;
+            // deb3(l, r, mid);
+            if(a[mid]>a[n-1]){
+                pv = mid;
+                l = mid + 1;
+            }else 
+                r = mid - 1;
+            // deb(pv);
+        }
+        deb(pv);
+        deb(a[pv]);
+        
+        if(a[pv]==x) return pv;
+        // do serch on both sides of pv
+        l = 0; r = pv;
+        while(l<=r){
+            mid = l + (r-l)/2;
+            if(a[mid]==x)
+                return mid;
+            else if(a[mid]<x)
+                l = mid + 1;
+            else 
+                r = mid - 1;
+        }
+
+        l = pv + 1; r = n-1;
+        while(l<=r){
+            mid = l + (r-l)/2;
+            if(a[mid]==x)
+                return mid;
+            else if(a[mid]<x)
+                l = mid + 1;
+            else 
+                r = mid - 1;
+        }
+        return -1;
+    }
+};
+
+class Solution {
+public:
+    int search(vector<int>& a, int x) {
+        int n = a.size();
+        if(!n) return 0;
+
+        // I want to find the smallest element
+        // 1,2,3,4,5
+        // 3,4,5,1,2
+        int l(0), r(n-1); 
+        while(l<r){
+            int mid = l + (r-l)/2;
+            if(a[mid]<a[r])
+                r = mid; // since mid is smaller, so we don't sub 1
+            else 
+                l = mid + 1; // a[mid]> a[r], so it cant be smallest
+        }
+        // now l==r, is the location of piviot
+        // Account for rotation using %
+        int rot = l;
+        l = 0; r=n-1;
+        while(l<=r){
+            int mid = l + (r-l)/2;
+            int real_mid = (mid+rot)%n;
+            if(a[real_mid]==x)
+                return real_mid;
+            else if(a[real_mid]<x)
+                l = mid+1;
+            else 
+                r = mid -1;
+        }
+
+        return -1;
+    }
+};
+
 // @lc code=end
 int main(){
     Solution sol;
@@ -100,8 +213,8 @@ int main(){
     target = 3;
     cout<<sol.search(nums,target)<<endl;
 
-    nums = {65};
-    target = 1;
+    nums = {500,100,200,};
+    target = 3;
     cout<<sol.search(nums,target)<<endl;
 
 
