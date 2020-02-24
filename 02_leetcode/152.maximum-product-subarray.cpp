@@ -94,6 +94,60 @@ public:
     }
 };
 
+// with_missing always contains the best possible product,
+// it could be derieved from max{x, x*prev_missing, x*prev_wo_missing} (all combinations possible)
+// Similary wo_missing aims to get as negative prod as possible, so that it
+// could b converted into positive, when a new neg appears
+// So it in min of {x, prev_missing*x, prev_wo_missing*x} (all combs possible)
+// 0 is a special case, since it disconnect the contiguity of a subarray,
+// so we just reset it to 1, so that it doesnot have any affect on upcoming subarrays
+class Solution3 {
+public:
+    int maxProduct(vector<int>& a) {
+        int n = a.size();
+        int mxp = a[0];
+        vi with_missing(n), wo_missing(n); // with, without
+
+        with_missing[0] = a[0];
+        wo_missing[0]  = a[0];
+        for(int i=1; i<n; i++){
+            int x = a[i];
+            mxp = max(mxp, x);
+            if(x==0){
+                with_missing[i] = 1;
+                wo_missing[i]  = 1;
+            }else{
+                with_missing[i] = max({x, x*wo_missing[i-1], x*with_missing[i-1]});
+                wo_missing[i]  = min({x, wo_missing[i-1]*x, with_missing[i-1]*x});
+                mxp = max(mxp, with_missing[i]);
+            }
+        }
+        // print(a,1);
+        // print(wo);
+        // print(w);
+
+        return mxp;
+        
+    }
+};
+
+
+class Solution4 {
+public:
+    int maxProduct(vi &a){
+        int n = a.size();
+        int mp = a[0]; int l=0; int r =0;
+
+        for(int i=0; i<n; i++){
+            l = (l ? l : 1) * a[i];
+            r = (r ? r : 1) * a[n-i-1];
+            mp = max(mp, max(l,r));
+            // deb3(i, l, r);
+        }
+        return mp;
+    }
+};
+
 int main(){
     Solution sol;
     vi nums = {2,3,-2,4}; //6
