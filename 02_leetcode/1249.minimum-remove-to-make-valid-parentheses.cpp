@@ -162,10 +162,61 @@ public:
         return out2;        
     }
 };
+
+
+class Solution2 {
+public:
+    string minRemoveToMakeValid(string s) {
+        int n = s.size();
+        // Remove '(' if bal -ve moving forward
+        // and store in out
+        string out;
+        int bal = 0;
+        for(int i=0; i<n; ++i){
+            if(s[i]!='(' && s[i]!=')'){
+                out+=s[i];
+                continue;
+            }
+            bal += s[i]=='(' ? 1 : -1;
+            if(bal<0){
+                bal = 0;
+            }else{
+                out+=s[i];
+            }
+        }
+
+        // deb(out);        
+
+        bal = 0;
+        n = out.size();
+        stack<char> stk;
+        for(int i=n-1; i>=0; i--){
+            if(out[i]!='(' && out[i]!=')'){
+                stk.push(out[i]);
+                continue;
+            }
+            bal += out[i]==')' ? 1 : -1;
+            if(bal<0){
+                bal = 0;
+            }else{
+                stk.push(out[i]);
+            }
+        }
+
+        s.clear();
+        while(stk.size()){
+            s+=stk.top();
+            stk.pop();
+        }
+        
+        // deb(s);
+        return s;
+    }
+};
 // @lc code=end
 
 int main(){
-    Solution sol;
+    Solution2 sol;
     string s;
     cout<<sol.minRemoveToMakeValid("lee(t(c)o)de)")<<endl;
     cout<<sol.minRemoveToMakeValid("a)b(c)d")<<endl;
