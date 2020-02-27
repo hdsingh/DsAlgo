@@ -103,6 +103,8 @@ public:
         dp[1] = cnt[1];
         for(int i=2; i<nax; i++){
             dp[i] = max(dp[i-2] + cnt[i]*i, dp[i-1]);
+            // Since the adjacent numbers have been deleted, their count will not be included
+            // but i-2 will be considered
         }
 
         return dp[nax-1];

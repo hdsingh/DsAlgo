@@ -75,20 +75,22 @@ template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout
 
 class Solution {
 public:
-    int numberOfArithmeticSlices(vi A){
-        int n = A.size();
-        if(n<=2) return 0;
-        vi dp(n);
-        if(A[1] - A[0]==A[2]-A[1])  dp[2] = 1;
-
+    int numberOfArithmeticSlices(vector<int>& a) {
+		int n = a.size();
+		if(n<3) return 0;
+		
+		vi dp(n); // number of seq with a[i] as end
+        
         // if A[i] forms AP, then it will be appended to all
         // APs formed by i-1, also a new AP will be formed [A[i-2], A[i-1], A[i]]
-        fore(i, 3, n){
-            if(A[i]-A[i-1] == A[i-1] - A[i-2])
-                dp[i] = dp[i-1] + 1;
-        }
 
-        return accumulate(all(dp), 0);
+		for(int i=2; i<n; ++i){
+			if(a[i] - a[i-1] == a[i-1] - a[i-2])
+				dp[i] = dp[i-1] + 1;
+		}
+
+		// print(dp);
+		return accumulate(all(dp), 0);
     }
 
     int BruteForce_numberOfArithmeticSlices(vector<int>& A) {

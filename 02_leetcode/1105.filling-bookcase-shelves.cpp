@@ -83,6 +83,11 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
+// Try placing book i at the last pos of shelf, and keep on adding prev books 
+// to this shelf till the limit is reached,
+// ........j (height req for books till j)
+// j+1 ....i (new shelf formed with max possible valid width)
+// now min_self of height req for prev books + by this shelf
 const int width = 0;
 const int height = 1;
 const int inf = 1e6;

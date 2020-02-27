@@ -75,6 +75,16 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
+// DP[i][M] : max score that can be gained till a[i: ], using multiplier M
+// So we will try out all possible multipliers
+// Rec relation: 
+//  max_self(dp[i][x] , suf[i] - dp[i+x][max(m,x)]
+// the maximum that can be gained by a player till i for a multiplier M,
+// could be found by minimising the gain of opponent,
+// If we use multiplier x, the next player will use max(x,m)
+// Our answer is dp[0][1], max gain till 0 position and the multiplier M will be 1 in the beginning
+// Since we are starting from end, we will assume the multiplier M to be max possible
+// and decrease it
 // @lc code=start
 class Solution {
 public:
@@ -106,7 +116,7 @@ int main(){
     Solution sol;
     vi p = {2,7,9,4,4};
     int out;
-    out = sol.stoneGameII(p);
+    // out = sol.stoneGameII(p);
     deb(out);
     p = {1,2,3,4,5,100};
     out = sol.stoneGameII(p);
