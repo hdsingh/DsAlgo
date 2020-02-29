@@ -29,96 +29,87 @@
  * Output: 4
  * 
  */
-#include "cpp.h"
+#include <bits/stdc++.h>
 using namespace std;
+#define forn(i, n) for(int i = 0; i < int(n); i++)
+#define fore(i, l, r) for(int i = int(l); i < int(r); i++)
+#define pb push_back
+#define deb(x) cout<<#x<<" "<<x<<endl;
+#define deb2(x, y) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<endl;
+#define deb3(x, y, z) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<" "<<#z<<" "<<z<<endl;
+#define all(x) x.begin(), x.end()
+typedef long long ll;
+typedef vector<int> vi;
+typedef vector<vector<int>> vvi;
+typedef vector<ll> vl;
+typedef vector<vector<ll>> vvl;
+typedef vector<string> vs;
+typedef vector<bool> vb;
+typedef pair<int, int> pii;
+const int mod = 1e9 + 7;
+template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
+template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
+template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
 
-typedef std::vector<int> vi;
-typedef std::vector<vector<int>> vvi;
+template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<v.size(); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(w)<<*i<<" ";cout<<endl;}
+template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
+template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
 // @lc code=start
 
-// here dp[i][j] represents the maximum length of a size at that point
-// if matrix[i][j] exist then max length at that point will be 
-// 1 + min of matrix{ (i-1,j), (i, j-1), (i-1,j-1) }
-//  __  __
-// |    x
-// else 0
-// in the end we compute are from lenght of max side
-// everything else is just to initialize dp and handle corner cases
-
-int min3(int a, int b, int c){
-    return min(min(a,b),c);
-}
-
-class Solution {
+// dp[i][j] represent the max side of square whose bottom corner is
+// point (i,j). If mat[i][j] exists only then a sqaure can exist there
+// Also we will extend the minimum of previous existing squares
+class Solution1 {
 public:
-    int maximalSquare(vector<vector<int>>& matrix) {
-        int n = matrix.size();
-        if(!n) return 0;
-        int m = matrix[0].size();
-        if(!m) return 0;
+    int maximalSquare(vector<vector<char>>& mat) {
+		int n = mat.size();
+		if(!n) return 0;
+		int m = mat[0].size();
+		if(!m) return 0;
 
-
-        vvi dp(n, vi(m, 0));
-        int max_side = 0;
-
-        // base cases
-        
-        for(int j=0; j<m; j++){
-            dp[0][j] = matrix[0][j];
-            max_side = max(max_side, dp[0][j]);
-            if(matrix[0][j] && n==1) return 1;
-        }
-        if(n==1) return 0;
-        
-
-        for(int i=0; i<n; i++){
-            dp[i][0] = matrix[i][0];
-            max_side = max(max_side, dp[i][0]);
-            if(matrix[i][0] && m==1) return 1;
-        }
-        if(m==1) return 0;
-    
-        // // initalize the first row and first col with same num
-        // for(int i=0; i<n; i++) dp[i][0] = matrix[i][0];
-        // for(int j=0; j<m; j++) dp[0][j] = matrix[0][j];
-
-        for(int i=1; i<n; i++)
-            for(int j=1; j<m; j++){
-                if(matrix[i][j]){
-                    dp[i][j] = 1 + min3(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
-                    max_side = max(max_side, dp[i][j]);
-                }
-            }
-
-        // print_vv(dp);
-
-        return max_side * max_side;
+		vvi dp(n+1, vi(m+1));
+		int max_side = 0;
+		fore(i, 1, n+1){
+			fore(j,1,m+1){
+				if(mat[i-1][j-1]=='0') continue;
+				dp[i][j] = min({dp[i-1][j], dp[i][j-1], dp[i-1][j-1]})+1;
+				max_side = max(max_side, dp[i][j]);
+			}
+		}
+		return max_side*max_side;
     }
 };
+
+// Since we are using only 1 prev row space optimisation is possible
+class Solution {
+public:
+    int maximalSquare(vector<vector<char>>& mat) {
+		int n = mat.size();
+		if(!n) return 0;
+		int m = mat[0].size();
+		if(!m) return 0;
+
+		vi dp(m+1);
+		int max_side = 0;
+		fore(i, 1, n+1){
+            vi ndp(m+1);
+			fore(j,1,m+1){
+				if(mat[i-1][j-1]=='0') continue;
+				ndp[j] = min({dp[j], ndp[j-1], dp[j-1]})+1;
+				max_side = max(max_side, ndp[j]);
+			}
+            dp = ndp;
+		}
+		return max_side*max_side;
+    }
+};
+
 // @lc code=end
 int main(){
-    Solution sol;
-    vvi matrix;
-    matrix = {{1,0,1,0,0},
-              {1,0,1,1,1},
-              {1,1,1,1,1},
-              {1,0,0,1,0}};
-
-    cout<<sol.maximalSquare(matrix)<<endl;
-
-    matrix = {{1},{0}};
-    cout<<sol.maximalSquare(matrix)<<endl;
-
-    matrix = {{0},{0},{0}};
-    cout<<sol.maximalSquare(matrix)<<endl;
-
-    matrix = {{0,1},{1,0}};
-    cout<<sol.maximalSquare(matrix)<<endl;
-
-    matrix = {{0}};
-    cout<<sol.maximalSquare(matrix)<<endl;
-    
-
-
+	Solution sol;
+	vector<vector<char>> mat; int out;
+	mat = {{'1','0','1','0','0'},{'1','0','1','1','1'},{'1','1','1','1','1'},{'1','0','0','1','0'}};
+	out = sol.maximalSquare(mat); deb(out);
+	return 0;
 }

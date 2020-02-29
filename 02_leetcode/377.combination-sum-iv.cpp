@@ -82,6 +82,27 @@ public:
 };
 
 // DP
+class Solution4 {
+public:
+    int combinationSum4(vector<int>& nums, int x) {
+        int n = nums.size();
+
+        vector<unsigned int> dp(x+1, 0);
+        // number of ways to get a sum i
+        dp[0] = 1;
+
+        // Forward DP
+        for(int t=0; t<=x; t++){
+            for(auto num: nums){
+                if(t+num<=x)
+                    dp[t+num] += dp[t];
+            }
+        }
+
+        return dp[x];
+    }  
+};
+
 class Solution2 {
 public:
     int combinationSum4(vector<int>& nums, int target) {
@@ -131,12 +152,14 @@ public:
 
 // @lc code=end
 int main(){
-    Solution s;
+    Solution4 s;
     vi nums;
     int target;
 
     nums = {10000, 10001};
     target=20001;
+    nums = {1,2,3}; target = 4;
+    nums = { 3,33,333 }, target = 10000;
     cout<<s.combinationSum4(nums, target);
     return 0;
 
