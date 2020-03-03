@@ -31,6 +31,8 @@
  * Could you do it in O(n) time and O(1) space?
  * 
  */
+
+// @lc code=start
 /**
  * Definition for singly-linked list.
  * struct ListNode {
@@ -39,99 +41,57 @@
  *     ListNode(int x) : val(x), next(NULL) {}
  * };
  */
-#include "cpp.h"
-#include "node.h"
-#include "extra.h"
+#include <bits/stdc++.h>
 using namespace std;
-typedef ListNode node;
+#define deb(x) cout<<#x<<" "<<x<<endl;
+
+typedef long long ll;
+typedef vector<int> vi;
+typedef vector<vector<int>> vvi;
+#include "LinkedList.h"
 
 class Solution {
 public:
     bool isPalindrome(ListNode* head) {
-        if(!head) return true;
-        node* first = head;
-        node* sec = head;
+		if(!head) return head;
+        ListNode* mid = findMid(head);
+		ListNode* end = reverseList(mid);
 
-        while(sec->next && sec->next->next){
-            first = first->next;
-            sec = sec->next->next;
-        }
-
-        first->next = revList(first->next);
-        first = first->next;
-
-        while(first){
-            if(head->val!=first->val)
-                return false;
-            head = head->next;
-            first = first->next;
-        }
-
-        return true;
+		while(end){
+			if(head->val!=end->val)
+				return false;
+			head = head->next;
+			end = end->next;
+		}
+		return true;
     }
 
-    node* revList(node* head){
-        node* pre = NULL;
-        node* next = NULL;
+	ListNode* findMid(ListNode* head){
+		ListNode* slow = head;
+		ListNode* fast = head;
+		while(fast && fast->next){
+			slow = slow->next;
+			fast = fast->next->next;
+		}
+		return slow;
+	};
 
-        while(head){
-            next =  head->next;
-            head->next = pre;
-            pre = head;
-            head = next;
-        }
-        return pre;
-    }
+	ListNode* reverseList(ListNode* head){
+		if(!head || !head->next) return head;
 
-    // by reversing a list
-    bool isPalindrome2(ListNode* head) {
-        if(!head) return true;
-        node* rev_head = NULL;
-        node* cur = head;
-        while(cur){
-            node* temp = new node(cur->val);
-            temp->next = rev_head;
-            rev_head = temp;
-            cur = cur->next;
-        }
-        
-        while(head){
-            if(head->val!=rev_head->val) return false;
-            head = head->next;
-            rev_head = rev_head->next;
-        }
+		ListNode *end = reverseList(head->next);
+		head->next->next = head;
+		head->next = NULL;
 
-        return true;
-    }
-
-    // using deque
-    bool isPalindrome1(ListNode* head) {
-        if(!head) return true;
-        deque<node*> dq;
-        node* cur = head;
-        while(cur){
-            dq.push_back(cur);
-            cur = cur->next;
-        }
-        while(dq.size()>1){
-            node* l = dq.front(); dq.pop_front();
-            node* r = dq.back(); dq.pop_back();
-            if(l->val!=r->val) return false;
-        }
-        return true;
-    }
+		return end;	
+	}
 };
 
-int main() {
-    string line;
-    while (getline(cin, line)) {
-        ListNode* head = stringToListNode(line);
-        
-        bool ret = Solution().isPalindrome(head);
-
-        string out = boolToString(ret);
-        cout << out << endl;
-    }
-    return 0;
+int main(){
+	ListNode *l1 = createList({1,2,1}); 
+	Solution sol; bool out;
+	out = sol.isPalindrome(l1); deb(out);
+	l1 = createList({1});
+    out = sol.isPalindrome(l1); deb(out);
+	return 0;
 }
-

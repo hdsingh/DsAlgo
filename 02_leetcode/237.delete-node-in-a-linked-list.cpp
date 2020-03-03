@@ -62,15 +62,10 @@ using namespace std;
 class Solution {
 public:
     void deleteNode(ListNode* node) {
-        ListNode* cur = node;
-        ListNode* prev = NULL;
-        
-        while(cur->next){
-            cur->val = cur->next->val;
-            prev = cur;
-            cur = cur->next;
-        }
-        prev->next =  NULL;
+        node->val = node->next->val;
+		// ListNode*temp = node->next;
+		node->next = node->next->next;
+		// delete temp;
     }
 };
 
