@@ -75,8 +75,44 @@
 #include "extra.h"
 using namespace std;
 typedef ListNode node;
+    //     d         
+    // |_______|         f  
+    // x   x   x    x  x 
+    //         x    c    x
+    //            x   x 
+    //       c-f
+// fast and slow meet at pt f
+// 2k - k = c
+// also 2k - k = d + f;
+// -> c = d + f
+// -> c - f = d
+// hence from point f, moving d forward both slow and beg will meet
 
 class Solution {
+public:
+    ListNode *detectCycle(ListNode *head) {
+		if(!head || !head->next);
+        ListNode *slow = head;
+		ListNode *fast = head;
+
+		while(fast && fast->next){
+			slow = slow->next;
+			fast = fast->next->next;
+			if(fast==slow){
+				ListNode* start = head;
+				while(start!=slow){
+					start = start->next;
+					slow = slow->next;
+				}
+				return start;
+			}
+		}
+		
+		return NULL;
+    }
+};
+
+class Solution0 {
 public:
     // Simplified
     ListNode *detectCycle(ListNode *head) {

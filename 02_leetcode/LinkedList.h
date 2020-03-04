@@ -25,6 +25,7 @@ void printList(ListNode* head){
     cout<<endl;
 }
 
+// 1,2,3,4 -> 3
 ListNode* findMid(ListNode* head){
     ListNode* slow = head;
     ListNode* fast = head;
@@ -35,10 +36,36 @@ ListNode* findMid(ListNode* head){
     return slow;
 };
 
-ListNode* reverseList(ListNode* head){
+// 1,2,3,4 -> 2
+ListNode* findMid2(ListNode* head){
+    ListNode* slow = head;
+    ListNode* fast = head;
+    while(fast->next && fast->next->next){
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    return slow;
+};
+
+
+ListNode* reverseList(ListNode *head){
+		ListNode *cur, *prev, *nx, *temp;
+		prev = NULL;
+		cur = head;
+
+		while(cur){
+			nx = cur->next;
+			cur->next = prev;
+			prev = cur;
+			cur = nx;
+		}
+		return prev;		
+	}
+
+ListNode* reverseListRec(ListNode* head){
     if(!head || !head->next) return head;
 
-    ListNode *end = reverseList(head->next);
+    ListNode *end = reverseListRec(head->next);
     head->next->next = head;
     head->next = NULL;
 
