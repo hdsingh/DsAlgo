@@ -44,6 +44,8 @@
  * Bonus points if you could solve it both recursively and iteratively.
  * 
  */
+
+// @lc code=start
 /**
  * Definition for a binary tree node.
  * struct TreeNode {
@@ -53,86 +55,63 @@
  *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
  * };
  */
-// #include "cpp.h"
-// #include "node.h"
-// #include "extra.h"
-// using namespace std;
+#include <bits/stdc++.h>
+using namespace std;
+#define pb push_back
+#define deb(x) cout<<#x<<" "<<x<<endl;
+#define deb2(x, y) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<endl;
+#define deb3(x, y, z) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<" "<<#z<<" "<<z<<endl;
+#define all(x) x.begin(), x.end()
 typedef vector<int> vi;
-typedef TreeNode node;
+template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<v.size(); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(w)<<*i<<" ";cout<<endl;}
+#include "Tree.h"
 
+// Level order traveral
 class Solution {
 public:
-    // Iterative 
-    bool isSymmetric(node* root){
+    bool isSymmetric(TreeNode* root) {
         if(!root) return true;
-        queue<node*> q;
-        node* cur_l; node* cur_r;
-
-        if(!root->left || !root->right){ //any one or both are null
-            // if one null and other not
-            if(root->left!=root->right) return false;
-        }
-        else { //if(root->left && root->right) i.e both exist
-            if(root->left->val != root->right->val)
-                return false;
-            q.push(root->left);
-            q.push(root->right);
-        }
-            
+        queue<TreeNode*> q;
+        TreeNode* cur = root;
+        q.push(cur); q.push(cur);
 
         while(!q.empty()){
-            cur_l= q.front(); q.pop();
-            cur_r= q.front(); q.pop();
+            TreeNode* n1 = q.front(); q.pop();
+            TreeNode* n2 = q.front(); q.pop();
 
-            if(cur_l->val!=cur_r->val)
-                return false;
-            else{
-                // ll,rr
-                if(!cur_l->left || !cur_r->right){
-                    if(cur_l->left!=cur_r->right) return false;
-                }else{
-                    q.push(cur_l->left);
-                    q.push(cur_r->right);
-                }
-
-                // lr,rl
-                if(!cur_l->right || !cur_r->left){
-                    if(cur_l->right!=cur_r->left) return false;
-                }else{
-                    q.push(cur_l->right);
-                    q.push(cur_r->left);
-                }
-            }
+            if(!n1 && !n2) continue;
+            if(!n1 || !n2) return false;
+            if(n1->val != n2->val) return false;
+            q.push(n1->left);
+            q.push(n2->right);
+            q.push(n1->right);
+            q.push(n2->left);
         }
-
         return true;
-
-    }
-
-    // Recursive
-    bool isSymmetricRec(TreeNode* root) {
-        if(!root) return true;
-        return isSymmetricHelper(root->left, root->right);
-    }
-    
-    bool isSymmetricHelper(node* left, node* right){
-        if(!left || !right)
-            return left==right;
-        if(left->val!=right->val)
-            return false;
-        return isSymmetricHelper(left->left, right->right) && isSymmetricHelper(left->right, right->left);
     }
 };
 
-// int main() {
-//     string line;
-//     while (getline(cin, line)) {
-//         TreeNode* root = stringToTreeNode(line);
-        
-//         bool ret = Solution().isSymmetric(root);
+// Recursive
+class Solution1 {
+public:
+    bool isSymmetric(TreeNode* root) {
+        return isMirror(root, root);
+    }
+    bool isMirror(TreeNode* r1, TreeNode* r2){
+        if(!r1 && !r2) return true;
+        if(!r1 || !r2) return false;
+        return r1->val == r2->val &&
+                isMirror(r1->left, r2->right) &&
+                isMirror(r1->right, r2->left);
+    }
+};
+// @lc code=end
 
-//         string out = boolToString(ret);
-//         cout << out << endl;
-//     }
-//     return 0;
-// }
+int main(){
+    Solution sol;
+    string s = "[1,2,2,3,4,4,3]";
+    // s = " [1,2,2,null,3,null,3]";
+    TreeNode* root = stringToTreeNode(s);
+    bool out = sol.isSymmetric(root); deb(out);
+    return 0;
+}

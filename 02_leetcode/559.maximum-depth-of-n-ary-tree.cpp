@@ -52,18 +52,72 @@ public:
     }
 };
 */
+#include <bits/stdc++.h>
+using namespace std;
+#define pb push_back
+#define deb(x) cout<<#x<<" "<<x<<endl;
+#define deb2(x, y) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<endl;
+#define deb3(x, y, z) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<" "<<#z<<" "<<z<<endl;
+#define all(x) x.begin(), x.end()
+typedef vector<int> vi;
+template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<v.size(); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(w)<<*i<<" ";cout<<endl;}
+
+class Node {
+public:
+    int val;
+    vector<Node*> children;
+
+    Node() {}
+
+    Node(int _val) {
+        val = _val;
+    }
+
+    Node(int _val, vector<Node*> _children) {
+        val = _val;
+        children = _children;
+    }
+};
+
 class Solution {
 public:
     int maxDepth(Node* root) {
         if(!root) return 0;
+        int mxdepth = 0;
 
-        int max_val(0),depth(0);
-        for(int i=0; i<root->children.size(); i++){
-            depth = maxDepth(root->children[i]);
-            max_val = max(max_val, depth);
-        }
-
-        return 1 + max_val;
+        for(auto &child: root->children)
+            mxdepth = max(mxdepth, maxDepth(child));
+        
+        return 1 + mxdepth;
     }
 };
 
+class Solution {
+public:
+    int maxDepth(Node* root) {
+        if(!root) return NULL;
+        queue<Node*> q;
+        q.push(root);
+        int depth = 0;
+
+        while(q.size()){
+            ++depth;
+            int breadth = q.size();
+
+            for(int i=0; i<breadth; ++i){
+                Node* cur = q.front(); q.pop();
+                for(auto &child:  cur->children)
+                    if(child)
+                        q.push(child);
+            }
+        }
+        return depth;
+    }
+};
+
+
+int main(){
+    Solution sol; string ss; Node*
+
+    return 0;
+}

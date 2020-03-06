@@ -36,6 +36,8 @@
  * 
  * 
  */
+
+// @lc code=start
 /**
  * Definition for a binary tree node.
  * struct TreeNode {
@@ -45,46 +47,48 @@
  *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
  * };
  */
-// #include "cpp.h"
-// #include "node.h"
-// #include "extra.h"
-// using namespace std;
+#include <bits/stdc++.h>
+using namespace std;
+#define pb push_back
+#define deb(x) cout<<#x<<" "<<x<<endl;
+#define deb2(x, y) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<endl;
+#define deb3(x, y, z) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<" "<<#z<<" "<<z<<endl;
+#define all(x) x.begin(), x.end()
 typedef vector<int> vi;
-typedef TreeNode node;
+template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<v.size(); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(w)<<*i<<" ";cout<<endl;}
+#include "Tree.h"
 
 class Solution {
 public:
     TreeNode* sortedArrayToBST(vector<int>& nums) {
         int n = nums.size();
-        int root_i = n/2;
-
-        node* root = createTree(0, n-1, nums);
-        return root;
+        if(!n) return NULL;
+        int l = 0;
+        int r = n-1;
+        return create(nums, l, r);
     }
 
-    node* createTree(int l_i, int r_i, vi& nums){
-        if(l_i==r_i) return new node(nums[l_i]);
-        if(l_i>r_i || l_i<0 || r_i>nums.size()-1) return NULL;
-
-        int root_i = l_i + (r_i-l_i)/2;
-        node* root = new node(nums[root_i]);
-
-        root->left = createTree(l_i, root_i-1, nums);
-        root->right = createTree(root_i+1, r_i, nums);
-
-        return root;
+    TreeNode* create(vector<int> & a, int l, int r){
+        if(l>r) return NULL;
+        // if(l==r){
+        //     return new TreeNode(a[l]);
+        // }
+        int mid = l + (r-l)/2;
+        
+        TreeNode* midnode = new TreeNode(a[mid]);
+        midnode->left = create(a, l, mid-1);
+        midnode->right = create(a, mid+1, r);
+        return midnode;
     }
 };
 
-// int main() {
-//     string line;
-//     while (getline(cin, line)) {
-//         vector<int> nums = stringToIntegerVector(line);
-        
-//         TreeNode* ret = Solution().sortedArrayToBST(nums);
+// @lc code=end
 
-//         string out = treeNodeToString(ret);
-//         cout << out << endl;
-//     }
-//     return 0;
-// }
+int main(){
+    Solution sol;
+    vi a = {1,2,3,4,5};
+    TreeNode* root = sol.sortedArrayToBST(a);
+    string s = treeNodeToString(root);
+    deb(s);
+    return 0;
+}

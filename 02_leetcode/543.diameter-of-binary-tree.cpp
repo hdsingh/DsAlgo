@@ -40,12 +40,6 @@
  * between them.
  * 
  */
-#include "cpp.h"
-#include "node.h"
-using namespace std;
-
-typedef std::vector<int> vi;
-typedef std::vector<vector<int>> vvi;
 
 // @lc code=start
 /**
@@ -57,40 +51,38 @@ typedef std::vector<vector<int>> vvi;
  *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
  * };
  */
+#include <bits/stdc++.h>
+using namespace std;
+#define pb push_back
+#define deb(x) cout<<#x<<" "<<x<<endl;
+#define deb2(x, y) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<endl;
+#define deb3(x, y, z) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<" "<<#z<<" "<<z<<endl;
+#define all(x) x.begin(), x.end()
+typedef vector<int> vi;
+template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<v.size(); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(w)<<*i<<" ";cout<<endl;}
+#include "Tree.h"
+
 class Solution {
+    int maxDia;
 public:
     int diameterOfBinaryTree(TreeNode* root) {
-        if (root == NULL) 
-        return 0; 
-        int ans = INT_MIN; // This will store the final answer 
-        findDiameter(root, ans); 
-        return ans; 
+        maxDia = 0;
+        findDepth(root);
+        return maxDia;
     }
 
-    int findDiameter(TreeNode *root, int &dia){
+    int findDepth(TreeNode* root){
         if(!root) return 0;
-
-        int left = findDiameter(root->left, dia);
-        int right = findDiameter(root->right, dia);
-
-        dia = max(dia, left+right);
-
-        return 1+max(left,right);
+        int l = findDepth(root->left);
+        int r = findDepth(root->right);
+        maxDia = max(maxDia, l + r);
+        return 1 + max(l,r);
     }
-
 };
 // @lc code=end
+
 int main(){
-    TreeNode* root = new TreeNode(1);
-    root->left = new TreeNode(2);;
-    root->right = new TreeNode(3);
-    root->left->left = new TreeNode(4);
-    root->left->right = new TreeNode(5);
-    root->right->left = new TreeNode(6);
-    root->right->left = new TreeNode(7);
-
-
-    Solution s;
-    cout<<s.diameterOfBinaryTree(root);
-
+    Solution sol;
+    
+    return 0;
 }

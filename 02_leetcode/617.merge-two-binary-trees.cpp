@@ -45,6 +45,8 @@
  * Note: The merging process must start from the root nodes of both trees.
  * 
  */
+
+// @lc code=start
 /**
  * Definition for a binary tree node.
  * struct TreeNode {
@@ -54,66 +56,70 @@
  *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
  * };
  */
+#include <bits/stdc++.h>
+using namespace std;
+#define pb push_back
+#define deb(x) cout<<#x<<" "<<x<<endl;
+#define deb2(x, y) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<endl;
+#define deb3(x, y, z) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<" "<<#z<<" "<<z<<endl;
+#define all(x) x.begin(), x.end()
+typedef long long ll;
+typedef vector<int> vi;
 
-// #include "cpp.h"
-// #include "node.h"
-// #include "extra.h"
-// using namespace std;
+#include "Tree.h"
 
-typedef TreeNode node;
+class Solution1 {
+public:
+    TreeNode* mergeTrees(TreeNode* t1, TreeNode* t2) {
+        if(!t1) return t2;
+        if(!t2) return t1;
+
+        t1->val +=t2->val;
+        t1->left = mergeTrees(t1->left, t2->left);
+        t1->right = mergeTrees(t1->right, t2->right);
+
+        return t1;   
+    }
+};
 
 class Solution {
 public:
     TreeNode* mergeTrees(TreeNode* t1, TreeNode* t2) {
-        // base
         if(!t1) return t2;
         if(!t2) return t1;
+		stack<TreeNode*> stk1, stk2;
+		stk1.push(t1); stk2.push(t2);
+		
+		while(!stk1.empty()){
+			TreeNode* a = stk1.top(); stk1.pop();
+			TreeNode* b = stk2.top(); stk2.pop();
 
-        stack<node*> s1, s2;
-        TreeNode* res = t1;
-        s1.push(t1);
-        s2.push(t2);
+			a->val +=b->val;
 
-        while(!s1.empty()){
-            TreeNode* a = s1.top(); s1.pop();
-            TreeNode* b = s2.top(); s2.pop();
+			if(a->right && b->right)
+				stk1.push(a->right), stk2.push(b->right);
+			else if(a->right || b->right)
+				a->right = a->right ? a->right : b->right;
 
-            a->val += b->val;
+			if(a->left && b->left)
+				stk1.push(a->left), stk2.push(b->left);
+			else if(a->left || b->left)
+				a->left = a->left ? a->left : b->left;
+		}
 
-            // Push the childern
-        
-            if(a->right && b->right){
-                s1.push(a->right); s2.push(b->right);
-            }
-            else if(a->right || b->right){
-                a->right= a->right? a->right:b->right;
-            }
-
-            if(a->left && b->left){
-                s1.push(a->left); s2.push(b->left);
-            }
-            else if(a->left || b->left){
-                a->left= a->left? a->left:b->left;
-            }
-
-        }
-
-        return res;
-
+		return t1;
     }
 };
 
-// int main() {
-//     string line;
-//     while (getline(cin, line)) {
-//         TreeNode* t1 = stringToTreeNode(line);
-//         getline(cin, line);
-//         TreeNode* t2 = stringToTreeNode(line);
-
-//         TreeNode* ret = Solution().mergeTrees(t1, t2);
-
-//         string out = treeNodeToString(ret);
-//         cout << out << endl;
-//     }
-//     return 0;
-// }
+int main(){
+	Solution sol; string s1, s2, s3; node *t1, *t2, *out;
+	s1 = "[1,3,2,5]";
+	s2 = "[2,1,3,null,4,null,7]";
+    // s1 = "[]"; s2 = "[1]";
+	t1 = stringToTreeNode(s1);
+	t2 = stringToTreeNode(s2);
+    // s1 = treeNodeToString(t1); s2 = treeNodeToString(t2); deb2(s1,s2);
+	out = sol.mergeTrees(t1, t2);
+	s3 = treeNodeToString(out); deb(s3);
+	return 0;
+}

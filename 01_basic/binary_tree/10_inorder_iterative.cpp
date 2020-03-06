@@ -21,8 +21,8 @@ void inorderTraversal(node* root){
     if(!root) return;
     stack<node*> s;
     node* cur = root;
-    s.push(cur);
-    cur= cur->left;
+    // s.push(cur);
+    // cur= cur->left;
 
     while(cur || !s.empty()){
         while(cur){

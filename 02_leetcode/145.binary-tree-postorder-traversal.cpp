@@ -31,6 +31,8 @@
  * Follow up: Recursive solution is trivial, could you do it iteratively?
  * 
  */
+
+// @lc code=start
 /**
  * Definition for a binary tree node.
  * struct TreeNode {
@@ -40,93 +42,80 @@
  *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
  * };
  */
-// #include "cpp.h"
-// #include "node.h"
-// #include "extra.h"
-// using namespace std;
+#include <bits/stdc++.h>
+using namespace std;
+#define forn(i, n) for(int i = 0; i < int(n); i++)
+#define fore(i, l, r) for(int i = int(l); i < int(r); i++)
+#define pb push_back
+#define deb(x) cout<<#x<<" "<<x<<endl;
+#define deb2(x, y) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<endl;
+#define deb3(x, y, z) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<" "<<#z<<" "<<z<<endl;
+#define all(x) x.begin(), x.end()
+typedef long long ll;
 typedef vector<int> vi;
+typedef vector<vector<int>> vvi;
+typedef vector<ll> vl;
+typedef vector<vector<ll>> vvl;
+typedef vector<string> vs;
+typedef vector<bool> vb;
+typedef pair<int, int> pii;
+const int mod = 1e9 + 7;
+template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
+template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
+template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
+
+template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<v.size(); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(w)<<*i<<" ";cout<<endl;}
+template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
+template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
+
+#include "Tree.h"
 typedef TreeNode node;
 
 class Solution {
 public:
-    vi postorderTraversal(node* root){
-        vi res;
-        stack<node*> s;
-        node* cur = root;
+    vector<int> postorderTraversal(TreeNode* root) {
+		vector<int> out;
+		TreeNode *cur = root;
+		stack<TreeNode*> stk;
 
-        while(!s.empty() || cur){
-            if(cur){
-                s.push(cur);
-                cur = cur->left;
-            }else{
-                if(s.top()->right){
-                    cur = s.top()->right;
-                }else{
-                    node* temp = s.top();
-                    s.pop();
-                    res.push_back(temp->val);
-                    while(!s.empty() && s.top()->right==temp){
-                        temp = s.top();
-                        s.pop();
-                        res.push_back(temp->val);
-                    }
-                }
-            }
-        }
-        return res;
-    }
+		while(cur || !stk.empty()){
+			if(cur){
+				stk.push(cur);
+				cur = cur->left;
+			}else{
+				if(stk.top()->right){
+					cur = stk.top()->right;
+				}else{
+					TreeNode *temp = stk.top(); stk.pop();
+					out.push_back(temp->val);
+					// cout<<temp->val<<" ";
 
-    // Iterative 2 stack
-    vi postorderTraversal2Stack(node* root){
-        vi res{};
-        if(!root) return res;
-        stack<node*> s1, s2;
-        s1.push(root);
-        node* cur;
+					while(stk.size() && stk.top()->right==temp){
+						temp = stk.top(); stk.pop();
+						out.push_back(temp->val);
+						// cout<<temp->val<<" ";
+					}
+				}
+			}
+		}
 
-        while(!s1.empty()){
-            cur = s1.top();
-            s1.pop();
-            s2.push(cur);
-
-            if(cur->left) s1.push(cur->left);
-            if(cur->right) s1.push(cur->right);
-        }
-
-        while(!s2.empty()){
-            cur = s2.top();
-            res.push_back(cur->val);
-            s2.pop();
-        }
-        
-        return res;
-    }
-
-
-    vector<int> postorderTraversalRec(TreeNode* root) {
-        vi res;
-        postorder(root, res);
-        return res;
-    }
-
-    void postorder(node* root, vi &res){
-        if (!root) return;
-
-        postorder(root->left, res);
-        postorder(root->right, res);
-        res.push_back(root->val);
+		return out;
     }
 };
 
-// int main() {
-//     string line;
-//     while (getline(cin, line)) {
-//         TreeNode* root = stringToTreeNode(line);
-        
-//         vector<int> ret = Solution().postorderTraversal(root);
+node* Tree(){
+    node* root = new node(60);
+    root->left = new node(30);
+    root->right = new node(50);
+    root->left->left = new node(10);
+    root->left->right = new node(20);
+    root->right->left = new node(40);
+    return root;
+};
 
-//         string out = integerVectorToString(ret);
-//         cout << out << endl;
-//     }
-//     return 0;
-// }
+int main(){
+	Solution sol; node* root = Tree();
+	vi out = sol.postorderTraversal(root);
+	print(out);
+	return 0;
+}

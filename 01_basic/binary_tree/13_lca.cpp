@@ -56,22 +56,16 @@ node* sampleTree(){
     return root;
 };
 
-
-node* lca(node* root, int n1, int n2){
+node* lca(node* root, const int &n1, const int &n2){
     if(!root) return NULL;
+    if(root->data == n1 || root->data==n2) return root;
 
-    if(root->data==n1 || root->data==n2)
-        return root;
-    
-    node* l = lca(root->left, n1, n2);
-    node* r = lca(root->right, n1, n2);
+    node* left = lca(root->left, n1, n2);
+    node* right = lca(root->right, n1, n2);
 
-    if(l==NULL && r==NULL) return NULL;
-    
-    // if both are found then return the root
-    if (l && r) return root;
-
-    return l ? l:r;
+    if(!left && !right) return NULL;
+    if(left && right) return root;
+    return left ? left : right;
 }
 
 

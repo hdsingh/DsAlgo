@@ -57,44 +57,62 @@
  * };
  */
 
-#include "cpp.h"
-#include "node.h"
+#include <bits/stdc++.h>
 using namespace std;
+#define pb push_back
+#define deb(x) cout<<#x<<" "<<x<<endl;
+#define deb2(x, y) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<endl;
+#define deb3(x, y, z) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<" "<<#z<<" "<<z<<endl;
+#define all(x) x.begin(), x.end()
+typedef long long ll;
+typedef vector<int> vi;
 
+#include "Tree.h"
+
+class Solution0 {
+	int L, R;
+public:
+    int rangeSumBST(TreeNode* root, int L, int R) {
+		this->L = L;
+		this->R = R;
+		return dfs(root);
+    }
+	
+	int dfs(TreeNode* root){
+		if(!root) return 0;
+		int val = root->val;
+		int res = val >=L && val<=R ? val : 0;
+		return res + (L<val ? dfs(root->left) : 0) + (val<R ? dfs(root->right) : 0);
+	}
+};
+
+// Iterative
 class Solution {
 public:
     int rangeSumBST(TreeNode* root, int L, int R) {
-        int res = 0;
-        sumBST(root, L, R, res);
-        return res;
-    }
+		int res = 0;
+        stack<TreeNode*> stk;
+		if(root) stk.push(root);
 
-    void sumBST(TreeNode* root, int L, int R, int& res){
-        if(root){
-            sumBST(root->left, L, R, res);
-            int temp = root->val;
-            if (temp>=L && temp<=R){
-                // cout<<"t: "<<temp<<" ";
-                res+=temp;
-            }
-            sumBST(root->right, L, R, res);
-        }
+		while(stk.size()){
+			TreeNode* cur = stk.top(); stk.pop();
+			
+			if(L<=cur->val && cur->val<=R)
+				res+=cur->val;
+			if(L<cur->val && cur->left)
+				stk.push(cur->left);
+			if(cur->val<R && cur->right)
+				stk.push(cur->right);
+			
+		}
+
+		return res;
     }
 };
 
-int main() {
-    string line;
-    while (getline(cin, line)) {
-        TreeNode* root = stringToTreeNode(line);
-        getline(cin, line);
-        int L = stringToInteger(line);
-        getline(cin, line);
-        int R = stringToInteger(line);
-        
-        int ret = Solution().rangeSumBST(root, L, R);
-
-        string out = to_string(ret);
-        cout << out << endl;
-    }
-    return 0;
+int main(){
+	Solution sol; int L, R, out;
+	node* root = ExampleInTree();
+	out = sol.rangeSumBST(root, 25, 55); deb(out);
+	return 0;
 }
