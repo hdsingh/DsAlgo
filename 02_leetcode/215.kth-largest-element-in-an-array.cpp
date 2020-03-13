@@ -83,6 +83,31 @@ public:
     }
 };
 
+// min PQ
+class Solution1 {
+public:
+    int findKthLargest(vector<int>& a, int k) {
+        // min pq
+        priority_queue<int, vector<int>, greater<int>> pq; 
+        for(auto &x: a){
+            pq.push(x);
+            if((int)pq.size()>k) pq.pop();
+        }
+        return pq.top();
+    }
+};
+
+// nth_element
+class Solution2 {
+public:
+    int findKthLargest(vector<int>& nums, int k) {
+        nth_element(nums.begin(), nums.begin()+k-1, nums.end(), greater<int>());
+        print(nums);
+        return *(nums.begin()+k-1);
+    }
+};
+
+
 int main() {
     string line;
     while (getline(cin, line)) {

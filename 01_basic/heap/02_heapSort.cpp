@@ -12,6 +12,7 @@ void print(T v){
     cout<<endl; 
 }
 
+// swap root with left or right, iff whichever is larger
 void heapify(vi &arr, int start, int end){
     int largest = start;
     int l = start*2+1;
@@ -29,10 +30,14 @@ void heapify(vi &arr, int start, int end){
 
 void heapSort(vi &arr){
     int n = arr.size();
-    
+
+    // Create max heap from bottom to top, 
+    // Since the elements in last level are leaf nodes(single) the already from a 
+    // max heap, so we start from n/2-1 toward to and create heap
     for(int i= n/2-1; i>=0; i--)
         heapify(arr, i, n);
 
+    // remove the mopmost element and swap it with the end;
     for(int i = n-1; i>=0; i--){
         swap(arr[0], arr[i]);
 

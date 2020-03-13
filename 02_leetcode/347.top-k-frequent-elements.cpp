@@ -91,6 +91,34 @@ public:
     }
 };
 
+class Solution {
+public:
+    vector<int> topKFrequent(vector<int>& nums, int k) {
+        int n = nums.size();
+        unordered_map<int, int> cnt;
+        for(auto &x: nums)
+            cnt[x]++;
+        
+        // Min heap
+        auto compare = [](pii &a, pii &b){
+            return a.second > b.second;
+        };
+
+        priority_queue<pii, vector<pii>, decltype(compare)> pq(compare);
+        for(auto &p: cnt){
+            pq.push(p);
+            if((int)pq.size()>k) pq.pop();
+        }
+
+        vi out;
+        while(pq.size()){
+            out.push_back(pq.top().first);
+            pq.pop();
+        }
+        return out;
+    }
+};
+
 int main() {
     string line;
     while (getline(cin, line)) {

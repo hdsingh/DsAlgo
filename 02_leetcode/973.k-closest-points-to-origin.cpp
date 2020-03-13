@@ -108,25 +108,7 @@ public:
         
         return vector<vector<int>>(points.begin(), points.begin()+K);
     }
-    
 
-    vector<vector<int>> kClosest1(vector<vector<int>>& points, int K) {
-        priority_queue<vi> pq;
-        vector<vector<int>> out;
-        
-        for(int i =0; i<points.size(); i++){
-            pq.push(points[i]);
-            if(pq.size()>K) pq.pop();
-        }
-
-        int s = pq.size();
-        while(s--){
-            out.push_back(pq.top());
-            pq.pop();
-
-        }
-        return out;
-    }
 };
 // @lc code=end
 
