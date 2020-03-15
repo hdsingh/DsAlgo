@@ -59,42 +59,32 @@ public:
 };
 
 class DisjointSet1{
-    int n;
-    vector<int> parent;
-    vector<int> rank;
-public:
-    DisjointSet1(int N){
-        n=N;
-        parent.resize(N, -1);
-        rank.resize(N, 0);
-    }
+	vector<int> par, ranks;
+public: 
 
-    void makeSet(int data){
-        parent[data] = data;
-        // rank[data] = 0; // not req as initialize to 0
-    }
+	// for all the sets
+	void make_sets(int n){
+		par.clear(); par.resize(n);
+		ranks.clear(); ranks.resize(n);
+		iota(par.begin(),par.end(), 0); // make a node par of itself
+	}
 
-    bool Union(int a, int b){
-        a = findSet(a);
-        b = findSet(b);
+	bool union_sets(int a, int b){
+		a = find_set(a);
+		b = find_set(b);
+		if(a==b) return false; // already united, since having same par
 
-        if(a==b) return false;
-        else{//a!=b
-            if(rank[a]<rank[b])
-                swap(a, b);
-            parent[b] = a;
-            if(rank[a]==rank[b])
-                rank[a]++;
-        }
-        return true;
-    }
+		if(ranks[a]<ranks[b])
+			swap(a,b);
+		par[b] = a;
+		if(ranks[a]==ranks[b])
+			ranks[a]++;
 
-    int findSet(int a){
-        if(a == parent[a])
-            return a;
+		return true;
+	};
 
-        // path compression        
-        parent[a] = findSet(parent[a]);
-        return parent[a];
-    }
+	int find_set(int a){
+		if(a==par[a]) return a;
+		return par[a] = find_set(par[a]);
+	}
 };
