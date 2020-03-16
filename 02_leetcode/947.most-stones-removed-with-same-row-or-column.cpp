@@ -123,10 +123,83 @@ public:
     }    
 };
 
+class DisjointSet{
+public: 
+	vi par, ranks;
+	// for all the sets
+	void make_sets(int n){
+		par.clear(); par.resize(n);
+		ranks.clear(); ranks.resize(n);
+		iota(par.begin(),par.end(), 0); // make a node par of itself
+	}
+
+	bool union_sets(int a, int b){
+		a = find_set(a);
+		b = find_set(b);
+		if(a==b) return false; // already united, since having same par
+
+		if(ranks[a]<ranks[b])
+			swap(a,b);
+		par[b] = a;
+		if(ranks[a]==ranks[b])
+			ranks[a]++;
+
+		return true;
+	};
+
+	int find_set(int a){
+		if(a==par[a]) return a;
+		return par[a] = find_set(par[a]);
+	}
+
+};
+
+// add 10000 to use same dsu for cols
+class Solution1 {
+public:
+    int removeStones(vector<vector<int>>& stones) {
+        int n = stones.size();
+        DisjointSet dsu;
+        dsu.make_sets(20001);
+    
+        for(auto &st: stones)
+            dsu.union_sets(st[0],st[1]+10000);
+
+        set<int> seen; // to count different parents formed
+        for(auto &st: stones)
+            seen.insert(dsu.find_set(st[0]));
+
+        return n - seen.size();
+    }
+};
+
+// Connect the  stones by their number
+class Solution2 {
+public:
+    int removeStones(vector<vector<int>>& stones) {
+        int n = stones.size();
+        DisjointSet dsu;
+        dsu.make_sets(n);
+    
+        for(int i=0; i<n; ++i){
+            for(int j=0; j<n; ++j){
+                if(stones[i][0]==stones[j][0] || stones[i][1]==stones[j][1])
+                    dsu.union_sets(i,j);
+            }
+        }
+         
+        int groups = 0;
+        for(int i=0; i<n; ++i)
+            if(dsu.par[i]==i)
+                ++groups;
+        return n - groups;        
+    }
+};
+
 // @lc code=end
 
 int main(){
-    Solution sol; vvi stones; int out;
+    Solution2 sol; vvi stones; int out;
     stones = {{0,0},{0,1},{1,0},{1,2},{2,1},{2,2}};
     out = sol.removeStones(stones); deb(out);
 
