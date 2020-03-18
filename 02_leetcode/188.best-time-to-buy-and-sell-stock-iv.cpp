@@ -103,6 +103,46 @@ public:
 };
 // @lc code=end
 
+// Same with comments
+// buy new trans. starts  : inc. transaction, in buy we pay so -prices[i]
+// sell            ends   : same transaction, that staterd on buying,
+// we sell so  get money hence, +prices[i]
+class Solution {
+public:
+    int maxProfit(int k, vector<int>& prices) {
+        int n = prices.size();
+		if(k>=n/2){
+			// same as buy and selling multiple times without any restriction
+			int tot = 0;
+			for(int i=1; i<n; ++i)
+				if(prices[i-1]<prices[i])
+					tot+=prices[i] - prices[i-1];
+			return tot;
+		}
+		vvi buy(k+1, vi(n+1)); // buy profit
+		vvi sell(k+1, vi(n+1)); // sell profit
+
+        // if Initial price -v -inf, only then we can get max by buying
+        // -prices[i] in the 1st transaction
+		for(int j=1; j<=k; ++j)
+			buy[j][0] = INT_MIN;
+
+		for(int i=1; i<=n; ++i){
+			for(int j=1; j<=k; ++j){
+				buy[j][i] = max(buy[j][i-1], sell[j-1][i-1] - prices[i-1]); 
+				// at by trans. starts, so either till prev profit, or
+				// sell till prev trans. and pay the price
+				sell[j][i] = max(sell[j][i-1], buy[j][i-1] + prices[i-1]);
+				// here transaction will remain same, 
+			}
+		}
+
+		// print_vv(buy);
+		// print_vv(sell);
+		return sell[k][n];
+    }
+};
+
 
 int main(){
     Solution sol;

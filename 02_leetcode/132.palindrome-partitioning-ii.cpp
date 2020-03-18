@@ -35,7 +35,7 @@ typedef std::vector<vector<int>> vvi;
 
 // @lc code=start
 // Refer: https://www.youtube.com/watch?v=WPr1jDh3bUQ
-class Solution {
+class Solution0 {
 public:
     int minCut(string s) {
         int n = s.size();
@@ -130,12 +130,54 @@ public:
         return true;
     }    
 };
+
+// Better implementation
+// first create is_pal table
+// cuts till pos r will depend on
+//  x..y..z..a[ccddcc]
+// min of cut till pos j + 1, if j+1 to r is pal, for all js
+class Solution {
+public:
+    int minCut(string s) {
+        int n = s.size();
+		vector<vector<bool>> is_pal(n+1, vector<bool>(n+1));
+
+		for(int l=n-1; l>=0; --l){
+			for(int r=l; r<n; ++r){
+				if(s[l]==s[r])
+					is_pal[l][r] = l+1<r-1 ? is_pal[l+1][r-1] : true;
+				else 
+					is_pal[l][r] = false;
+			}
+		}
+
+		vi cuts(n,INT_MAX);
+		for(int r=0; r<n; r++){
+			if(is_pal[0][r])
+				cuts[r] = 0;
+			else{
+				int cur_cuts = INT_MAX;
+				for(int j=0; j<r; ++j){
+					if(is_pal[j+1][r] && cuts[j]+1<cur_cuts)
+						cur_cuts = cuts[j]+1;
+				}
+				cuts[r] = cur_cuts;
+			}
+		}
+		return cuts[n-1];
+    }
+};
 // @lc code=end
 int main(){
-    Solution sol;
-    cout<<sol.minCut("banana");
-    
+	Solution sol; string s; int out;
+	vs ss = {
+		"a",
+		"abb",
+		"cabababcbc",
+        "banana",
+	};
+	for(auto &s: ss)
+		out = sol.minCut(s), deb(out);
 
-
-
+	return 0;
 }
