@@ -61,6 +61,20 @@ ll powMod(ll n, ll p) {
 	return res;
 }
 
+ll powmod1(ll A, ll p, ll MOD = mod){
+    A%=MOD;
+    ll res  = 1;
+    while(p){
+        if(p&1)
+            res = ((__int128)res*A)%MOD;
+        
+        A = ((__int128)A*A)%MOD;
+        p>>=1;
+    }
+
+    return res;
+}
+
 int main(){
     precalc();
     cout<<C(10,8)<<endl;
