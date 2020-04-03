@@ -67,3 +67,35 @@ int main2(){
 
     return 0;
 }
+
+        // vl dp(W+1);
+        // fore(i,1,n+1){
+        //     for(int w=W; w>=1; w--){
+        //         if(w-wt[i-1]>=0)
+        //             max_self(dp[w], dp[w-wt[i-1]] + val[i-1]);
+        //     }
+        // }
+
+        // vl dp(W+1);
+        // fore(i,1,n+1){
+        //     for(int wt_already = W - wt[i-1]; wt_already>=0; --wt_already)
+        //         max_self(dp[wt_already+wt[i-1]], dp[wt_already] + val[i-1]);
+        // }
+
+        // Better explained in E
+        // ll val_sum = accumulate(all(val), (ll)0);
+        // vl dp(val_sum + 1, inf); // minimum wt that could be obtained for a val v
+        // dp[0] = 0;
+        // forn(i,n){
+        //     for(int val_already = val_sum - val[i]; val_already>=0; --val_already)
+        //         min_self(dp[val_already + val[i]], dp[val_already] + wt[i]);
+        // }
+
+        // // print(dp);
+        // ll ans = 0;
+        // // Find the max val where wt is in limit
+        // forn(i,val_sum+1)
+        //     if(dp[i]<=W)
+        //         max_self(ans, i);
+
+        // cout<<ans<<endl;        

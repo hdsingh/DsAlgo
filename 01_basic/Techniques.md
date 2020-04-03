@@ -17,6 +17,12 @@
 `Random`:
 1. [Position in Fraction](https://codeforces.com/problemset/problem/900/B)
 
+`Strongly Connected Components`:
+1. [Reachability from the Capital](https://codeforces.com/contest/999/problem/E)
+
+
+`Topological Sort`:
+1.[Online Courses In BSU](https://codeforces.com/problemset/problem/770/C)
 
 `Trees DP`:
 1. Re-rooting : 
