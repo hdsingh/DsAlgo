@@ -17,7 +17,6 @@ typedef vector<bool> vb;
 typedef pair<int, int> pii;
 const int mod = 1e9 + 7;
 template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
-template<class T, class U> inline void sub_self(T &a, U b){a -= b; if (a >= mod) a -= mod;if (a < 0) a += mod;}
 template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
 template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
 
@@ -25,43 +24,69 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
+ll n,k;
+
+int mul(int a, int b){
+    return (ll) a*b % mod;
+}
+
+vvi matmul(vvi &a, vvi &b){
+    vvi res(n, vi(n));
+    
+    forn(i,n)
+        forn(j,n)
+            forn(k,n)
+                add_self(res[i][j], mul(a[i][k], b[k][j]));
+    return res;
+}
+
+vvi matPow(vvi &a, ll p){
+    vvi res(n, vi(n));
+    forn(i,n)
+        res[i][i] = 1;
+    
+    while(p){
+        if(p&1)
+            res = matmul(res,a);
+        a = matmul(a,a);
+        p>>=1;
+    }
+    return res;
+}
+
 int main(){
-    int n,k;
+    
     while(cin>>n>>k){
-        vi dp(k+1); // number of ways to use i candies so far
-        vi a(n); forn(i,n) cin>>a[i];
-    
-        dp[0] = 1;
-    
-        // for(auto up_limit: a){
-        //     for(int used = k; used>=0; --used){
-        //         for(int here = 1; here<=min(up_limit, k-used); ++here){
-        //             add_self(dp[here+used], dp[used]);
+        vvi can(n, vi(n));
+        forn(i,n)
+            forn(j,n) 
+                cin>>can[i][j];
+
+        can = matPow(can,k);
+
+        int ans = 0;
+        forn(i,n)
+            forn(j,n)
+                add_self(ans, can[i][j]);
+        
+        cout<<ans<<endl;
+
+        // vi dp(n,1);
+        // for(ll steps =0; steps<k; ++steps){
+        //     vi ndp(n);
+        //     forn(i,n){
+        //         forn(j,n){
+        //             if(can[i][j])
+        //                 add_self(ndp[j], dp[i]);
         //         }
         //     }
+        //     dp = ndp;
         // }
 
-        for(auto up_limit: a){
-            vi fake(k+1);
-            for(int used = k; used>=0; --used){
-                int l = used + 1;
-                int r = used + min(up_limit, k - used);
-
-                if(l<=r)
-                    add_self(fake[l], dp[used]);
-                if(r+1<=k)
-                    sub_self(fake[r+1], dp[used]);
-            }
-
-            int prefix_sum = 0;
-            forn(i,k+1){
-                add_self(prefix_sum, fake[i]);
-                add_self(dp[i], prefix_sum);
-            }
-
-        }
-
-        cout<<dp[k]<<endl;
+        // int ans = 0;
+        // for(auto x: dp)
+        //     add_self(ans,x);
+        // cout<<ans<<endl;
     
     }
     return 0;

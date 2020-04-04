@@ -17,7 +17,6 @@ typedef vector<bool> vb;
 typedef pair<int, int> pii;
 const int mod = 1e9 + 7;
 template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
-template<class T, class U> inline void sub_self(T &a, U b){a -= b; if (a >= mod) a -= mod;if (a < 0) a += mod;}
 template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
 template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
 
@@ -25,44 +24,38 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
+const int nax = 1e5+10;
+int n,m,u,v;
+vvi adj(nax);
+vi dp(nax,-1);
+
+int dfs(int x){
+    if(dp[x]!=-1) return dp[x];
+    dp[x] = 0;
+    for(auto ad: adj[x])
+        max_self(dp[x], dfs(ad));
+
+    ++dp[x];
+    return dp[x];
+}
+
 int main(){
-    int n,k;
-    while(cin>>n>>k){
-        vi dp(k+1); // number of ways to use i candies so far
-        vi a(n); forn(i,n) cin>>a[i];
-    
-        dp[0] = 1;
-    
-        // for(auto up_limit: a){
-        //     for(int used = k; used>=0; --used){
-        //         for(int here = 1; here<=min(up_limit, k-used); ++here){
-        //             add_self(dp[here+used], dp[used]);
-        //         }
-        //     }
-        // }
-
-        for(auto up_limit: a){
-            vi fake(k+1);
-            for(int used = k; used>=0; --used){
-                int l = used + 1;
-                int r = used + min(up_limit, k - used);
-
-                if(l<=r)
-                    add_self(fake[l], dp[used]);
-                if(r+1<=k)
-                    sub_self(fake[r+1], dp[used]);
-            }
-
-            int prefix_sum = 0;
-            forn(i,k+1){
-                add_self(prefix_sum, fake[i]);
-                add_self(dp[i], prefix_sum);
-            }
-
-        }
-
-        cout<<dp[k]<<endl;
-    
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    cin>>n>>m;
+    forn(i,m){
+        cin>>u>>v;
+        adj[u].pb(v);
     }
+
+    int maxLen = 0;
+    fore(i,1,n+1){
+        if(dp[i]==-1)
+            dfs(i);
+        max_self(maxLen, dp[i]);
+    }
+
+    cout<<maxLen-1<<endl;
+
+
     return 0;
 }
