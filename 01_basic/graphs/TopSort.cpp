@@ -12,6 +12,11 @@ typedef vector<int> vi;
 typedef vector<vector<int>> vvi;
 typedef vector<bool> vb;
 
+// Better methods
+// 1. DFS+Coloring + Cycle detection (CF 770C)
+// 2. Kahns Algo : BFS + Cycle Detection(LC 207)
+
+// Simple method
 int n; // number of vertices
 vvi adj;
 vi ans;

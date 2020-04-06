@@ -50,82 +50,101 @@
  * 
  * 
  */
-#include "cpp.h"
-#include "extra.h"
+#include <bits/stdc++.h>
 using namespace std;
+#define forn(i, n) for(int i = 0; i < int(n); i++)
+#define fore(i, l, r) for(int i = int(l); i < int(r); i++)
+#define pb push_back
+#define deb(x) cout<<#x<<" "<<x<<endl;
+#define deb2(x, y) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<endl;
+#define deb3(x, y, z) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<" "<<#z<<" "<<z<<endl;
+#define all(x) x.begin(), x.end()
+typedef long long ll;
+typedef vector<int> vi;
+typedef vector<vector<int>> vvi;
+typedef vector<ll> vl;
+typedef vector<vector<ll>> vvl;
+typedef vector<string> vs;
+typedef vector<bool> vb;
+typedef pair<int, int> pii;
+const int mod = 1e9 + 7;
+template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
+template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
+template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
+
+template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<v.size(); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(w)<<*i<<" ";cout<<endl;}
+template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
+template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
 // @lc code=start
+
+// Method 1 : DFS Coloring
+class Solution1 {
+    int n;
+    vvi adj;
+    vi colors;
+    bool has_cycle;
+public:
+    bool canFinish(int N, vector<vector<int>>& pre) {
+        n = N;
+        adj.clear(); adj.resize(n);
+        colors.clear(); colors.resize(n);
+        for(auto p: pre)
+            adj[p[0]].push_back(p[1]);
+
+        has_cycle = false;
+
+        for(int i=0; i<n; ++i){
+            if(colors[i]==0)
+                dfs(i);
+
+            if(has_cycle) return false;
+        }
+
+        return !has_cycle;
+    }
+
+    void dfs(int x){
+        colors[x] = 1;
+        for(auto ad: adj[x]){
+            if(colors[ad]==0)
+                dfs(ad);
+            else if(colors[ad]==1)
+                has_cycle = true;
+        }
+        colors[x] = 2;
+    }
+};
+
+// Method 2: Khans algo
 class Solution {
 public:
-    // using kahn's algo
-    bool canFinish(int n, vector<vector<int>>& edges) {
+    bool canFinish(int n, vector<vector<int>>& pre) {
         vvi adj(n);
-        vi indeg(n, 0);
-
-        // Create adj matrix
-        for(auto e: edges){
-            adj[e[0]].push_back(e[1]);
-            indeg[e[1]]++;
+        vi indeg(n);
+        for(auto p: pre){
+            adj[p[0]].push_back(p[1]);
+            indeg[p[1]]++;
         }
 
         queue<int> q;
-        int cnt = 0;
-
-        // push all the indeg=0 vertices into q
-        for(int i=0; i<n; i++)
+        for(int i=0;i<n; ++i)
             if(indeg[i]==0)
                 q.push(i);
         
+        int cnt = 0;
         while(!q.empty()){
-            int u = q.front(); q.pop();
+            int cur = q.front(); q.pop();
+            ++cnt;
 
-            // dec indeg of all adj vertices of u
-            for(int v: adj[u]){
-                indeg[v]--;
-                if(indeg[v]==0)
-                    q.push(v);
+            for(auto ad: adj[cur]){
+                indeg[ad]--;
+                if(indeg[ad]==0)
+                    q.push(ad);
             }
-
-            cnt++;
         }
 
-        // if cnt!=n cycle is present
-        // here is cycle is present return false so
-        return cnt==n;
-    }
-
-    // 3 color method
-    bool canFinish1(int n, vector<vector<int>>& edges) {
-        vvi adj(n);
-
-        for(auto e: edges){
-            adj[e[0]].push_back(e[1]);
-        }
-
-        vi color(n, 1); //all white(1)
-
-        for(int i=0; i<n; i++){
-            if(color[i]==1)
-                if(dfs_color(i, color, adj)) return false;
-                // return false if cycle exists, else true
-        }
-        return true;
-    }
-
-    bool dfs_color(int u, vi &color, vvi &adj){
-        color[u]=2;
-
-        for(int v: adj[u]){
-            if(color[v]==3) continue;
-
-            if(color[v]==2) return true;
-
-            if(color[v]==1)
-                if(dfs_color(v, color, adj)) return true;
-        }
-
-        color[u]=3;
-        return false;
+        return cnt==n;        
     }
 };
 // @lc code=end

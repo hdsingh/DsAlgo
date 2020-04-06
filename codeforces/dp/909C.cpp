@@ -19,14 +19,15 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 
 const int mod = 1e9+7;
+template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
 
-void add_self(ll &a, ll b){
-    a+=b;
-    if(a>=mod)
-        a-=mod;
-}
+// if prev is 'f' then the next char has to be on depth+1
+// else prev is 's', then we have option to place it at any depth
+// less than equal to cur depth, and add the ways
+// the #of ways of placing at depth d, will include ways of d+1, d+2
+// d+1, will include ways of d+1, as well as d. (Suffix summation)
 
-int main(){
+int main0(){
     int n;
     char c;
     while(cin>>n){
@@ -60,5 +61,36 @@ int main(){
         cout<<ans<<endl;
     }
     
+    return 0;
+}
+
+int main(){
+    int n; 
+    while(cin>>n){
+        string s(n,' ');
+        forn(i,n) cin>>s[i];
+
+        vvi dp(n+1, vi(n+1));
+        dp[0][0] = 1;
+
+        for(int pos=1; pos<n; ++pos){
+            if(s[pos-1]=='f'){
+                for(int depth=0; depth<=pos; ++depth)
+                    add_self(dp[pos][depth+1], dp[pos-1][depth]);
+            }else{
+                int suf = 0;
+                for(int depth=pos; depth>=0; --depth){
+                    add_self(suf, dp[pos-1][depth]);
+                    dp[pos][depth] = suf;
+                }
+            }
+        }
+
+        int ans = 0;
+        forn(i,n+1)
+            add_self(ans, dp[n-1][i]);
+        cout<<ans<<endl;
+
+    }
     return 0;
 }

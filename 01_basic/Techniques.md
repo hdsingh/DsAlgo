@@ -14,6 +14,10 @@
 2. [Connected Components?](https://codeforces.com/contest/920/problem/E), [Good Explanation](https://codeforces.com/blog/entry/57516)
 3. [E. Counter Attack](https://codeforces.com/problemset/problem/190/E)
 
+
+`Digit DP`:
+1. [Digit Sum](https://atcoder.jp/contests/dp/tasks/dp_s)
+
 `Random`:
 1. [Position in Fraction](https://codeforces.com/problemset/problem/900/B)
 
@@ -23,6 +27,8 @@
 
 `Topological Sort`:
 1.[Online Courses In BSU](https://codeforces.com/problemset/problem/770/C)
+2.[Course Schedule](https://leetcode.com/problems/course-schedule/description/), [Course Schedule II](https://leetcode.com/problems/course-schedule-ii/description/)
+3.[Substring](https://codeforces.com/contest/919/problem/D) (using kahn's algorithm)
 
 `Trees DP`:
 1. Re-rooting : 
