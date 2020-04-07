@@ -18,8 +18,18 @@
 `Digit DP`:
 1. [Digit Sum](https://atcoder.jp/contests/dp/tasks/dp_s)
 
+
+`KnapSack-DP`:
+1. [C. Buns](https://codeforces.com/contest/106/problem/C)
+
+
 `Random`:
 1. [Position in Fraction](https://codeforces.com/problemset/problem/900/B)
+
+
+`Shortest Path`:
+1. [You Are Given a Decimal String...](https://codeforces.com/contest/1202/problem/B)(Floyd Warshall APSP)
+
 
 `Strongly Connected Components`:
 1. [Reachability from the Capital](https://codeforces.com/contest/999/problem/E)

@@ -6,7 +6,6 @@ using namespace std;
 #define deb(x) cout<<#x<<" "<<x<<endl;
 #define deb2(x, y) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<endl;
 #define deb3(x, y, z) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<" "<<#z<<" "<<z<<endl;
-#define deb4(t, x, y, z) cout<<#t<<" "<<t<<" "<<#x<<" "<<x<<" "<<#y<<" "<<y<<" "<<#z<<" "<<z<<endl;
 #define all(x) x.begin(), x.end()
 typedef long long ll;
 typedef vector<int> vi;
@@ -26,45 +25,31 @@ template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; re
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
 int main(){
-	int n,m,c0,d0;
-	while(cin>>n>>m>>c0>>d0){
-		vi tot_stuf(m+1), b(m+1), c(m+1), d(m+1); // tot stuffing, stuf/bun, dough/bun, $
-		fore(i,1,m+1)
-			cin>>tot_stuf[i]>>b[i]>>c[i]>>d[i];
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
 
-		vvi dp(n+1, vi(m+1));
-		// max profit with i grams of dough and till jth stuffing type
+    int n,m,q; string s; char c;
+    while(cin>>n>>s){
+        vvi dp(26, vi(n+1));
+        
+        forn(c,26){
+            forn(i,n){
+                int replace_cnt = 0;
+                fore(j,i,n){
+                    if(s[j]-'a'!=c) ++replace_cnt;
+                    max_self(dp[c][replace_cnt], j-i+1);
+                }
+            }
 
-		for(int j=1; j<=m; ++j){
-			for(int dough=n; dough>=0; --dough){
-				for(int buns=0; buns<=tot_stuf[j]/b[j]; ++buns){
-					int req_dough = buns * c[j];
-					if(req_dough<=dough)
-						max_self(dp[dough][j], dp[dough - req_dough][j-1] + d[j]*buns);
-				}
-			}
-		}
-		
-		int mx = 0;
-		fore(dough, 0, n+1)
-			max_self(mx, dp[dough][m] + (n-dough)/c0 * d0);
+            fore(i,1,n+1){
+                max_self(dp[c][i], dp[c][i-1]);
+            }
+        }
 
-		cout<<mx<<endl;
-
-	}
-	return 0;
+        cin>>q; 
+        while(q--){
+            cin>>m>>c;
+            cout<<dp[c-'a'][m]<<endl;
+        }
+    }
+    return 0;
 }
-
-// Let create array dp by size n x m.
-//  dp[i][j] means maximum number of tugriks that the baker 
-//  can earn if he used i grams of dough and cook buns with 
-//  stuffings of types 1..j.
-
-// Initially dp[i][0] is 0 for all i.
-
-// You can easily calculate this dp:
-// for every k from 0 to a[j]/b[j], for which i-c[j]*k>=0
-// dp[i][j] = max{ dp[i-c[j]*k][j-1] + d[j]*k } 
-
-// The answer will be 
-// max{ dp[k][m] + ((n-k)/c0)*d0 } for every k from 0 to n.
