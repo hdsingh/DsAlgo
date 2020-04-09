@@ -24,23 +24,40 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
+const int N = 3e5+10;
+int n;
+int a[2][N];
+ll s123[2][N], s321[2][N], s111[2][N];
+
 int main(){
-    int n,m,k;
-    while(cin>>n>>m>>k){
-        vi a(n); forn(i,n) cin>>a[i];
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    cin>>n;
+    forn(i,2)
+        forn(j,n)
+            cin>>a[i][j];
 
-        ll res =0;
-        vl dp(n+1);
-        for(int r=1; r<=n; ++r){
-            ll sum = 0;
-            for(int l=r-1; l>=max(0, r-m); --l){
-                sum+=a[l];
-                dp[r] = max(dp[r], dp[l] + sum - k);
-            }
-            res = max(dp[r],res);
+    forn(i,2){
+        for(int j=n-1; j>=0; --j){
+            s123[i][j] = s123[i][j+1] + (j+1) * 1LL * a[i][j];
+            s321[i][j] = s321[i][j+1] + (n-j) * 1LL * a[i][j];
+            s111[i][j] = s111[i][j+1] + a[i][j];
         }
-        cout<<res<<endl;
-
     }
+
+    ll res=0, sum=0;
+
+    for(int i=0, j=0; j<n; ++j, i^=1){
+        ll nres = sum;
+        nres += s123[i][j] + j * 1LL * s111[i][j];
+        nres += s321[i^1][j] + (j+n) * 1LL * s111[i^1][j];
+
+        res = max(res, nres);
+
+        sum+=a[i][j] *1LL * (j+j+1);
+        sum+=a[i^1][j] * 1LL * (j+j+2);
+    }
+
+    for(int j=0; j<n; ++j) res-=a[0][j] + a[1][j];
+    cout<<res<<endl;
+
     return 0;
-}

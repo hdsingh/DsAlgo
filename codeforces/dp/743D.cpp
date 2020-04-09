@@ -14,7 +14,7 @@ typedef vector<ll> vl;
 typedef vector<vector<ll>> vvl;
 typedef vector<string> vs;
 typedef vector<bool> vb;
-typedef pair<int, int> pii;
+typedef pair<ll,ll> pll;
 const int mod = 1e9 + 7;
 template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
 template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
@@ -24,22 +24,52 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
-int main(){
-    int n,m,k;
-    while(cin>>n>>m>>k){
-        vi a(n); forn(i,n) cin>>a[i];
+ll inf = 1e16L;
+const int nax = 2e5+10;
+ll n,ans;
+vvi adj;
+vi a;
+vl mx, sum;
 
-        ll res =0;
-        vl dp(n+1);
-        for(int r=1; r<=n; ++r){
-            ll sum = 0;
-            for(int l=r-1; l>=max(0, r-m); --l){
-                sum+=a[l];
-                dp[r] = max(dp[r], dp[l] + sum - k);
-            }
-            res = max(dp[r],res);
+// Find two max in sub children and add them
+// sum, max_val
+void  dfs(int x, int par){
+    mx[x] = -1e16;
+    sum[x] = a[x];
+    for(auto ad: adj[x]){
+        if(ad==par) continue;
+        dfs(ad, x);
+        sum[x]+=sum[ad];
+        ans = max(ans, mx[x] + mx[ad]);
+        mx[x] = max(mx[x],mx[ad]);
+    }
+    mx[x] = max(sum[x], mx[x]);
+}
+
+int main(){
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    while(cin>>n){
+        ans=-1e15;
+        adj.clear(); adj.resize(nax);
+        a.clear(); a.resize(nax);
+        mx.clear(); mx.resize(nax); sum.clear(); sum.resize(nax);
+
+        fore(i,1,n+1) cin>>a[i];
+        
+        int x,y;
+        forn(i,n-1){
+            cin>>x>>y;
+            adj[x].pb(y), adj[y].pb(x);
         }
-        cout<<res<<endl;
+
+        dfs(1,-1);
+
+        if(ans==-1e15){
+            cout<<"Impossible"<<endl;
+        }else{
+            cout<<ans<<endl;
+        }
+        
 
     }
     return 0;

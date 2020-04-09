@@ -25,22 +25,18 @@ template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; re
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
 int main(){
-    int n,m,k;
-    while(cin>>n>>m>>k){
-        vi a(n); forn(i,n) cin>>a[i];
+    int t, n,m;
+    cin>>t;
+    while(t--){
+        cin>>n>>m;
+        vs out(n, string(m, 'W'));
+        
+        forn(j,m) out[0][j] = 'B';
+        forn(i,n) out[i][0] = 'B';
 
-        ll res =0;
-        vl dp(n+1);
-        for(int r=1; r<=n; ++r){
-            ll sum = 0;
-            for(int l=r-1; l>=max(0, r-m); --l){
-                sum+=a[l];
-                dp[r] = max(dp[r], dp[l] + sum - k);
-            }
-            res = max(dp[r],res);
+        forn(i,n){
+            cout<<out[i]<<endl;
         }
-        cout<<res<<endl;
-
     }
     return 0;
 }

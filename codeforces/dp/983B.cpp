@@ -25,21 +25,36 @@ template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; re
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
 int main(){
-    int n,m,k;
-    while(cin>>n>>m>>k){
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    
+    int n,q,l,r;
+    while(cin>>n){
         vi a(n); forn(i,n) cin>>a[i];
 
-        ll res =0;
-        vl dp(n+1);
-        for(int r=1; r<=n; ++r){
-            ll sum = 0;
-            for(int l=r-1; l>=max(0, r-m); --l){
-                sum+=a[l];
-                dp[r] = max(dp[r], dp[l] + sum - k);
+        // print(a);
+
+        vvi dp(n, vi(n));
+        vvi ans(n,vi(n));
+        for(int l=n-1; l>=0; --l){
+            dp[l][l] = a[l];
+            ans[l][l] = a[l];
+        
+            int mx = a[l];
+            for(int r=l+1; r<n; ++r){
+                dp[l][r] = dp[l][r-1] ^ dp[l+1][r];
+                ans[l][r] = max({dp[l][r],ans[l][r-1],ans[l+1][r]});
             }
-            res = max(dp[r],res);
         }
-        cout<<res<<endl;
+        // print_vv(dp);
+        // print_vv(ans);
+
+        cin>>q;
+        while(q--){
+            cin>>l>>r;
+            --l,--r;
+            cout<<ans[l][r]<<endl;
+        }
+        // cout<<endl;
 
     }
     return 0;

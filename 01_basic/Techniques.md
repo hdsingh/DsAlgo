@@ -19,6 +19,9 @@
 1. [Digit Sum](https://atcoder.jp/contests/dp/tasks/dp_s)
 
 
+`Kadane DP`:
+1. [Beautiful Array](https://codeforces.com/problemset/problem/1155/D)
+
 `KnapSack-DP`:
 1. [C. Buns](https://codeforces.com/contest/106/problem/C)
 

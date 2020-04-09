@@ -24,23 +24,51 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
+// We cant use simple kadane here so lets modify it
+// We have to find the max subarray sum of 
+//  1 1 1 1 1   x x x x  1 1 1 1 
+//  a a a a a  a a a a  a a a a 
+//  i          j        k     l
+// After multiplying a selected elements by x, find the subarray sum
+// so it has 3 parts
+// max_sum of part1,2,3 = best1,2,3 
+// best1 = max_sum[i:j-1]
+// best2 = max_sum[j:k-1]
+// best3 = max_sum[k:l]
+// However best1 will be computed 1st, then best2 and then best3
+
 int main(){
-    int n,m,k;
-    while(cin>>n>>m>>k){
-        vi a(n); forn(i,n) cin>>a[i];
+    int n, x;
+    while(cin>>n>>x){
+        ll best1(0), best2(0), best3(0);
+        vl a(n); forn(i,n) cin>>a[i];
 
-        ll res =0;
-        vl dp(n+1);
-        for(int r=1; r<=n; ++r){
-            ll sum = 0;
-            for(int l=r-1; l>=max(0, r-m); --l){
-                sum+=a[l];
-                dp[r] = max(dp[r], dp[l] + sum - k);
-            }
-            res = max(dp[r],res);
+        ll ans = 0;
+        for(auto e: a){
+            best3 = max({0LL, best2 + e, best3+e});
+            best2 = max({0LL, best1 + e*x, best2 + e*x});
+            best1 = max({0LL, e, best1+e});
+            ans = max({ans, best1, best2, best3});
         }
-        cout<<res<<endl;
-
+        cout<<ans<<endl;
+        
     }
     return 0;
 }
+
+// reverse order to compute best1 first and then use it in best2, 
+// similarly, compute best2 first and use it in best3 later
+
+// 3. extend the prev best2 by adding simple e(start of simple seq) or keep on extending the prev started best seq
+// best3 = max({0LL, best2 + e, best3+e});
+
+// 2. extend the best1 by adding e*x (start of x seq), or keep on extending the prev best2 seq by adding e*x
+// best2 = max({0LL, best1 + e*x, best2 + e*x});
+
+// 1. 0, sinlge e or extend the prev best by adding single e
+// best1 = max({0LL, e, best1+e});
+
+
+
+// ans = max({best1, best2, best3});
+

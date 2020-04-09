@@ -24,23 +24,39 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
-int main(){
-    int n,m,k;
-    while(cin>>n>>m>>k){
-        vi a(n); forn(i,n) cin>>a[i];
+int n, ans;
+bool vis[400][400][8][32]; // x,y,dir, level
+bool marked[400][400];
+vi t(32);
+// Mark the following directions on paper to see the clockwise pattern
+vvi dirs = {{-1,1},{0,1},{1,1},{1,0},{1,-1},{0,-1},{-1,-1},{-1,0}};
 
-        ll res =0;
-        vl dp(n+1);
-        for(int r=1; r<=n; ++r){
-            ll sum = 0;
-            for(int l=r-1; l>=max(0, r-m); --l){
-                sum+=a[l];
-                dp[r] = max(dp[r], dp[l] + sum - k);
-            }
-            res = max(dp[r],res);
+void dfs(int x, int y, int dir, int lev){
+    if(vis[x][y][dir][lev]) return;
+    if(lev>=n) return;
+    
+    vis[x][y][dir][lev] = 1;
+    for(int i=0; i<t[lev]; ++i){
+        x+= dirs[dir][0];
+        y+= dirs[dir][1];
+        if(!marked[x][y]){
+            marked[x][y] = 1;
+            ++ans;
         }
-        cout<<res<<endl;
-
     }
+    // move 45deg clockwise 
+    dfs(x,y,(dir+1)%8,lev+1);
+    // move 45deg anti-clockwise
+    dfs(x,y,(dir+7)%8,lev+1);
+}
+
+int main(){
+    cin>>n;
+    forn(i,n) cin>>t[i];
+
+    ans = 0;
+    dfs(160,160,7,0);
+    cout<<ans<<endl;
+
     return 0;
 }

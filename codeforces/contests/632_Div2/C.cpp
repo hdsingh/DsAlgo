@@ -24,22 +24,25 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
+// Intead of counting bad, directly count good
 int main(){
-    int n,m,k;
-    while(cin>>n>>m>>k){
-        vi a(n); forn(i,n) cin>>a[i];
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    ll n,x;
+    while(cin>>n){
+        int64_t sum=0;
+        map<int64_t, int> lastInd;
+        int ind = 0;
+        int64_t ans = 0;
 
-        ll res =0;
-        vl dp(n+1);
-        for(int r=1; r<=n; ++r){
-            ll sum = 0;
-            for(int l=r-1; l>=max(0, r-m); --l){
-                sum+=a[l];
-                dp[r] = max(dp[r], dp[l] + sum - k);
-            }
-            res = max(dp[r],res);
+        forn(i,n){
+            lastInd[sum] = i+1;
+            int a; cin>>a;
+            sum+=a;
+            ind = max(ind, lastInd[sum]);
+            ans += (i+1 - ind);
         }
-        cout<<res<<endl;
+        cout<<ans<<endl;
+
 
     }
     return 0;

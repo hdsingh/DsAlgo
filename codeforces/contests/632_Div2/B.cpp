@@ -25,22 +25,38 @@ template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; re
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
 int main(){
-    int n,m,k;
-    while(cin>>n>>m>>k){
-        vi a(n); forn(i,n) cin>>a[i];
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    int t,n;
+    cin>>t;
+    while(t--){
+        cin>>n;
+        vi a(n), b(n);
+        forn(i,n) cin>>a[i];
+        forn(i,n) cin>>b[i];
 
-        ll res =0;
-        vl dp(n+1);
-        for(int r=1; r<=n; ++r){
-            ll sum = 0;
-            for(int l=r-1; l>=max(0, r-m); --l){
-                sum+=a[l];
-                dp[r] = max(dp[r], dp[l] + sum - k);
-            }
-            res = max(dp[r],res);
+        vi has_pos(n+1), has_neg(n+1);
+        forn(i,n){
+            has_pos[i+1] = ((a[i]>0) || has_pos[i]);
+            has_neg[i+1] = ((a[i]<0) || has_neg[i]);
         }
-        cout<<res<<endl;
+        // print(a);
+        // print(has_pos);
+        // print(has_pos);
+        // cout<<endl;
 
+        bool out = true;
+        // out&=(a[0]==b[0]);
+        fore(i,0,n){
+            int dif = b[i] - a[i];
+            
+            if(dif>0)
+                out&=has_pos[i];
+            else if(dif<0)
+                out&=has_neg[i];
+                
+        }
+        string ans = out ? "YES" : "NO";
+        cout<<ans<<endl;
     }
     return 0;
 }
