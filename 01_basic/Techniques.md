@@ -26,6 +26,9 @@
 1. [C. Buns](https://codeforces.com/contest/106/problem/C)
 
 
+`KMP`:
+1. [Prefix-Suffix Palindrome](https://codeforces.com/contest/1326/problem/D2)
+
 `Random`:
 1. [Position in Fraction](https://codeforces.com/problemset/problem/900/B)
 
