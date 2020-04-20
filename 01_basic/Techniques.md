@@ -29,6 +29,11 @@
 `KMP`:
 1. [Prefix-Suffix Palindrome](https://codeforces.com/contest/1326/problem/D2)
 
+
+`MST`:
+1. [C. Dungeons and Candies](https://codeforces.com/problemset/problem/436/C) (Kruskal's)
+
+
 `Random`:
 1. [Position in Fraction](https://codeforces.com/problemset/problem/900/B)
 
