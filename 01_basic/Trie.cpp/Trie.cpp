@@ -12,14 +12,20 @@ typedef vector<int> vi;
 typedef vector<vector<int>> vvi;
 typedef vector<string> vs;
 
+// better simple implementation
 struct TrieNode{
-    bool eow; // end of word
-    TrieNode* children[26];
-    TrieNode(){
-        eow = false;
-        memset(children, NULL, sizeof(children));
-    }
+    bool eow = false;
+    TrieNode* children[26] = {};
 };
+
+// struct TrieNode{
+//     bool eow; // end of word
+//     TrieNode* children[26];
+//     TrieNode(){
+//         eow = false;
+//         memset(children, NULL, sizeof(children));
+//     }
+// };
 
 class Trie {
     TrieNode* root;    

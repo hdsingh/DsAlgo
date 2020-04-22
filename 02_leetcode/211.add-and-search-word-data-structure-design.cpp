@@ -67,13 +67,18 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
+// struct TrieNode{
+//     bool eow; // end of word
+//     TrieNode* children[26];
+//     TrieNode(){
+//         eow = false;
+//         memset(children, NULL, sizeof(children));
+//     }
+// };
+
 struct TrieNode{
-    bool eow; // end of word
-    TrieNode* children[26];
-    TrieNode(){
-        eow = false;
-        memset(children, NULL, sizeof(children));
-    }
+    bool eow = false;
+    TrieNode* children[26] = {};
 };
 
 // @lc code=start
