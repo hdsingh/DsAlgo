@@ -15,6 +15,10 @@
 3. [E. Counter Attack](https://codeforces.com/problemset/problem/190/E)
 
 
+`Coordinate Compression`:
+1. [699. Falling Squares](https://leetcode.com/problems/falling-squares/) (CC + Segment Tree)
+
+
 `Digit DP`:
 1. [Digit Sum](https://atcoder.jp/contests/dp/tasks/dp_s)
 
@@ -36,6 +40,9 @@
 
 `Random`:
 1. [Position in Fraction](https://codeforces.com/problemset/problem/900/B)
+
+`Segment Tree`:
+1. [Basic Template](https://leetcode.com/articles/a-recursive-approach-to-segment-trees-range-sum-queries-lazy-propagation/)
 
 
 `Shortest Path`:
