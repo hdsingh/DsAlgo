@@ -51,7 +51,14 @@
 2.[Course Schedule](https://leetcode.com/problems/course-schedule/description/), [Course Schedule II](https://leetcode.com/problems/course-schedule-ii/description/)
 3.[Substring](https://codeforces.com/contest/919/problem/D) (using kahn's algorithm)
 
+
 `Trees DP`:
 1. Re-rooting : 
    - [F. Maximum White Subtree](https://codeforces.com/contest/1324/problem/F)
    - [F. Tree with Maximum Cost](https://codeforces.com/contest/1092/problem/F)
+
+
+`Tries`:
+1. [LeetCode](https://leetcode.com/tag/trie/)
+2. [B - A Lot of Games](https://codeforces.com/contest/455/problem/B)
+
