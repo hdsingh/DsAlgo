@@ -38,6 +38,11 @@
 1. [C. Dungeons and Candies](https://codeforces.com/problemset/problem/436/C) (Kruskal's)
 
 
+`Number Theory`:
+1. [E - Divisible Substring](https://atcoder.jp/contests/abc158/tasks/abc158_e)
+2. [D - Multiple of 2019](https://atcoder.jp/contests/abc164/tasks/abc164_d)
+
+
 `Random`:
 1. [Position in Fraction](https://codeforces.com/problemset/problem/900/B)
 
