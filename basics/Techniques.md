@@ -34,6 +34,12 @@
 1. [Prefix-Suffix Palindrome](https://codeforces.com/contest/1326/problem/D2)
 
 
+`Monotonic Queue/Deque`:
+1. [239. Sliding Window Maximum](https://leetcode.com/problems/sliding-window-maximum/)
+2. [1425. Constrained Subset Sum](https://leetcode.com/problems/constrained-subset-sum/)
+3. [862. Shortest Subarray with Sum at Least K](https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/)
+
+
 `MST`:
 1. [C. Dungeons and Candies](https://codeforces.com/problemset/problem/436/C) (Kruskal's)
 

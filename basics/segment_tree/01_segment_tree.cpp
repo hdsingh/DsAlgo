@@ -3,28 +3,38 @@ using namespace std;
 typedef vector<int> vi;
 
 // Range sum query mutable
+struct node{
+    int val;
+};
+
 class SegmentTree {
     int n;
-    vi st;
+    vector<node> st;
+
+    node make_node(int val) {
+        node res;
+        res.val = val;
+        return res;
+    }
 public:
     SegmentTree(vector<int>& a) {
         n = a.size();
         if(!n) return;
 
-        int x = (int)(ceil(log2(n)));
-        int max_size = 2*(int)pow(2, x);
-        // or max_size = 4*n
-        st.clear(); st.resize(max_size);
+        // int x = (int)(ceil(log2(n)));
+        // int max_size = 2*(int)pow(2, x);
+        int max_size = 4*n;
+        st.clear(); st.resize(max_size, node());
         build(1,0,n-1,a);
     }
 
-    void merge(int &cur, int l, int r){
-        cur = l + r;
+    void merge(node &cur, node l, node r){
+        cur.val = l.val + r.val;
     }
 
     void build(int pos, int l, int r, vi &a){
         if(l==r){
-            st[pos] = a[l];
+            st[pos] = make_node(a[l]);
             return;
         }
         int mid = (l+r)/2;
@@ -36,7 +46,7 @@ public:
     
     void update(int i, int val, int pos, int l, int r) {
         if(l==r){
-            st[pos] = val;
+            st[pos] = make_node(val);
             return;
         }
         int mid = (l+r)/2;
@@ -49,13 +59,13 @@ public:
         merge(st[pos], st[2*pos] , st[2*pos+1]);
     }
     
-    int query(int i, int j, int pos, int l, int r) {
-        if(i>r || l>j) return 0;
+    node query(int i, int j, int pos, int l, int r) {
+        if(i>r || l>j) return make_node(0);
         if(i<=l && r<=j) return st[pos];
         int mid = (l+r)/2;
-        int left = query(i,j,2*pos,l,mid);
-        int right = query(i,j,2*pos+1,mid+1,r);
-        int cur;
+        node left = query(i,j,2*pos,l,mid);
+        node right = query(i,j,2*pos+1,mid+1,r);
+        node cur;
         merge(cur, left, right);
         return cur;
     }
@@ -65,7 +75,8 @@ public:
     }
 
     int query(int i,int j){
-        return query(i,j,1,0,n-1);
+        node q = query(i,j,1,0,n-1);
+        return q.val;
     }
 };
 
@@ -81,3 +92,6 @@ int main(){
 
     return 0;
 }
+
+// Example: 
+// 1 . other/GSS3
