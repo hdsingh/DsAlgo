@@ -25,49 +25,52 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
-// Ref: https://www.youtube.com/watch?v=iGGolqb6gDE, cpalgos
-
-const int nax = 10;
-vvi adj(nax);
-vi in(nax), low(nax), vis(nax);
-int timer;
-
-void dfs(int x, int par){
-    vis[x] = 1;
-    in[x] = low[x] = timer++;
-
-    int child = 0;
-    for(auto ad: adj[x]){
-        if(ad==par) continue;
-        if(vis[ad]){ // back_edge
-            low[x] = min(low[x], in[ad]);
-        }else{ // forward edge
-            // go and try decrement the low time of ad, by checking if it connects to some ancestor
-            dfs(ad,x); 
-            low[x] = min(low[x], low[ad]);
-
-            // we are not succesful in finding a better low time for ad, i.e
-            // some ancestor was not found, then this is cut point, 
-            // except root, (since it always satifies this condition)
-            if(low[ad]>=in[x] && par!=-1)
-                cout<<x<<" is a cut point \n";
-            
-            ++child;
-        }
-    }   
-
-    if(par==-1 && child>1)
-        cout<<x<<" is a cut point \n";
-}
-
 int main(){
-    vvi edges = {{1,2},{1,3},{1,4}};
-    edges = {{1,2},{2,3},{3,1},{1,4}};
-    for(auto e: edges)
-        adj[e[0]].pb(e[1]) , adj[e[1]].pb(e[0]);
-    dfs(1,-1);
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    int T; string s,t;
+    cin>>T;
+    while(T--){
+        cin>>s>>t;
+        for(auto &x: s) x-='a';
+        for(auto &x: t) x-='a';
+
+        int n = s.size(); int m = t.size();
+        // check all present
+        set<int> present;
+        vvi pos(26);
+        forn(i,n){
+            pos[s[i]].pb(i);
+            present.insert(s[i]);
+        }
+
+        bool good = 1;
+        for(auto x: t){
+            if(present.count(x)==0){
+                good =false;
+                break;
+            }
+        }
+        if(!good){
+            cout<<-1<<endl;
+            continue;
+        }
+
+        int i = 0, j = 0;
+        int ans = 1;
+        while(j<m){
+            auto it = lower_bound(all(pos[t[j]]), i);
+            if(it==pos[t[j]].end()){
+                i = 0;
+                ++ans;
+            }
+            else {
+                i = *it;
+                ++i; ++j;
+            }
+        }
+    
+        cout<<ans<<endl;
+        
+    } 
     return 0;
 }
-
-// Usage: 
-// https://www.spoj.com/problems/SUBMERGE/

@@ -35,9 +35,29 @@ int phi(int n){
     return result;
 }
 
+// more efficient way, similar to Seive
+vi phi_1_to_n(int n){
+    vi phi(n+1);
+    phi[0] = 0;
+    phi[1] = 1;
+    for(int i=2; i<=n; ++i)
+        phi[i] = i; // mark all as prime
+
+    for(int i=2; i<=n; ++i){
+        if(phi[i]==i){ // if prime, remove it from its multiples
+            for(int j=i; j<=n; j+=i)
+                phi[j]-=phi[j]/i;
+        }
+    }
+    return phi;
+}
+
 int main(){
     deb(phi(6));
     deb(phi(12));
     deb(phi(23));
     return 0;
 }
+
+// Usage: 
+// https://codeforces.com/contest/1295/problem/D

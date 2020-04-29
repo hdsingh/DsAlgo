@@ -25,12 +25,11 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
-// Ref: https://www.youtube.com/watch?v=iGGolqb6gDE, cpalgos
 
-const int nax = 10;
-vvi adj(nax);
-vi in(nax), low(nax), vis(nax);
+vvi adj;
+vi in, low, vis;
 int timer;
+set<int> cutPoints;
 
 void dfs(int x, int par){
     vis[x] = 1;
@@ -50,24 +49,35 @@ void dfs(int x, int par){
             // some ancestor was not found, then this is cut point, 
             // except root, (since it always satifies this condition)
             if(low[ad]>=in[x] && par!=-1)
-                cout<<x<<" is a cut point \n";
+                cutPoints.insert(x);
             
             ++child;
         }
     }   
 
     if(par==-1 && child>1)
-        cout<<x<<" is a cut point \n";
+        cutPoints.insert(x);
 }
+
 
 int main(){
-    vvi edges = {{1,2},{1,3},{1,4}};
-    edges = {{1,2},{2,3},{3,1},{1,4}};
-    for(auto e: edges)
-        adj[e[0]].pb(e[1]) , adj[e[1]].pb(e[0]);
-    dfs(1,-1);
+    int n,m,u,v;
+    while(cin>>n>>m){
+        if(!n && !m) break;
+        cutPoints.clear();
+        adj.clear(); adj.resize(n+1);
+        in.assign(n+1,0); low.assign(n+1, 0);
+        vis.assign(n+1,0); 
+        timer = 0;
+
+        forn(i,m){
+            cin>>u>>v;
+            adj[u].pb(v); adj[v].pb(u);
+        }
+        dfs(1,-1);
+
+        cout<<(int)cutPoints.size()<<endl;
+        
+    }
     return 0;
 }
-
-// Usage: 
-// https://www.spoj.com/problems/SUBMERGE/
