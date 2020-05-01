@@ -25,91 +25,43 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
-// Ref: https://www.youtube.com/watch?v=7undZLA3_rU
-
-int n, q;
-const int nax = 200000 + 10;
-const int SZ = 500;
-
-struct query{
-    int l, r, idx;
-};
-
-vector<query> Q(nax);
-vi a(nax);
-vl ans(nax);
-vi freq(1e6+10);
-ll res = 0;
-
-bool comp(query &d1, query &d2){
-    int b1 = d1.l/SZ;
-    int b2 = d2.l/SZ;
-    if(b1!=b2)
-        return b1<b2;
-    return (b1&1) ? (d1.r < d2.r) : (d1.r > d2.r);
-}
-
-void add(int pos){
-    ll cnt = freq[a[pos]];
-    freq[a[pos]]++;
-
-    res-= cnt*cnt*a[pos]; 
-    ++cnt;
-    res+= cnt*cnt*a[pos];
-}
-
-void remove(int pos){
-    ll cnt = freq[a[pos]];
-    freq[a[pos]]--;
-    
-    res-= cnt*cnt*a[pos]; 
-    --cnt;
-    res+= cnt*cnt*a[pos];
-}
-
-void mo(){
-
-    sort(Q.begin()+1, Q.begin()+q+1, comp);
-
-    int gl=1, gr = 0;
-    fore(i,1,q+1){
-        int l = Q[i].l;
-        int r = Q[i].r;
-        int idx = Q[i].idx;
-
-        // extend ranges
-        while(gl>l) --gl, add(gl);
-        while(gr<r) ++gr, add(gr);
-
-        // shrink ranges
-        while(gl<l) remove(gl), ++gl;
-        while(gr>r) remove(gr), --gr;
-
-        ans[idx] = res;
-    }
-}
-
-// Aim: count the occurance of a number in range
-// Remember: in order to use the odd, even comparison optimisation
-// start from 1st index, so that odd even are properly configured
+// we need to find smallest lcm of (a+k, b+k)
+// assume a<=b, acc to euclid: lcm(a,b) = lcm(b-a, a)
+// i.e lcm(b-a, a+k); so the lcm is a divisor of b-a
+// hence iterate over all divisors of b-a and check the value
 int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    
-    cin>>n>>q;
-    fore(i,1,n+1) cin>>a[i];
-
-    fore(i,1,q+1){
-        cin>>Q[i].l>>Q[i].r;
-        Q[i].idx = i;
+    ll a, b;
+    while(cin>>a>>b){
+        // deb2(a,b);
+        ll dif = abs(a-b);
+        vi divs;
+        for(int i=1; i*i<=dif; ++i){
+            if(dif%i==0){
+                divs.push_back(i);
+                if(dif/i!=i)
+                    divs.push_back(dif/i);
+            }
+        }
+        
+        sort(all(divs));
+        // print(divs);
+        ll mn = LONG_LONG_MAX;
+        ll k = 0;
+        for(auto d: divs){
+            if(a%d!=b%d) continue;
+            if(a%d==0){
+                ll cur = (a*b)/__gcd(a,b);
+                if(cur<mn)
+                    mn =cur, k=0;
+            }else{
+                ll A = (a + d - a%d); // inc a to make it multiple of d
+                ll B = (b + d - a%d);
+                ll cur = (A*B)/__gcd(A,B);
+                if(cur<mn)
+                    mn = cur, k = d - a%d;
+            }
+        }
+        cout<<k<<endl;
     }
-
-    mo();
-
-    fore(i,1,q+1){
-        cout<<ans[i]<<endl;
-    }
-
     return 0;
 }
-
-// DQUERY.cpp 
