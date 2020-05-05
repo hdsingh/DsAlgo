@@ -74,7 +74,8 @@
 1. Re-rooting : 
    - [F. Maximum White Subtree](https://codeforces.com/contest/1324/problem/F)
    - [F. Tree with Maximum Cost](https://codeforces.com/contest/1092/problem/F)
-
+2. Other:
+   - [F - LIS on Tree](https://atcoder.jp/contests/abc165/tasks/abc165_f)
 
 `Tries`:
 1. [LeetCode](https://leetcode.com/tag/trie/)

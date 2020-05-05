@@ -4,14 +4,14 @@ using namespace std;
 typedef vector<int> vi;
 typedef vector<vector<int>> vvi;
 
-
-int n;
-int timer;
 const int nax = 100;
-const int LG = log2(nax)+1;
+int n;
 vvi adj(nax);
-int parent[LG][nax+1]; // par[i][j] is 2^i th par of j
-int level[nax], tin[nax], tout[nax];
+
+int timer;
+const int LG = log2(nax)+1;
+vvi parent(LG, vi(nax+1)); // par[i][j] is 2^i th par of j
+vi level(nax), tin(nax), tout(nax);
 
 void dfs(int node, int par, int lvl){
     tin[node] = ++timer;
@@ -25,12 +25,12 @@ void dfs(int node, int par, int lvl){
 }
 
 void init(){
-    dfs(1,-1,0); 
+    dfs(1,0,0); 
     
     // precompute lca parent array
     for(int i=1; i<LG; ++i)
         for(int j=1; j<=n; ++j)
-            if(parent[i][j])
+            if(parent[i-1][j])
                 parent[i][j] = parent[i-1][parent[i-1][j]];
 }
 

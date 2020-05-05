@@ -7,6 +7,7 @@ using namespace std;
 #define deb2(x, y) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<endl;
 #define deb3(x, y, z) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<" "<<#z<<" "<<z<<endl;
 #define all(x) x.begin(), x.end()
+#define sz(a) int((a).size())
 typedef long long ll;
 typedef vector<int> vi;
 typedef vector<vector<int>> vvi;
@@ -24,64 +25,57 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
-const int inf = 1e9;
-vector<vector<pii>> adj;
+int nax = 2e5 + 10;
+vi cost(nax), a(nax);
+int n;
 
-void dijkstra(int src, int dest, vi &dist, vi &par){
-    int n = adj.size();
-    vb visited(n);
-    dist.assign(n, inf);
-    par.assign(n, -1);
+vi color(nax);
+vi path;
+vvi cycles;
 
-    dist[src] = 0;
-    priority_queue<pii, vector<pii>, greater<pii>> q;
-    q.push({0,src});
+void dfs(int x){
+    path.push_back(x);
+    color[x] = 1;
+    
+    int ad = a[x];
+    if(color[ad]==0){
+        dfs(ad);
+    }else if(color[ad]==1){
+        cycles.push_back({});
 
-    while(!q.empty()){
-        int d = q.top().first;
-        int v = q.top().second;
-        q.pop();
-        visited[v] = true;
-        
-        // We already found a better path before we got to
-        // processing this node so we can ignore it.
-        if(dist[v] < d) continue;
-
-        for(auto edge: adj[v]){
-            int to = edge.first;
-            int len = edge.second;
-
-            // You cannot get a shorter path by revisiting
-            // a node you have already visited before.
-            if(visited[to]) continue;
-
-            if(dist[v] + len < dist[to]){
-                dist[to] = dist[v] + len;
-                par[to] = v;
-                q.push({dist[to], to});
-            }
-        }
-
-        // If we know the end, we can break when end is found
-        if(v==dest) break;
+        int id = sz(path) - 1;
+        while(path[id]!=ad)
+            cycles.back().push_back(path[id--]);
+        cycles.back().push_back(ad);
     }
 
-    if(!visited[dest]){
-        cout<<-1<<endl; return;
-    }
-
-	vi path;
-    for(int v = dest; v!=src; v = par[v])
-        path.push_back(v);
-    path.push_back(src);
-
-    reverse(all(path));
-    print(path);
+    color[x] = 2;
+    path.pop_back();
 }
 
 int main(){
-    
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    cin>>n;
+
+    fore(i,1,n+1) cin>>cost[i];
+    fore(i,1,n+1) cin>>a[i];
+
+    fore(i,1,n+1){
+        if(color[i]==0){
+            dfs(i);
+        }
+    }
+
+    ll ans = 0;
+    for(auto cycle: cycles){
+        int mn = INT_MAX;
+        for(auto x: cycle)
+            mn = min(mn, cost[x]);
+        ans+=mn;
+    }
+
+
+    cout<<ans<<endl;
+
     return 0;
 }
-
-// https://codeforces.com/problemset/problem/1076/D

@@ -7,6 +7,7 @@ using namespace std;
 #define deb2(x, y) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<endl;
 #define deb3(x, y, z) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<" "<<#z<<" "<<z<<endl;
 #define all(x) x.begin(), x.end()
+#define sz(a) int((a).size())
 typedef long long ll;
 typedef vector<int> vi;
 typedef vector<vector<int>> vvi;
@@ -24,64 +25,66 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
-const int inf = 1e9;
-vector<vector<pii>> adj;
+vi tail;
+const int nax = 2e5+20;
+vi a(nax), ans(nax);
+vvi adj(nax);
+int n,u,v;
 
-void dijkstra(int src, int dest, vi &dist, vi &par){
-    int n = adj.size();
-    vb visited(n);
-    dist.assign(n, inf);
-    par.assign(n, -1);
+// int LIS1(vi &a){
+//     vi tail;
+//     for(auto x: a){
+//         auto it = lower_bound(all(tail), x);
+//         if(it==tail.end())
+//             tail.push_back(x);
+//         else 
+//             *it = x;
+//     }
+//     print(tail);
+//     return tail.size();
+// }
 
-    dist[src] = 0;
-    priority_queue<pii, vector<pii>, greater<pii>> q;
-    q.push({0,src});
-
-    while(!q.empty()){
-        int d = q.top().first;
-        int v = q.top().second;
-        q.pop();
-        visited[v] = true;
-        
-        // We already found a better path before we got to
-        // processing this node so we can ignore it.
-        if(dist[v] < d) continue;
-
-        for(auto edge: adj[v]){
-            int to = edge.first;
-            int len = edge.second;
-
-            // You cannot get a shorter path by revisiting
-            // a node you have already visited before.
-            if(visited[to]) continue;
-
-            if(dist[v] + len < dist[to]){
-                dist[to] = dist[v] + len;
-                par[to] = v;
-                q.push({dist[to], to});
-            }
-        }
-
-        // If we know the end, we can break when end is found
-        if(v==dest) break;
+void dfs(int x, int par){
+    int prev = -1;
+    auto it = lower_bound(all(tail), a[x]);
+    int idx = it - tail.begin();
+    if(it==tail.end()){
+        tail.push_back(a[x]);
+    }
+    else{
+        prev = *it;
+        *it = a[x];
     }
 
-    if(!visited[dest]){
-        cout<<-1<<endl; return;
+    ans[x] = (int)tail.size();
+
+    for(auto ad: adj[x]){
+        if(ad==par) continue;
+        dfs(ad, x);
     }
 
-	vi path;
-    for(int v = dest; v!=src; v = par[v])
-        path.push_back(v);
-    path.push_back(src);
-
-    reverse(all(path));
-    print(path);
+    if(prev==-1)
+        tail.pop_back();
+    else{
+        tail[idx] = prev;
+    }
 }
 
 int main(){
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    cin>>n;
+    fore(i,1,n+1)
+        cin>>a[i];
     
+    forn(i,n-1){
+        cin>>u>>v;
+        adj[u].pb(v), adj[v].pb(u);
+    }
+
+    dfs(1,-1);
+
+    fore(i,1,n+1)
+        cout<<ans[i]<<"\n";
+
     return 0;
 }
-
-// https://codeforces.com/problemset/problem/1076/D

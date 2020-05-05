@@ -26,12 +26,13 @@ struct Edge {
 int n;
 vector<Edge> edges;
 vector<int> par, ranks;
-
+vector<Edge> result;
+int cost = 0;
 
 
 void make_set(int n){
-    par.clear(); par.resize(n);
-    ranks.clear(); ranks.resize(n);
+    par.clear(); par.resize(n+1);
+    ranks.clear(); ranks.resize(n+1);
     iota(par.begin(),par.end(), 0); // make a node par of itself
 }
 
@@ -54,11 +55,8 @@ bool union_sets(int a, int b){
     return true;
 };
 
+void kruskal(){
 
-int main(){
-
-    int cost = 0;
-    vector<Edge> result;
     make_set(n);
 
     sort(edges.begin(), edges.end());
@@ -70,6 +68,14 @@ int main(){
             union_sets(e.u, e.v);
         }
     }
+}
+
+int main(){
+    // input edges
+    
 
     return 0;
 }
+
+// https://codeforces.com/problemset/problem/1095/F
+// https://codeforces.com/contest/1213/problem/G

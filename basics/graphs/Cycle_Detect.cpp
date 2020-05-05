@@ -40,6 +40,7 @@ bool dfs(int x){
         }else if(color[ad]==1){
             cycle_start = ad;
             cycle_end = x;
+            return true;
         }
     }
     color[x] = 2;
@@ -79,3 +80,5 @@ int main(){
     find_cycle();
     return 0;
 }
+
+// https://codeforces.com/problemset/problem/1027/D

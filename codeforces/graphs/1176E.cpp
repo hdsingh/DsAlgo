@@ -7,6 +7,7 @@ using namespace std;
 #define deb2(x, y) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<endl;
 #define deb3(x, y, z) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<" "<<#z<<" "<<z<<endl;
 #define all(x) x.begin(), x.end()
+#define sz(a) int((a).size())
 typedef long long ll;
 typedef vector<int> vi;
 typedef vector<vector<int>> vvi;
@@ -24,64 +25,58 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
-const int inf = 1e9;
-vector<vector<pii>> adj;
+int main(){
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    int t,n,m,u,v;
+    cin>>t;
+    while(t--){
+        cin>>n>>m;
+        vvi adj(n+1);
+    
+        forn(i,m){
+            cin>>u>>v;
+            adj[u].pb(v), adj[v].pb(u);
+        }
 
-void dijkstra(int src, int dest, vi &dist, vi &par){
-    int n = adj.size();
-    vb visited(n);
-    dist.assign(n, inf);
-    par.assign(n, -1);
-
-    dist[src] = 0;
-    priority_queue<pii, vector<pii>, greater<pii>> q;
-    q.push({0,src});
-
-    while(!q.empty()){
-        int d = q.top().first;
-        int v = q.top().second;
-        q.pop();
-        visited[v] = true;
-        
-        // We already found a better path before we got to
-        // processing this node so we can ignore it.
-        if(dist[v] < d) continue;
-
-        for(auto edge: adj[v]){
-            int to = edge.first;
-            int len = edge.second;
-
-            // You cannot get a shorter path by revisiting
-            // a node you have already visited before.
-            if(visited[to]) continue;
-
-            if(dist[v] + len < dist[to]){
-                dist[to] = dist[v] + len;
-                par[to] = v;
-                q.push({dist[to], to});
+        vi col(n+1,-1);
+        bool is_bipartite = false;
+        queue<int> q;
+        fore(i,1,n+1){
+            if(col[i]==-1){
+                q.push(i);
+                col[i] = 0;
+                while(!q.empty()){
+                    int top = q.front(); q.pop();
+                    for(auto ad: adj[top]){
+                        if(col[ad]==-1){
+                            col[ad] = col[top]^1; 
+                            q.push(ad);
+                        }else{
+                            is_bipartite &= col[top]!=col[ad];
+                        }
+                    }
+                }
             }
         }
 
-        // If we know the end, we can break when end is found
-        if(v==dest) break;
+        // assert(is_bipartite);
+        int c0 = count(all(col),0);
+        // int c1 = n - c0;
+        vi out;
+        // deb2(c0,c1);
+        if(c0<=n/2){
+            fore(i,1,n+1)
+                if(col[i]==0)
+                    out.pb(i);
+        }else{
+            fore(i,1,n+1)
+                if(col[i]==1)
+                    out.pb(i);
+        }
+            
+        cout<<sz(out)<<endl;
+        for(auto x: out) cout<<x<<" ";
+        cout<<endl;
     }
-
-    if(!visited[dest]){
-        cout<<-1<<endl; return;
-    }
-
-	vi path;
-    for(int v = dest; v!=src; v = par[v])
-        path.push_back(v);
-    path.push_back(src);
-
-    reverse(all(path));
-    print(path);
-}
-
-int main(){
-    
     return 0;
 }
-
-// https://codeforces.com/problemset/problem/1076/D
