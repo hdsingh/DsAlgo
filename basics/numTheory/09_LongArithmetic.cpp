@@ -101,3 +101,5 @@ int main(){
     lwrite(out);
     return 0;
 }
+
+// https://codeforces.com/problemset/problem/1144/E
