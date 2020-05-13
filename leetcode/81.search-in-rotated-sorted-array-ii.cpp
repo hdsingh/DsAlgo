@@ -72,40 +72,33 @@ template <typename T>void print_vv(T v){int w = 3;cout<<setw(w)<<" ";for(int j=0
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
 // Referenced
-class Solution{
+class Solution {
 public:
-  bool search(vi a, int x) {
-		int n = a.size();
-		int l = 0; int r = n-1;
-		int mid=0;
-		while(l<r){
-			mid = l + (r-l)/2;
-			if(a[mid]==x){
-				return true;
-			}
-			// not rotated
-			else if(a[mid]<a[r]){
-				// locate the pos of x
-				if(a[mid]<=x && x<=a[r])
-					l = mid+1;
-				else 
-					r = mid-1;
-			}
-			// rotated
-			else if(a[mid]>a[r]){
-				if(a[l]<= x && x<=a[mid])
-					r = mid-1;
-				else 
-					l = mid+1;
-			}
-			else {
-				--r;
-			}
-		}
+    bool search(vector<int>& a, int X) {
+        int n = a.size();
+        if(!n) return 0;
+        int l = 0, r = n-1;
+        while(l<=r){
+            int mid = l + (r-l)/2;
+            if(a[mid]==X) return true;
+            else if(a[mid]<a[r]){
+                // sorted from a[mid] to a[r]
+                if(a[mid]<X && X<=a[r])
+                    l = mid + 1;
+                else 
+                    r = mid - 1;
+            }else if(a[mid]>a[r]){
+                // a[l] to a[mid] is sorted
+                if(a[l]<=X && X<a[mid])
+                    r = mid - 1;
+                else 
+                    l = mid + 1;
+            }else // same as mid
+                --r;
+        }
 
-		return a[l]==x;
-  }
-
+        return a[l]==X;
+    }
 };
 
 // @lc code=end
@@ -114,7 +107,7 @@ int main(){
     vi nums; int target;
 
     nums = {3,4,5,6,0,1,2};
-	print(nums, 1);
+	// print(nums, 1);
     target = 4;
     cout<<sol.search(nums,target)<<endl;
 

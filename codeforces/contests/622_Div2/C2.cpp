@@ -1,42 +1,3 @@
-/*
- * @lc app=leetcode id=153 lang=cpp
- *
- * [153] Find Minimum in Rotated Sorted Array
- *
- * https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/description/
- *
- * algorithms
- * Medium (43.83%)
- * Likes:    1355
- * Dislikes: 187
- * Total Accepted:    343.1K
- * Total Submissions: 782.2K
- * Testcase Example:  '[3,4,5,1,2]'
- *
- * Suppose an array sorted in ascending order is rotated at some pivot unknown
- * to you beforehand.
- * 
- * (i.e.,  [0,1,2,4,5,6,7] might become  [4,5,6,7,0,1,2]).
- * 
- * Find the minimum element.
- * 
- * You may assume no duplicate exists in the array.
- * 
- * Example 1:
- * 
- * 
- * Input: [3,4,5,1,2] 
- * Output: 1
- * 
- * 
- * Example 2:
- * 
- * 
- * Input: [4,5,6,7,0,1,2]
- * Output: 0
- * 
- * 
- */
 #include <bits/stdc++.h>
 using namespace std;
 #define forn(i, n) for(int i = 0; i < int(n); i++)
@@ -52,6 +13,7 @@ typedef vector<vector<ll>> vvl;
 typedef vector<string> vs;
 typedef vector<bool> vb;
 typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
 const int mod = 1e9 + 7;
 template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
 template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
@@ -66,46 +28,66 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-// Is the mid element greater than a[last];
-// here we are looking for first false;
-// ex:  4 5 6 7 1 2 3 
-//      T T T T F F F
-// or
-//      1 2 3 4 5 6 7
-//      F F F F F F F 
-class Solution {
-public:
-    int findMin(vector<int>& a) {
-        int n = a.size();
-        int l = 0, r = n-1;
-        int ans = 0;
-        while(l<=r){
-            int mid = l + (r-l)/2;
-            if(a[mid]>a.back()){
-                l = mid + 1;
-            }else{
-                ans = a[mid];
-                r = mid - 1;
-            }
-        }
+int n;
+const int nax = 5e5+10;
+// const int nax = 10;
+vl a(nax);
 
-        return ans;
-    }
-};
-
-// @lc code=end
-int main(){
-    Solution sol;
-    vi nums = {3,4,5,1,2};
-    cout<<sol.findMin(nums)<<endl;
-
-    nums = {4,5,6,7,0,1,2};
-    cout<<sol.findMin(nums)<<endl;
-
-    nums = {4,5,6,7,7,0,1,1,2,2,3,};
-    cout<<sol.findMin(nums)<<endl;
+void go(vl &sum){
+    stack<int> stk;
+    stk.push(0);
+    // 1 5 6 2
+    fore(i,1,n+1){
+        while(a[stk.top()]>=a[i])
+            stk.pop();
     
-    nums = {-1};
-    cout<<sol.findMin(nums)<<endl;
+        int top = stk.top(); // this is index of  prev min, less than a[i]
+        sum[i] = sum[top] + (i-top)*a[i];
+        stk.push(i);
+    }
+}
 
+int main(){
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    cin>>n;
+    fore(i,1,n+1) cin>>a[i];
+
+    vl lsum(nax), rsum(nax);
+
+    go(lsum);
+    reverse(a.begin()+1, a.begin()+1+n);
+    go(rsum);
+    reverse(a.begin()+1, a.begin()+1+n);
+    reverse(rsum.begin()+1, rsum.begin()+1+n); 
+    // since rsum stored in reverse manner , due to same function
+
+
+    // print(a,1);
+    // print(lsum);
+    // print(rsum);
+
+    // find the pos, where max sum can be obtained
+    pll mx({0,1});
+    fore(i,1,n+1){
+        // deb(i, lsum[i] +  rsum[i] - a[i]);
+        mx = max(mx, {lsum[i] + rsum[i] - a[i],i});
+    }
+
+    ll min_val = a[mx.second];
+    for(int i=mx.second-1; i>=1; --i){
+        min_val = min(min_val, a[i]);
+        a[i] = min_val;
+    }
+
+    min_val = a[mx.second];
+    // deb(min_val, mx.second);
+    for(int i=mx.second+1; i<=n; ++i){
+        min_val = min(min_val, a[i]);
+        a[i] = min_val;
+    }
+
+    fore(i,1,n+1) cout<<a[i]<<" ";
+    cout<<"\n";
+
+    return 0;
 }

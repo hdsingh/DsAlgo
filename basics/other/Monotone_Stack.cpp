@@ -51,3 +51,8 @@ int main(){
 	
 	return 0;
 }
+
+// 1. [239. Sliding Window Maximum](https://leetcode.com/problems/sliding-window-maximum/)
+// 2. [1425. Constrained Subset Sum](https://leetcode.com/problems/constrained-subset-sum/)
+// 3. [862. Shortest Subarray with Sum at Least K](https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/)
+// 4. [C2. Skyscrapers](https://codeforces.com/contest/1313/problem/C2)

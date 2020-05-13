@@ -164,36 +164,62 @@ public:
     }
 };
 
-class Solution {
+class Solution3 {
 public:
-    int search(vector<int>& a, int x) {
-        int n = a.size();
-        if(!n) return 0;
+    int search(vector<int>& a, int X) {
+        // find the beg((rot)ation point) by looking for first false
+        // check if the mid is less than back
 
-        // I want to find the smallest element
-        // 1,2,3,4,5
-        // 3,4,5,1,2
-        int l(0), r(n-1); 
-        while(l<r){
-            int mid = l + (r-l)/2;
-            if(a[mid]<a[r])
-                r = mid; // since mid is smaller, so we don't sub 1
-            else 
-                l = mid + 1; // a[mid]> a[r], so it cant be smallest
-        }
-        // now l==r, is the location of piviot
-        // Account for rotation using %
-        int rot = l;
-        l = 0; r=n-1;
+        int n = a.size();
+        int rot = 0, l = 0, r = n-1;
         while(l<=r){
             int mid = l + (r-l)/2;
-            int real_mid = (mid+rot)%n;
-            if(a[real_mid]==x)
-                return real_mid;
-            else if(a[real_mid]<x)
+            if(a[mid]>a.back())
                 l = mid+1;
             else 
-                r = mid -1;
+                rot = mid, r = mid-1;
+        }
+        // deb(rot);
+
+        // now search as if in normal array by normailising the idx wrt to mod
+        l = 0, r = n-1;
+        while(l<=r){
+            int mid = (l+r)/2;
+            // deb(mid);
+            int rmid = (mid+rot)%n;
+            if(a[rmid]==X) return rmid;
+            else if(a[rmid]<X)
+                l = mid + 1;
+            else 
+                r = mid - 1;
+        }
+
+        return -1;
+    }
+};
+
+
+class Solution {
+public:
+    int search(vector<int>& a, int X) {
+        int n = a.size();
+        int l = 0, r = n-1;
+        while(l<=r){
+            int mid = l + (r-l)/2;
+            if(a[mid]==X) return mid;
+            // not rotated (a[mid] to a[r] are in inc order)
+            if(a[mid]<=a[r]){
+                if(a[mid]<X && X<=a[r])
+                    l = mid + 1;
+                else 
+                    r = mid - 1;
+            }else{ // is rotated
+                // (a[l] to a[mid] will be in increasing order)
+                if(a[l]<=X && X<a[mid])
+                    r = mid - 1;
+                else 
+                    l = mid + 1;
+            }
         }
 
         return -1;
@@ -214,7 +240,7 @@ int main(){
     cout<<sol.search(nums,target)<<endl;
 
     nums = {500,100,200,};
-    target = 3;
+    target = 200;
     cout<<sol.search(nums,target)<<endl;
 
 

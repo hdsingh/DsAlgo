@@ -166,7 +166,7 @@ public:
         }
 
         for(int i=n-1; i>=0; --i){
-            while(stk_n.size() && a[stk_n.top()]>a[i])
+            while(stk_n.size() && a[stk_n.top()]>a[i]) // don't use >= here since used above
                 stk_n.pop();
             next_less[i] = stk_n.size() ? stk_n.top() : n; // limit should be n here if not found
             stk_n.push(i);

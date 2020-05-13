@@ -54,30 +54,31 @@ typedef std::vector<vector<int>> vvi;
 // eg([6,7,0,1,2,3,4,5]), shift high towards mid, since min would be in left half
 // 
 // Now everything same as prev(LC153)
-// for the case when low and high have same element, shift high towards left (high--)
+// for the case when mid and high have same element, shift high towards left (high--)
 
 // @lc code=start
+
 class Solution {
 public:
-    int findMin(vector<int>& nums) {
-        int low = 0;
-        int high = nums.size()-1;
-
-        while(low<high){
-                        
-            int mid = low + (high-low)/2;
-
-            if(nums[mid]>nums[high])
-                low = mid+1;
-            else if(nums[mid]<nums[high]) 
-                high = mid;
-            else
-                high--;
-
+    int findMin(vector<int>& a) {
+        int n = a.size();
+        int l = 0, r = n-1;
+        while(l<=r){
+            int mid = l + (r-l)/2;
+            
+            if(a[mid]>a[r])
+                l = mid + 1;
+            else if(a[mid]<a[r]) // dont go beyond mid, since it could be the min element
+                r = mid;
+            else 
+                r--;
+            
+            cout<<"\n";
         }
-        return nums[low];
+        return a[l];
     }
 };
+
 // @lc code=end
 int main(){
     Solution sol;
