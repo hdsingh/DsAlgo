@@ -27,32 +27,50 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-// int main(){
-//     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-//     ll t, n,k;
-//     cin>>t;
-//     while(t--){
-//         cin>>n>>k;
-//         ll need = (k-1)/(n-1);
-//         cout<<k+need<<endl;
-//     }
-//     return 0;
-// }
+#define x first
+#define y second
+
+vector<pii> p(10);
+
+pair<pii, pii> intersect(pii w1, pii w2, pii b1, pii b2){
+    int lt, rt, up, dn;
+    lt = max(min(w1.x, w2.x), min(b1.x, b2.x));
+    rt = min(max(w1.x, w2.x), max(b1.x, b2.y));
+    up = min(max(w1.y, w2.y), max(b1.y, b2.y));
+    dn = max(min(w1.y, w2.y), min(b1.y, b2.y));
+
+    if(rt<=lt || up<=dn) return {{0,0},{0,0}};
+
+    return {{lt,dn}, {rt,up}};
+}
+
+ll square(pii lt_dn, pii rt_up){
+    return 1LL * abs(lt_dn.x - rt_up.x) * abs(lt_dn.y - rt_up.y);
+}
+
+void solve(){
+    fore(i,1,7)
+        cin>>p[i].x>>p[i].y;
+    
+    pair<pii, pii> wb1 = intersect(p[1],p[2], p[3], p[4]);
+    pair<pii, pii> wb2 = intersect(p[1],p[2], p[5], p[6]);
+    pair<pii, pii> b1b2 = intersect(wb1.x, wb1.y, wb2.x, wb2.y);
+
+    ll area_wt = square(p[1], p[2]);
+    ll awb1 = square(wb1.x, wb1.y);
+    ll awb2 = square(wb2.x, wb2.y);
+    ll inter = square(b1b2.x, b1b2.y);
+
+    ll rem = area_wt - (awb1 + awb2 - inter);
+    if(rem>0){
+        cout<<"YES\n";
+    }else 
+        cout<<"NO\n";
+}
+
 
 int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    ll t, n,k;
-    cin>>t;
-    while(t--){
-        cin>>n>>k;
-        int buckets = k/(n-1); // complete buckets
-        
-        int rem = k - buckets*(n-1);
-        if(!rem){
-            cout<<buckets*n -  1<<endl;
-        }else{
-            cout<<buckets*n + rem<<endl;
-        }
-    }
+    // forn(i,6) 
+        solve();
     return 0;
 }

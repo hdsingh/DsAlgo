@@ -27,32 +27,40 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-// int main(){
-//     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-//     ll t, n,k;
-//     cin>>t;
-//     while(t--){
-//         cin>>n>>k;
-//         ll need = (k-1)/(n-1);
-//         cout<<k+need<<endl;
-//     }
-//     return 0;
-// }
-
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    ll t, n,k;
-    cin>>t;
-    while(t--){
-        cin>>n>>k;
-        int buckets = k/(n-1); // complete buckets
-        
-        int rem = k - buckets*(n-1);
-        if(!rem){
-            cout<<buckets*n -  1<<endl;
+    string s;
+    cin>>s;
+    int n = s.size();
+    vector<set<int>> locs(26);
+    forn(i,n){
+        locs[s[i]-'a'].insert(i);
+    }
+    
+    int q, tp, pos,l, r; char c;
+    cin>>q;
+    while(q--){
+        cin>>tp;
+        if(tp==1){
+            cin>>pos>>c;
+            --pos;
+            int prev = s[pos]-'a';
+            locs[prev].erase(pos);
+            s[pos] = c;
+            locs[c-'a'].insert(pos);
         }else{
-            cout<<buckets*n + rem<<endl;
+            cin>>l>>r;
+            --l, --r;
+            int ans = 0;
+            forn(i,26){
+                auto beg = locs[i].lower_bound(l);
+                if(beg!=locs[i].end() && *beg<=r) 
+                    ++ans;
+               
+            }
+            cout<<ans<<endl;
         }
     }
+
     return 0;
 }

@@ -27,32 +27,61 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-// int main(){
-//     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-//     ll t, n,k;
-//     cin>>t;
-//     while(t--){
-//         cin>>n>>k;
-//         ll need = (k-1)/(n-1);
-//         cout<<k+need<<endl;
-//     }
-//     return 0;
-// }
+vvi grid;
+int n;
+
+void dfs(int x, int y, int px, int py){
+    // deb(x,y,px,py);
+    if(y>=n+1){
+        grid[x][y] = 3;
+        return;
+    }
+
+
+    if(grid[x][y]==1){
+        dfs(x,y+1,x,y);
+    }else{
+        if(x==px){
+            if(grid[x^1][y]==2){
+                dfs(x^1,y,x,y);
+            }
+        }else if(y==py){
+            dfs(x,y+1,x,y);
+        }
+    }
+}
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    ll t, n,k;
+    int t; char c;
     cin>>t;
     while(t--){
-        cin>>n>>k;
-        int buckets = k/(n-1); // complete buckets
-        
-        int rem = k - buckets*(n-1);
-        if(!rem){
-            cout<<buckets*n -  1<<endl;
-        }else{
-            cout<<buckets*n + rem<<endl;
+        cin>>n;
+        grid.clear();
+        grid.resize(2, vi(n+3));
+        forn(i,2){
+            fore(j,1,n+1){
+                cin>>c;
+                if(c=='1' || c=='2')
+                    grid[i][j] = 1;
+                else 
+                    grid[i][j] = 2;
+            }
         }
+
+        // print_vv(grid);
+
+        dfs(0,1,0,0);
+
+        // print_vv(grid);
+
+        if(grid[1][n+1]==3){
+            cout<<"YES\n";
+        }else 
+            cout<<"NO\n";
+
+
+        
     }
     return 0;
 }

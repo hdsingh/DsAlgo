@@ -27,32 +27,51 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-// int main(){
-//     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-//     ll t, n,k;
-//     cin>>t;
-//     while(t--){
-//         cin>>n>>k;
-//         ll need = (k-1)/(n-1);
-//         cout<<k+need<<endl;
-//     }
-//     return 0;
-// }
+vector<double> x(10), y(10);
 
-int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    ll t, n,k;
-    cin>>t;
-    while(t--){
-        cin>>n>>k;
-        int buckets = k/(n-1); // complete buckets
-        
-        int rem = k - buckets*(n-1);
-        if(!rem){
-            cout<<buckets*n -  1<<endl;
-        }else{
-            cout<<buckets*n + rem<<endl;
+bool outside(double px, double py){
+    bool o1 = false, o2 = false;
+    if(px<x[3] || px>x[4] || py<y[3] || py>y[4])
+        o1 = true;
+
+    if(px<x[5] || px>x[6] || py<y[5] || py>y[6])
+        o2 = true;
+    
+    if(o1 && o2) return true; // outside both boxes
+
+    return false;
+}
+
+void solve(){
+    fore(i,1,7){
+        cin>>x[i]>>y[i];
+    }
+    // print(x);
+    // print(y);
+
+    // check on the boundaries
+    // all x for y1, y2
+
+    for(double cx = x[1]; cx<=x[2]; cx+=0.5){
+        if(outside(cx,y[1]) || outside(cx, y[2])){
+            cout<<"YES\n";
+            return;
         }
     }
+
+    // all ys for x1, x2
+    for(double cy=y[1]; cy<=y[2]; cy+=0.5){
+        if(outside(x[1],cy) || outside(x[2],cy)){
+            cout<<"YES\n";
+            return;
+        }
+    }
+
+    cout<<"NO\n";
+}
+
+int main(){
+    // forn(i,6) 
+    solve();
     return 0;
 }
