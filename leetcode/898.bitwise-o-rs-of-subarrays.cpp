@@ -103,7 +103,7 @@ template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout
 // bit positions, upto 32.
 // The approach is same as using DP, increasing len in each step,
 // but due to use of sets, this works efficiently.
-class Solution {
+class Solution0 {
 public:
     int subarrayBitwiseORs(vector<int>& a) {
         int n = a.size();
@@ -123,6 +123,27 @@ public:
         return ans.size();
     }
 };
+
+// Imp obs: values are increasing, so vector can be used
+// 1. Use vector instead of set, 
+// 2. Use a single vector
+class Solution {
+public:
+    int subarrayBitwiseORs(vector<int>& A) {
+        int n = A.size();
+        vector<int> save;
+        for(int i=0, st=0, ed=0; i<n; st = ed, ed = save.size(), ++i){
+            save.pb(A[i]);
+            for(int j=st; j<ed; ++j){
+                int val = A[i]|save[j];
+                if(val!=save.back()) save.pb(val);
+                print(save);
+            }
+        }
+        // print(save);
+        return unordered_set<int>(save.begin(), save.end()).size();
+    }
+};
 // @lc code=end
 
 int main(){
@@ -133,7 +154,7 @@ int main(){
     a = {1,1,2};
     out = sol.subarrayBitwiseORs(a); deb(out);
 
-    a = {1,2,4};
+    a = {4,1,2};
     out = sol.subarrayBitwiseORs(a); deb(out);
 
     return 0;

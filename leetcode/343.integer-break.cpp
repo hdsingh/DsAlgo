@@ -47,17 +47,18 @@ typedef std::vector<vector<int>> vvi;
 
 class Solution {
 public:
-    int integerBreak(int n) {
+    long long integerBreak(long long n) {
         if(n<=2) return 1;
         if(n==3) return 2;
 
-        if(n%3==0) 
-            return pow(3, n/3);
-        else if(n%3==1)
-            return 4 * pow(3,n/3 -1);
-        else
-            return 2 * pow(3,n/3);
-        
+        int rem = n%3;
+        if(rem==0){
+            return powl(3,n/3);
+        }else if(rem==1){
+            return powl(3,(n-4)/3) * 4;
+        }
+        // rem ==2
+        return pow(3, (n-2)/3)*2;
     }
 };
 
