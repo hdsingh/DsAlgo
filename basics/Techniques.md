@@ -49,6 +49,9 @@
 1. [E - Divisible Substring](https://atcoder.jp/contests/abc158/tasks/abc158_e)
 2. [D - Multiple of 2019](https://atcoder.jp/contests/abc164/tasks/abc164_d)
 
+`Precesion`:
+1. [Distance bw endpoints of the hands](https://atcoder.jp/contests/abc168/tasks/abc168_c)
+
 
 `Random`:
 1. [Position in Fraction](https://codeforces.com/problemset/problem/900/B)

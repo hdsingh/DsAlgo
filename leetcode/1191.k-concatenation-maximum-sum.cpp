@@ -84,6 +84,11 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
+
+// The answer is the maximum between, 
+// the answer for k=1, the sum of the whole array multiplied by k, 
+// or the maximum suffix sum plus the maximum prefix sum 
+// plus (k-2) multiplied by the whole array sum for k > 1.
 class Solution {
 public:
     int kConcatenationMaxSum(vector<int>& a, int k) {

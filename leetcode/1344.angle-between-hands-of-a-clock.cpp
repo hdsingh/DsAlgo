@@ -96,7 +96,7 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
-class Solution {
+class Solution0 {
 public:
     double angleClock(double H, double M) {
         double hdeg = H*30 + M/2;
@@ -106,10 +106,18 @@ public:
         return min(dif, tot-dif);
     }
 };
+
+class Solution {
+public:
+    double angleClock(double H, double M) {
+        double ang = 360*abs(H/12 + (M/12)/60 - M/60);
+        return min(ang,360-ang);
+    }
+};
 // @lc code=end
 
 int main(){
-    Solution sol; int hour, minutes; double out;
+    Solution0 sol; int hour, minutes; double out;
     hour = 12, minutes = 30;
     out = sol.angleClock(hour, minutes); deb(out);
     hour = 3, minutes = 30;
