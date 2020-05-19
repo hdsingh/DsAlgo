@@ -27,75 +27,120 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-const int nax = 1e6+10;
-string s;
+// Offline Processing + Range minimum Query 
+// 1. Sort the queries by l and move from r to l
+// 2. for each a[i] find the distance to the next equal element a[j] to the right
+// (if it does not exists then it is taken as inf)
+// 3. While moving back update the next value for each l,
+// and process its r values, that is find the minimum in the range l to r
+// In this way updation of next elements will be done only when required 
+// and ensure correctness of operation
 
+const int nax = 5e5 +10;
+const int inf = 1e9;
+int n,m;
+
+// Range min query
 struct node{
-    int tot=0, open=0,close=0;
-    node(){};
-    node(int a, int b, int c) : tot(a), open(b), close(c) {}
+    int val = inf;
 };
 
-class SegmentTree{
-public: 
-    int n;
+class SegmentTree {
     vector<node> st;
 
-    SegmentTree(){
-        n = s.size();
-        if(!n) return;
+    node make_node(int val) {
+        node res;
+        res.val = val;
+        return res;
+    }
+public:
+    SegmentTree() {
+        int max_size = 4*n;
+        st.clear(); st.resize(max_size, node());
+    }
+
+    void merge(node &cur, node l, node r){
+        cur.val = min(l.val, r.val);
+    }
     
-        st.clear(); st.resize(4*n);
-        build(1,0,n-1);
-    }
-
-    void merge(node &cur, node &l, node& r){
-        int add = min(l.open, r.close);
-        cur.tot = l.tot + r.tot + add;
-        cur.open = l.open + r.open  - add;
-        cur.close = l.close + r.close - add;
-    }
-
-    void build(int pos, int l, int r){
+    void update(int pos, int l, int r, int i, int val) {
         if(l==r){
-            st[pos].open = (s[l]=='(');
-            st[pos].close = (s[l]==')');
+            st[pos] = make_node(val);
             return;
         }
         int mid = (l+r)/2;
-        build(2*pos,l, mid);
-        build(2*pos+1, mid+1, r);
-        merge(st[pos], st[2*pos], st[2*pos+1]);
+        // if index is <=mid it lies in left part
+        if(i<=mid)
+            update(2*pos,l,mid,i,val);
+        else 
+            update(2*pos+1,mid+1,r,i,val);
+
+        merge(st[pos], st[2*pos] , st[2*pos+1]);
     }
 
-    node query(int pos, int l, int r, int i, int j){
-        if(l>j || i>r) return node();
+    node query(int pos, int l, int r, int i, int j) {
+        if(i>r || l>j) return make_node(inf);
         if(i<=l && r<=j) return st[pos];
-        node cur;
         int mid = (l+r)/2;
-        node left = query(2*pos,l,mid, i, j);
-        node right = query(2*pos+1, mid+1, r, i, j);
+        node left = query(2*pos,l,mid,i,j);
+        node right = query(2*pos+1,mid+1,r,i,j);
+        node cur;
         merge(cur, left, right);
         return cur;
     }
 
-    int query(int i, int j){
-        node ans = query(1,0,n-1,i,j);
-        return ans.tot;
+    void update(int i, int val){
+        update(1,0,n-1,i,val);
+    }
+
+    int query(int i,int j){
+        node q = query(1,0,n-1,i,j);
+        return q.val;
     }
 };
 
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    cin>>s;
-    SegmentTree st;
-    int m, l, r;
-    cin>>m;
-    while(m--){
-        cin>>l>>r;
-        --l, --r;
-        cout<<2*st.query(l,r)<<endl;
+    cin>>n>>m;
+    vi a(n);
+    forn(i,n) cin>>a[i];
+    map<int,int> seen;
+    vi next(n); // distance to the next same value
+    for(int i=n-1; i>=0; --i){
+        if(seen.count(a[i]))
+            next[i] = seen[a[i]] - i;
+        else 
+            next[i] = inf;
+        seen[a[i]] = i;
     }
+
+    vector<vector<pii>> qs(nax);
+    vi ans(m);
+
+    int l, r;
+    forn(i,m){
+        cin>>l>>r;
+        --l,--r;
+        qs[l].push_back({r,i});
+    }
+
+    SegmentTree st;
+
+    for(int l=n-1; l>=0; --l){
+        if(next[l]!=inf){
+            st.update(l + next[l], next[l]);
+        }
+
+        for(auto q: qs[l]){
+            int min_dist = st.query(l,q.first);
+            ans[q.second] = (min_dist==inf ? -1 : min_dist);
+        }
+    }
+
+    for(auto x: ans) cout<<x<<"\n";
+    
+    
+
     return 0;
 }

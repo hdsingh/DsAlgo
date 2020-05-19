@@ -27,48 +27,50 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-const ll inf = 1e15L;
-
 int main(){
-    int n;
-    while(cin>>n){
-        vi c(n); forn(i,n) cin>>c[i];
-        vs ss(n), rs(n);
-        forn(i,n){
-            cin>>ss[i];
-            rs[i] = ss[i];
-            reverse(all(rs[i]));
-        }
-
-        vvl dp(n, vl(2,inf));
-        // min cost till ith pos, if it is simple/reversed(0/1)
-        string mn = "";
-        dp[0][0] = 0;
-        dp[0][1] = c[0];
-
-        fore(i,1,n){
-            // prev simple
-            if(ss[i-1]<=ss[i])
-                min_self(dp[i][0], dp[i-1][0]);
-            
-            if(ss[i-1]<=rs[i])
-                min_self(dp[i][1], dp[i-1][0] + c[i]);
-
-            // prev rev
-            if(rs[i-1]<=ss[i])
-                min_self(dp[i][0], dp[i-1][1]);
-
-            if(rs[i-1]<=rs[i])
-                min_self(dp[i][1], dp[i-1][1] + c[i]);
-        }
-
-        ll min_cost = min(dp[n-1][0], dp[n-1][1]);
-        if(min_cost>=inf){
-            cout<<-1<<endl;
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    int t; string s;
+    cin>>t;
+    while(t--){
+        cin>>s;
+        map<char,int> cnt;
+        for(auto x: s)  
+            cnt[x]++;
+        if(cnt['1']==0 || cnt['2']==0 || cnt['3']==0){
+            cout<<0<<endl;
             continue;
         }
-        cout<<min_cost<<endl;
-        
+        int n = s.size();
+        vvi pos(4);
+        vvi apos(4);
+        forn(i,n){
+            if(i<n-2 && s[i]!=s[i+1])
+                pos[s[i]-'0'].pb(i);
+
+            apos[s[i]-'0'].pb(i);
+        }
+
+        // print_vv(pos);
+        // print_vv(apos);
+
+        int min_len = INT_MAX;
+
+        fore(i,1, 4){
+            for(auto x: pos[i]){
+                int c = s[x] - '0';
+                int nc = s[x+1] - '0';
+                int req = 6 - c - nc;
+                auto it = lower_bound(all(apos[req]),x+1);
+                if(it!=apos[req].end()){
+                    int len = *it - x + 1;
+                    min_len = min(min_len, len);
+
+                }
+                if(min_len==3) break;
+            }
+        }
+
+        cout<<min_len<<endl;
     }
     return 0;
 }

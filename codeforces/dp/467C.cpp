@@ -3,10 +3,8 @@ using namespace std;
 #define forn(i, n) for(int i = 0; i < int(n); i++)
 #define fore(i, l, r) for(int i = int(l); i < int(r); i++)
 #define pb push_back
-#define deb(x) cout<<#x<<" "<<x<<endl;
-#define deb2(x, y) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<endl;
-#define deb3(x, y, z) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<" "<<#z<<" "<<z<<endl;
 #define all(x) x.begin(), x.end()
+#define sz(a) int((a).size())
 typedef long long ll;
 typedef vector<int> vi;
 typedef vector<vector<int>> vvi;
@@ -20,39 +18,39 @@ template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) 
 template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
 template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
 
-template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<v.size(); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(w)<<*i<<" ";cout<<endl;}
-template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
-template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
+#define _deb(x) cout<<x;
+void _print() {cerr << "]\n";} template <typename T, typename... V>void _print(T t, V... v) {_deb(t); if (sizeof...(v)) cerr << ", "; _print(v...);}
+#define deb(x...) cerr << "[" << #x << "] = ["; _print(x)
+template <class T, class U> void print_m(const map<T,U> &m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
+template<class T, class U>void debp(const pair<T, U> &pr, bool end_line=1){cout<<"{"<<pr.first<<" "<<pr.second<<"}"; cout<<(end_line ? "\n" : ", ");}
+template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cout<<"Empty"<<endl; return;}if(!sep_line) cout<<"{ ";for(auto x: vp) debp(x,sep_line);if(!sep_line) cout<<"}\n";cout<<endl;}
+template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
+template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
+
+// Try till i-m th pos having k groups and adding the value from i-m+1 to i
 
 int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-
-    int n,m,K,k,l,r;
+    ll n,m,K;
     while(cin>>n>>m>>K){
-        vl p(n+1);
-        fore(i,1,n+1) cin>>p[i];
+        vl a(n); forn(i,n) cin>>a[i];
+        vl pre(n);
+        partial_sum(all(a), pre.begin());
+        
+        vvl dp(n, vl(K+1));
+        // max value that we can obtain till pos i
+        // having k pairs
 
-        vvl dp(n+1, vl(n+1));
-        // max sum that could be obtained at ith pos, having k segments
-        vl pre(n+1);
-        fore(i,1,n+1) pre[i] = pre[i-1] + p[i];
-
-        auto sum = [&](int r, int l){
-            return pre[r] - pre[l-1];
-        };
-
-        fore(k,1,K+1){
-            fore(l,1,n+1){
-                fore(r,l,min(l+m,n+1)){
-                    max_self(dp[r][k], dp[r-1][k]);
-                    max_self(dp[r][k], dp[l-1][k-1] + sum(r,l));
-                }   
-            }
+        for(int i=0; i<n; ++i){
+            for(int k=0; k<K; ++k){
+                ll pval = (i ? dp[i-1][k+1] : 0);
+                ll prev = (i-m>=0 ? dp[i-m][k] : 0);
+                ll sum = pre[i] - (i-m>=0 ? pre[i-m] : 0);
+                max_self(dp[i][k+1], max(prev + sum, pval));
+            }        
         }
 
         // print_vv(dp);
-
-        cout<<dp[n][K]<<endl;
+        cout<<dp[n-1][K]<<endl;
 
     }
     return 0;

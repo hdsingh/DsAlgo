@@ -27,48 +27,58 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-const ll inf = 1e15L;
+const int nax = (1LL<<17) + 5;
+int nn, n, m;
 
+vi a(nax), st(4*nax);
+
+void merge(int p, int p1, int p2, int parity){
+    if(parity)
+        st[p] = (st[p1] | st[p2]);
+    else 
+        st[p] = (st[p1] ^ st[p2]);
+}
+
+void build(int pos, int l, int r, int parity){
+    if(l==r){
+        st[pos] = a[l];
+        return;
+    }
+    int mid = (l+r)/2;
+    build(2*pos,l,mid,parity^1);
+    build(2*pos+1,mid+1,r,parity^1);
+    merge(pos,2*pos,2*pos+1, parity);
+}
+
+void update(int pos, int l, int r, int parity, int i, int val){
+    if(l==r){
+        st[pos] = val;
+        return;
+    }
+    int mid = (l+r)/2;
+    if(i<=mid)
+        update(2*pos,l, mid, parity^1,i,val);
+    else 
+        update(2*pos+1,mid+1,r,parity^1,i,val);
+    
+    merge(pos,2*pos,2*pos+1, parity);
+}
+
+// imp: we need to to the operation based on the level,
+// if level is odd then or operation else xor
 int main(){
-    int n;
-    while(cin>>n){
-        vi c(n); forn(i,n) cin>>c[i];
-        vs ss(n), rs(n);
-        forn(i,n){
-            cin>>ss[i];
-            rs[i] = ss[i];
-            reverse(all(rs[i]));
-        }
+    cin>>nn>>m;
+    n = (1LL<<nn);
+    forn(i,n) cin>>a[i];
 
-        vvl dp(n, vl(2,inf));
-        // min cost till ith pos, if it is simple/reversed(0/1)
-        string mn = "";
-        dp[0][0] = 0;
-        dp[0][1] = c[0];
+    build(1,0,n-1,nn&1);
 
-        fore(i,1,n){
-            // prev simple
-            if(ss[i-1]<=ss[i])
-                min_self(dp[i][0], dp[i-1][0]);
-            
-            if(ss[i-1]<=rs[i])
-                min_self(dp[i][1], dp[i-1][0] + c[i]);
-
-            // prev rev
-            if(rs[i-1]<=ss[i])
-                min_self(dp[i][0], dp[i-1][1]);
-
-            if(rs[i-1]<=rs[i])
-                min_self(dp[i][1], dp[i-1][1] + c[i]);
-        }
-
-        ll min_cost = min(dp[n-1][0], dp[n-1][1]);
-        if(min_cost>=inf){
-            cout<<-1<<endl;
-            continue;
-        }
-        cout<<min_cost<<endl;
-        
+    int p, b;
+    while(m--){
+        cin>>p>>b; 
+        --p;
+        update(1,0,n-1,nn&1,p,b);
+        cout<<st[1]<<endl;
     }
     return 0;
 }

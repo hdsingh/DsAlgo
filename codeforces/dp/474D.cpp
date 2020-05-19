@@ -1,75 +1,62 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define deb(x) cout << #x <<  " " << x << endl;
-#define fo(i,n) for(int i=0;i<n;i++)
-#define rep(i, a, b) for (int i = int(a); i <=int(b); i++)
+#define forn(i, n) for(int i = 0; i < int(n); i++)
+#define fore(i, l, r) for(int i = int(l); i < int(r); i++)
+#define pb push_back
 #define all(x) x.begin(), x.end()
-typedef std::vector<int> vi;
-typedef std::vector<vector<int>> vvi;
-typedef std::vector<string> vs;
-typedef std::vector<bool> vb;
-typedef std::pair<int, int> pii;
-const int inf = 1e9;
-
-template <typename T>
-void print(T v){
-    for(auto i= v.begin(); i!=v.end(); i++)
-        cout<<*i<<" ";
-    cout<<endl; 
-}
-
-template <typename T>
-void print_vv(T v, bool same_line=true){
-    for(auto i= 0; i<v.size(); i++){
-        cout<<"{";
-        for(auto j = 0; j!=v[i].size(); j++){
-            cout<<setw(3)<<v[i][j]<<",";
-        }
-        cout<<"},";
-        if(same_line) cout<<endl;
-    }
-    cout<<endl;
-}
-
+#define sz(a) int((a).size())
 typedef long long ll;
-const ll mod = 1000000007;
+typedef vector<int> vi;
+typedef vector<vector<int>> vvi;
+typedef vector<ll> vl;
+typedef vector<vector<ll>> vvl;
+typedef vector<string> vs;
+typedef vector<bool> vb;
+typedef pair<int, int> pii;
+const int mod = 1e9 + 7;
+template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
+template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
+template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
 
+#define _deb(x) cout<<x;
+void _print() {cerr << "]\n";} template <typename T, typename... V>void _print(T t, V... v) {_deb(t); if (sizeof...(v)) cerr << ", "; _print(v...);}
+#define deb(x...) cerr << "[" << #x << "] = ["; _print(x)
+template <class T, class U> void print_m(const map<T,U> &m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
+template<class T, class U>void debp(const pair<T, U> &pr, bool end_line=1){cout<<"{"<<pr.first<<" "<<pr.second<<"}"; cout<<(end_line ? "\n" : ", ");}
+template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cout<<"Empty"<<endl; return;}if(!sep_line) cout<<"{ ";for(auto x: vp) debp(x,sep_line);if(!sep_line) cout<<"}\n";cout<<endl;}
+template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
+template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
+
+// dp[i] = # of ways to arrange i flowers
+// dp[i] = dp[i-1] + dp[i-k]
+// dp[i-1] : we can always add 1 more red flower to go to next state
+// dp[i-k]: to the prev(i-k)th state we can add k white flowers
 int main(){
-    int n, k;
-    cin>>n>>k;
-    int a, b;
-    int maxi = 0;
-
-    vvi arr;
-    for(int i=0; i<n; i++){
-        cin>>a>>b;
-        arr.push_back({a,b});
-        maxi = max(maxi, b);
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    ll t,k;
+    cin>>t>>k;
+    vvi a(t, vi(2));
+    int mx_b = 0;
+    forn(i,t){
+        cin>>a[i][0]>>a[i][1];
+        mx_b = max(mx_b, a[i][1]);
     }
 
-    ll dp[maxi+1];
+    vl dp(mx_b+1);
+    forn(i,k) dp[i] = 1;
     
-    for(int i=0; i<k; i++)
-        dp[i] = 1;
-    
-    dp[k]=2;
+    dp[k] = 2;
 
-    for(int i=k+1; i<=maxi; i++)
-        dp[i] = (dp[i-k] + dp[i-1])%mod;
+    for(int i=k+1; i<=mx_b; ++i)
+        add_self(dp[i], dp[i-1]+dp[i-k]);
     
+    // print(dp);
+    fore(i,1,mx_b+1)
+        add_self(dp[i],dp[i-1]);
 
-    ll cum[maxi+1];
-    cum[0] = dp[0];
-    for(int i=1; i<=maxi; i++){
-        cum[i] = (cum[i-1] + dp[i])%mod;
+    for(auto q: a){
+        cout<<(dp[q[1]] - dp[q[0]-1]+mod)%mod<<endl;
     }
 
-    for(auto ar: arr){
-        a = ar[0]; b = ar[1];
-        ll ans = (cum[b] - cum[a-1] + mod ) %mod;
-        cout<<ans<<endl;
-    }
-
-    
     return 0;
 }

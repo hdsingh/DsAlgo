@@ -21,8 +21,6 @@ public:
         n = a.size();
         if(!n) return;
 
-        // int x = (int)(ceil(log2(n)));
-        // int max_size = 2*(int)pow(2, x);
         int max_size = 4*n;
         st.clear(); st.resize(max_size, node());
         build(1,0,n-1,a);
@@ -44,7 +42,7 @@ public:
     }
     
     
-    void update(int i, int val, int pos, int l, int r) {
+    void update(int pos, int l, int r, int i, int val) {
         if(l==r){
             st[pos] = make_node(val);
             return;
@@ -52,30 +50,30 @@ public:
         int mid = (l+r)/2;
         // if index is <=mid it lies in left part
         if(i<=mid)
-            update(i,val,2*pos,l,mid);
+            update(2*pos,l,mid,i,val);
         else 
-            update(i,val,2*pos+1,mid+1,r);
+            update(2*pos+1,mid+1,r,i,val);
 
         merge(st[pos], st[2*pos] , st[2*pos+1]);
     }
     
-    node query(int i, int j, int pos, int l, int r) {
+    node query(int pos, int l, int r, int i, int j) {
         if(i>r || l>j) return make_node(0);
         if(i<=l && r<=j) return st[pos];
         int mid = (l+r)/2;
-        node left = query(i,j,2*pos,l,mid);
-        node right = query(i,j,2*pos+1,mid+1,r);
+        node left = query(2*pos,l,mid,i,j);
+        node right = query(2*pos+1,mid+1,r,i,j);
         node cur;
         merge(cur, left, right);
         return cur;
     }
 
     void update(int i, int val){
-        update(i,val,1,0,n-1);
+        update(1,0,n-1,i,val);
     }
 
     int query(int i,int j){
-        node q = query(i,j,1,0,n-1);
+        node q = query(1,0,n-1,i,j);
         return q.val;
     }
 };
@@ -94,4 +92,10 @@ int main(){
 }
 
 // Example: 
-// 1 . other/GSS3
+// 1. other/GSS3
+// 2. https://codeforces.com/contest/1354/problem/D
+// 3. https://codeforces.com/problemset/problem/380/C
+// 4. https://codeforces.com/contest/339/problem/D
+// 5. https://codeforces.com/contest/459/problem/D
+// 6. https://codeforces.com/contest/61/problem/E
+// 7. https://codeforces.com/problemset/problem/522/D

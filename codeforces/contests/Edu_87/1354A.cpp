@@ -27,48 +27,33 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-const ll inf = 1e15L;
-
 int main(){
-    int n;
-    while(cin>>n){
-        vi c(n); forn(i,n) cin>>c[i];
-        vs ss(n), rs(n);
-        forn(i,n){
-            cin>>ss[i];
-            rs[i] = ss[i];
-            reverse(all(rs[i]));
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    ll t, a,b,c,d;
+    cin>>t;
+    while(t--){
+        cin>>a>>b>>c>>d;
+        if(a<=b){
+            cout<<b<<endl;
+            continue;
         }
-
-        vvl dp(n, vl(2,inf));
-        // min cost till ith pos, if it is simple/reversed(0/1)
-        string mn = "";
-        dp[0][0] = 0;
-        dp[0][1] = c[0];
-
-        fore(i,1,n){
-            // prev simple
-            if(ss[i-1]<=ss[i])
-                min_self(dp[i][0], dp[i-1][0]);
-            
-            if(ss[i-1]<=rs[i])
-                min_self(dp[i][1], dp[i-1][0] + c[i]);
-
-            // prev rev
-            if(rs[i-1]<=ss[i])
-                min_self(dp[i][0], dp[i-1][1]);
-
-            if(rs[i-1]<=rs[i])
-                min_self(dp[i][1], dp[i-1][1] + c[i]);
-        }
-
-        ll min_cost = min(dp[n-1][0], dp[n-1][1]);
-        if(min_cost>=inf){
+        ll tot = 0;
+        a-=b;
+        tot+=b;
+        
+        if(c<=d){
             cout<<-1<<endl;
             continue;
         }
-        cout<<min_cost<<endl;
-        
+
+        ll dif = c - d;
+        ll times = a/dif;
+        ll rem = a%dif;
+        tot+=times*c;
+        if(rem){
+            tot+=c;
+        }        
+        cout<<tot<<endl;
     }
     return 0;
 }

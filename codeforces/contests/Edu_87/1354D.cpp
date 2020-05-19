@@ -27,48 +27,58 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-const ll inf = 1e15L;
+const int nax = 1e6+10;
+vi st(nax*4); // st[i] will store the count of ith element
+int n,q;
+
+void update(int pos, int l, int r, int i, int inc){
+    st[pos]+=inc;
+    if(l==r) return;
+    int mid = (l+r)/2;
+    if(i<=mid) update(2*pos, l, mid, i, inc);
+    else update(2*pos+1,mid+1, r, i, inc);
+}
+
+int find_kth(int pos, int l, int r, int k){
+    if(l==r) return l;
+    int mid = (l+r)/2;
+    if(st[2*pos]>=k) return find_kth(2*pos,l, mid, k);
+    return find_kth(2*pos+1,mid+1,r, k - st[2*pos]);
+}
+
+void find_any(int pos, int l, int r){
+    if(st[pos]==0){
+        cout<<0<<endl;
+        return;
+    }
+    if(l==r){
+        cout<<l<<endl;
+        return;
+    }
+    int mid = (l+r)/2;
+    if(st[2*pos]) find_any(2*pos,l,mid);
+    else find_any(2*pos+1,mid+1,r);
+}
 
 int main(){
-    int n;
-    while(cin>>n){
-        vi c(n); forn(i,n) cin>>c[i];
-        vs ss(n), rs(n);
-        forn(i,n){
-            cin>>ss[i];
-            rs[i] = ss[i];
-            reverse(all(rs[i]));
-        }
-
-        vvl dp(n, vl(2,inf));
-        // min cost till ith pos, if it is simple/reversed(0/1)
-        string mn = "";
-        dp[0][0] = 0;
-        dp[0][1] = c[0];
-
-        fore(i,1,n){
-            // prev simple
-            if(ss[i-1]<=ss[i])
-                min_self(dp[i][0], dp[i-1][0]);
-            
-            if(ss[i-1]<=rs[i])
-                min_self(dp[i][1], dp[i-1][0] + c[i]);
-
-            // prev rev
-            if(rs[i-1]<=ss[i])
-                min_self(dp[i][0], dp[i-1][1]);
-
-            if(rs[i-1]<=rs[i])
-                min_self(dp[i][1], dp[i-1][1] + c[i]);
-        }
-
-        ll min_cost = min(dp[n-1][0], dp[n-1][1]);
-        if(min_cost>=inf){
-            cout<<-1<<endl;
-            continue;
-        }
-        cout<<min_cost<<endl;
-        
+    scanf("%d %d", &n, &q);
+    int x;
+    forn(i,n){
+        scanf("%d ", &x);
+        update(1,1,n,x,1);
     }
+
+    while(q--){
+        scanf("%d ", &x);
+        if(x<0){
+            int val = find_kth(1,1,n,-x);
+            update(1,1,n,val,-1);
+        }else{
+            update(1,1,n,x,1);
+        }
+    }
+
+    find_any(1,1,n);
+
     return 0;
 }
