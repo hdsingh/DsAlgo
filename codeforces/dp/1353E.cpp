@@ -27,46 +27,50 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-const int dig = 0;
-const int alp = 1;
-const int sym = 2;
-const int inf = 1e9;
+const int inf = 1e7;
+const int of = 0;
+const int on = 1;
+
+// To turn a bit of, we can use the cost of turning (on or of till i-1)
+// to turn on, we can turn the current bit on  +  one of 
+// 1. cost of turning on till prev k and intermediate off
+// 2. all off till i-1;
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n,m;
-    while(cin>>n>>m){
-        vs ss(n);
-        forn(i,n) cin>>ss[i];
-
-        // for each string find the min moves req to get a digit, alpha, sym
-        vvi dp(n, vi(3,m)); // {0,1,2,} : {d, alpha, sym}
+    char c;
+    int t, n,k;
+    cin>>t;
+    while(t--){
+        cin>>n>>k;
+        vi a(n);
         forn(i,n){
-            forn(j,m){
-                if(isdigit(ss[i][j]))
-                    min_self(dp[i][dig], min(j,m-j));
-                else if(isalpha(ss[i][j]))
-                    min_self(dp[i][alp], min(j,m-j));
-                else    
-                    min_self(dp[i][sym], min(j,m-j));
-            }
+            cin>>c;
+            a[i] = (c=='1');
+        }
+        vi pre(n);
+        partial_sum(all(a), pre.begin());
+
+        auto sum = [&](int l, int r){
+            if(l>r) return 0;
+            return pre[r] -  (l>0 ? pre[l-1] : 0);
+        };
+
+        vvi dp(n, vi(2,inf));
+        dp[0][of] = (a[0]!=of);
+        dp[0][on] = (a[0]!=on);
+
+        fore(i,1,n){
+            int prev_kth_on = (i-k>=0 ? dp[i-k][on] : 0) + sum(i-k+1,i-1);
+            int prev_all_off = pre[i-1];
+            min_self(dp[i][on], (a[i]!=on) + min(prev_all_off, prev_kth_on));
+            min_self(dp[i][of], a[i] + min(dp[i-1][on], dp[i-1][of]));
         }
 
-        int ans = INT_MAX;
-        // since I only need to move three pointers
-        // for dig, sym, and alp each such that 
-        // each of them is on different string
+        // print_vv(dp);
 
-        forn(i,n)
-            forn(j,n)
-                forn(k,n){
-                    if(i!=j && j!=k && k!=i)
-                        min_self(ans, dp[i][dig] + dp[j][sym] + dp[k][alp]);
-                }
-
+        int ans = min(dp[n-1][on], dp[n-1][of]);
         cout<<ans<<endl;
-        
-                    
     }
     return 0;
 }

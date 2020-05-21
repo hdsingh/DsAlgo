@@ -3,8 +3,8 @@ using namespace std;
 #define forn(i, n) for(int i = 0; i < int(n); i++)
 #define fore(i, l, r) for(int i = int(l); i < int(r); i++)
 #define pb push_back
-#define deb(x) cout << #x <<  " " << x << endl;
 #define all(x) x.begin(), x.end()
+#define sz(a) int((a).size())
 typedef long long ll;
 typedef vector<int> vi;
 typedef vector<vector<int>> vvi;
@@ -13,116 +13,57 @@ typedef vector<vector<ll>> vvl;
 typedef vector<string> vs;
 typedef vector<bool> vb;
 typedef pair<int, int> pii;
-const int inf = 1e9 + 5;
+const int mod = 1e9 + 7;
+template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
+template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
+template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
 
-template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<v.size(); i++)cout<<setw(w)<<i<<" ";}cout<<endl;for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(w)<<*i<<" ";cout<<endl;}
-template <typename T>void print_vv(T v){int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
+#define _deb(x) cout<<x;
+void _print() {cerr << "]\n";} template <typename T, typename... V>void _print(T t, V... v) {_deb(t); if (sizeof...(v)) cerr << ", "; _print(v...);}
+#define deb(x...) cerr << "[" << #x << "] = ["; _print(x)
+template <class T, class U> void print_m(const map<T,U> &m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
+template<class T, class U>void debp(const pair<T, U> &pr, bool end_line=1){cout<<"{"<<pr.first<<" "<<pr.second<<"}"; cout<<(end_line ? "\n" : ", ");}
+template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cout<<"Empty"<<endl; return;}if(!sep_line) cout<<"{ ";for(auto x: vp) debp(x,sep_line);if(!sep_line) cout<<"}\n";cout<<endl;}
+template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
+template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-const int mod = 1e9+7;
-void add_self(int &a, int b){
-    a+=b;
-    if(a>=mod)
-        a-=mod;
+// for an element at a[i], it is possible for it to be
+// kth element of the sequence only if is divisible by k,
+// So we need to find its divisors.
+// Also its divisor d, will be extended by the number of elements that 
+// are present at d-1
+// Also we need to consider the divisors in reverse manner,
+// Since modiying the the seq len of smaller first will affect the larger 
+// length, so calc divs in rev(bigger first)
+const int nax = 1e6 + 10;
+vvi divs(nax+1);
+void precalc(){
+    for(int i=nax-1; i>=1; --i){
+        for(int j=i; j<nax;j+=i)
+            divs[j].pb(i);
+    }
 }
 
 int main(){
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    precalc();
+
     int n;
     while(cin>>n){
-        // vi a(n+1);
-        // fore(i, 1, n+1)
-        //     cin>>a[i];
-        
-        // 2D: Memory Limit Exceeded
-        // vvi dp(n+1, vi(n+1)); 
-        // // # of goood seq till position "pos" having length "len" 
-        // fore(pos, 1, n+1)
-        //     dp[pos][1] = pos;
-        // // Each element of len 1 is a good sub seq
+        vi a(n); forn(i,n) cin>>a[i];
 
-        // fore(len, 2 ,n+1){
-        //     fore(pos, len, n+1){                
-        //         dp[pos][len] = dp[pos-1][len];
-        //         if(a[pos]%len==0){
-        //             dp[pos][len] += dp[pos-1][len-1];
-        //         }
-        //     }
-        // }
-
-        // print_vv(dp);
-        // cout<<accumulate(all(dp[n]), 0)<<endl;
-
-        // Since we are calculating len by len (inc in each step)
-        // all that matters is pos, since len could be stored in a variable
-
-        // Gives TLE
-        // vi dp(n+1); // # of good subseq of size n
-        // fore(pos, 1, n+1)
-        //     dp[pos] = pos;
-        
-        // int ans = dp[n];
-        // print(dp);
-
-        // fore(len, 2, n+1){
-        //     vi new_dp(n+1);
-        //     fore(pos, len, n+1){
-        //         new_dp[pos] = new_dp[pos-1];
-        //         if(a[pos]%len==0){
-        //             add_self(new_dp[pos], dp[pos-1]);
-        //         }
-        //     }
-        //     swap(dp, new_dp);
-        //     add_self(ans, dp[n]);
-        //     print(dp);
-        // }
-        
-        // cout<<ans<<endl;
-
-        // We need to take into account divisiors, since only those pos will be affected
-
-        // for(int i=n; i>=1; i--){
-        //     for(int j=i; j<=n; j+=i)
-        //         divisor[j].push_back(i);
-        // }
-
-        vvi pr(n+1);
-
-        for(int i=n;i>=1;--i)
-		    for(int j=i;j<=n;j+=i)
-			    pr[j].push_back(i); 
-        
-        vi dp(n+1);
-        int ans = 0;
-        int x;
-	    dp[0]=1;
-        cin>>n;
-        for(int i=1;i<=n;++i) {
-            cin>>x;
-            for(auto x : pr[x])  dp[x]=(dp[x]+dp[x-1])%mod;
+        vi dp(nax);
+        dp[0] = 1;
+        for(auto x: a){
+            for(auto  div: divs[x]){
+                add_self(dp[div], dp[div-1]);
+            }
         }
-        for(int i=1;i<=n;++i) ans=(ans+dp[i])%mod;
-        cout<<ans;
+
+        ll ans = 0;
+        fore(i,1,nax)
+            add_self(ans, dp[i]);
+        cout<<ans<<endl;
 
     }
-    
-    return 0;
 }
-
-// #include <bits/stdc++.h>
-// using namespace std;
-// const int mod=1e9+7;
-// vector<int> pr[1000005];
-// int dp[1000005], ans=0, n, x;
-// int main() {
-	// for(int i=1000000;i>=1;--i)
-		// for(int j=i;j<=1000000;j+=i)
-			// pr[j].push_back(i);
-// 	dp[0]=1;
-// 	cin>>n;
-// 	for(int i=1;i<=n;++i) {
-// 		cin>>x;
-// 		for(auto x : pr[x])  dp[x]=(dp[x]+dp[x-1])%mod;
-// 	}
-// 	for(int i=1;i<=n;++i) ans=(ans+dp[i])%mod;
-// 	cout<<ans;
-// 	return 0;
-// }

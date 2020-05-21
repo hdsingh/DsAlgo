@@ -27,46 +27,75 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-const int dig = 0;
-const int alp = 1;
-const int sym = 2;
 const int inf = 1e9;
+const int nax = 2e5+10;
+int n,m,k;
+vi p;
+vi dist(nax, inf); //{min_dist to end, # of min paths}
+vvi nadj(nax);
+vvi adj(nax);
+
+void bfs(int t){
+    vi q;
+    q.pb(t);
+    dist[t] = 0;
+
+    while(!q.empty()){
+        vi nq;
+        for(auto top: q){
+            for(auto ad: nadj[top]){
+                if(dist[ad]!=inf) continue;
+                int dto = dist[top] + 1;
+
+                if(dist[ad]>dto)
+                    dist[ad] = dto;
+                
+                nq.push_back(ad);
+            }
+        }
+        q = nq;
+    }
+}
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n,m;
-    while(cin>>n>>m){
-        vs ss(n);
-        forn(i,n) cin>>ss[i];
+    cin>>n>>m;
+    int u,v;
+    forn(i,m){
+        cin>>u>>v;
+        adj[u].pb(v);
+        nadj[v].pb(u);
+    }
 
-        // for each string find the min moves req to get a digit, alpha, sym
-        vvi dp(n, vi(3,m)); // {0,1,2,} : {d, alpha, sym}
-        forn(i,n){
-            forn(j,m){
-                if(isdigit(ss[i][j]))
-                    min_self(dp[i][dig], min(j,m-j));
-                else if(isalpha(ss[i][j]))
-                    min_self(dp[i][alp], min(j,m-j));
-                else    
-                    min_self(dp[i][sym], min(j,m-j));
-            }
+    cin>>k;
+    p.resize(k);
+    forn(i,k) cin>>p[i];
+    // print(p);
+
+    bfs(p.back());
+
+    int mn = 0, mx = 0;
+
+    for(int i=0; i<k-1; ++i){
+        int mindist = dist[p[i]];
+        bool inc = false;
+        if(dist[p[i+1]] > mindist-1){
+            inc = true;
+            mn++, mx++;
         }
 
-        int ans = INT_MAX;
-        // since I only need to move three pointers
-        // for dig, sym, and alp each such that 
-        // each of them is on different string
-
-        forn(i,n)
-            forn(j,n)
-                forn(k,n){
-                    if(i!=j && j!=k && k!=i)
-                        min_self(ans, dp[i][dig] + dp[j][sym] + dp[k][alp]);
+        if(!inc){
+            for(auto ad: adj[p[i]]){
+                if(ad==p[i+1]) continue;
+                if(dist[ad]==mindist-1){
+                    mx++;
+                    break;
                 }
-
-        cout<<ans<<endl;
-        
-                    
+            }
+        }
     }
+
+    cout<<mn<<" "<<mx<<endl;
+
     return 0;
 }

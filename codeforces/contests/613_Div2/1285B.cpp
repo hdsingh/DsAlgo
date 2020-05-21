@@ -27,46 +27,37 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-const int dig = 0;
-const int alp = 1;
-const int sym = 2;
-const int inf = 1e9;
-
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n,m;
-    while(cin>>n>>m){
-        vs ss(n);
-        forn(i,n) cin>>ss[i];
+    int t, n;
+    cin>>t;
+    while(t--){
+        cin>>n;
+        vl a(n); forn(i,n) cin>>a[i];
+        ll sum = accumulate(all(a), 0ll);
 
-        // for each string find the min moves req to get a digit, alpha, sym
-        vvi dp(n, vi(3,m)); // {0,1,2,} : {d, alpha, sym}
-        forn(i,n){
-            forn(j,m){
-                if(isdigit(ss[i][j]))
-                    min_self(dp[i][dig], min(j,m-j));
-                else if(isalpha(ss[i][j]))
-                    min_self(dp[i][alp], min(j,m-j));
-                else    
-                    min_self(dp[i][sym], min(j,m-j));
-            }
+        ll mx1 = a[1];
+        ll cur = a[1];
+        for(int i=2; i<n; ++i){
+            cur = max(a[i], a[i] + cur);
+            mx1 = max(mx1, cur);
         }
 
-        int ans = INT_MAX;
-        // since I only need to move three pointers
-        // for dig, sym, and alp each such that 
-        // each of them is on different string
+        ll mx2 = a[0];
+        cur = a[0];
+        for(int i=1; i<n-1; ++i){
+            cur = max(a[i], a[i] + cur);
+            mx2 = max(mx2,cur);
+        }
 
-        forn(i,n)
-            forn(j,n)
-                forn(k,n){
-                    if(i!=j && j!=k && k!=i)
-                        min_self(ans, dp[i][dig] + dp[j][sym] + dp[k][alp]);
-                }
+        mx1 = max(mx1, mx2);
 
-        cout<<ans<<endl;
-        
-                    
+        // deb(mx1, sum);
+
+        bool happy = (sum>mx1);
+        cout<<(happy ? "YES\n" : "NO\n");
+    
     }
     return 0;
 }
+

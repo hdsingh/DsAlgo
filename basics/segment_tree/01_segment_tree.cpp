@@ -5,6 +5,7 @@ typedef vector<int> vi;
 // Range sum query mutable
 struct node{
     int val;
+    node(){};
 };
 
 class SegmentTree {
@@ -26,7 +27,7 @@ public:
         build(1,0,n-1,a);
     }
 
-    void merge(node &cur, node l, node r){
+    void merge(node &cur, node &l, node &r){
         cur.val = l.val + r.val;
     }
 
@@ -93,9 +94,11 @@ int main(){
 
 // Example: 
 // 1. other/GSS3
-// 2. https://codeforces.com/contest/1354/problem/D
-// 3. https://codeforces.com/problemset/problem/380/C
-// 4. https://codeforces.com/contest/339/problem/D
-// 5. https://codeforces.com/contest/459/problem/D
-// 6. https://codeforces.com/contest/61/problem/E
-// 7. https://codeforces.com/problemset/problem/522/D
+// 2. https://codeforces.com/contest/1354/problem/D 
+// 3. https://codeforces.com/problemset/problem/380/C (Brackets)
+// 4. https://codeforces.com/contest/339/problem/D (Bitwise level based)
+// 5. https://codeforces.com/contest/459/problem/D (Range Sum Query)
+// 6. https://codeforces.com/contest/61/problem/E (Left greater + Right Lesser)
+// 7. https://codeforces.com/problemset/problem/522/D ( Offline Processing + Range minimum Query )
+// 8. (https://codeforces.com/contest/474/problem/F) (Count gcd of a range and number times it appears)
+
