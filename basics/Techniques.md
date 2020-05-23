@@ -4,6 +4,10 @@
 1. [Minimum Cost to Make at Least One Valid Path in a Grid](https://leetcode.com/problems/minimum-cost-to-make-at-least-one-valid-path-in-a-grid/description/)
 
 
+`Bitmasks`:
+1. [Little Pony and Harmony Chest](https://codeforces.com/contest/453/problem/B)
+
+
 `Combinatorics`:
 1. [Notes 1](https://www.askiitians.com/maths/permutation-and-combination.html)
 2. [Notes 2](https://www.careerbless.com/aptitude/qa/permutations_combinations_imp7.php)

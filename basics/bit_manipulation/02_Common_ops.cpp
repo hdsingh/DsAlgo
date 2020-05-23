@@ -14,6 +14,26 @@ int togglebit(int num, int pos){
     return num ^ (1<<pos);
 }
 
+// msb(0) = -1; msb(1) = 1; msb(4) = 2;
+int msb(int x){
+    int pos = -1;
+    while(x){
+        x>>=1;
+        ++pos;
+    }
+    return pos;
+}
+
+// lsb(0) = -1, lsb(1) = 0
+int lsb(int x){
+    int pos = 0;
+    while(x){
+        if(x&1) return pos;
+        x>>=1;
+        ++pos;
+    }
+    return -1;
+}
 
 int main(){
     cout<<setbit(16, 3)<<endl; // 10000-> 11000(24)
