@@ -59,12 +59,18 @@
  *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
  * };
  */
-// #include "cpp.h"
-// #include "node.h"
-// #include "extra.h"
-// using namespace std;
-typedef vector<int> vi;
-typedef TreeNode node;
+
+#include <bits/stdc++.h>
+using namespace std;
+
+struct TreeNode {
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+    TreeNode() : val(0), left(nullptr), right(nullptr) {}
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+    TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+};
 
 class Solution {
 public:
@@ -72,8 +78,8 @@ public:
         int i(0);
         int res;
         // do inorder traversal
-        stack<node*> s;
-        node* cur = root;
+        stack<TreeNode*> s;
+        TreeNode* cur = root;
 
         while(!s.empty()|| cur){
             while(cur){
@@ -92,18 +98,25 @@ public:
     }
 };
 
-// int main() {
-//     string line;
-//     while (getline(cin, line)) {
-//         TreeNode* root = stringToTreeNode(line);
-//         getline(cin, line);
-//         int k = stringToInteger(line);
-        
-//         int ret = Solution().kthSmallest(root, k);
 
-//         string out = to_string(ret);
-//         cout << out << endl;
-//     }
-//     return 0;
-// }
+// inorder tiem traversal
+class Solution {
+    int t,ans,k;
+public:
+    int kthSmallest(TreeNode* root, int K) {
+        t = 0, ans = 0, k = K;
+        dfs(root);
+        return ans;
+    }
 
+    void dfs(TreeNode* root){
+        if(!root) return;
+        dfs(root->left);
+        ++t;
+        if(ans==0 && t==k){
+            ans = root->val;
+            return;
+        }
+        dfs(root->right);
+    }
+};
