@@ -60,6 +60,10 @@
 `Random`:
 1. [Position in Fraction](https://codeforces.com/problemset/problem/900/B)
 
+
+`Segments Comparison`:
+1. [C. Nested Segments](https://codeforces.com/problemset/problem/976/C)
+
 `Segment Tree`:
 1. [Basic Template](https://leetcode.com/articles/a-recursive-approach-to-segment-trees-range-sum-queries-lazy-propagation/)
 

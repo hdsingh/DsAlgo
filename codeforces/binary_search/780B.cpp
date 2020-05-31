@@ -10,7 +10,7 @@ typedef vector<int> vi;
 typedef vector<vector<int>> vvi;
 typedef vector<ll> vl;
 typedef vector<vector<ll>> vvl;
-typedef vector<string> vs;
+// typedef vector<string> vs;
 typedef vector<bool> vb;
 typedef pair<int, int> pii;
 const int mod = 1e9 + 7;
@@ -27,52 +27,47 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-double ternary_search0(double l, double r) {
-    double eps = 1e-9;              //set the error limit here
+int n;
+vi xs, vs;
+
+double cost(double mid){
+    double max_time = 0;
+    forn(i,n){
+        double cur_time = (double)abs(mid-xs[i])/(double)vs[i];
+        max_time = max(max_time, cur_time);
+    }
+    return max_time;        
+}
+
+// \         /
+//  \       /
+//   \     / 
+//    \___/
+double ternary_search(double l, double r) {
+    double eps = 1e-6;              //set the error limit here
     while (r - l > eps) {
         double m1 = l + (r - l) / 3;
         double m2 = r - (r - l) / 3;
-        double f1 = f(m1);      //evaluates the function at m1
-        double f2 = f(m2);      //evaluates the function at m2
-        if (f1 < f2)
+        double f1 = cost(m1);      //evaluates the function at m1
+        double f2 = cost(m2);      //evaluates the function at m2
+        if (f1 > f2)
             l = m1;
         else
             r = m2;
     }
-    return f(l);                    //return the maximum of f(x) in [l, r]
-}
-
-ll cost(ll x){
-
-}
-
-ll ternary_search(ll l, ll r){
-    forn(i,400){
-        ll m1 = l + (r-l)/3;
-        ll m2 = r - (r-l)/3;
-        ll f1 = cost(m1);
-        ll f2 = cost(m2);
-        if(f1>f2)
-            l = m1;
-        else 
-            r = m2;
-    }
-
-    ll min_cost = LONG_LONG_MAX;
-    for(ll x = l; x<=r; ++x)
-        min_cost = min(min_cost, cost(x));
-    
-    return min_cost;
+    return cost(l);               //return the minimum of f(x) in [l, r]
 }
 
 
 int main(){
-    
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    while(cin>>n){
+        xs.resize(n), vs.resize(n);
+        forn(i,n) cin>>xs[i];
+        forn(i,n) cin>>vs[i];
+
+        double min_time = ternary_search(1,1e9);
+        printf("%.10lf\n", min_time);
+    }
     return 0;
 }
-
-// Ref:
-// Q: https://codeforces.com/contest/1355/problem/E 
-// A: https://codeforces.com/contest/1355/submission/80568214
-// Q: https://codeforces.com/problemset/problem/780/B
-// A: https://codeforces.com/contest/780/submission/81937685
