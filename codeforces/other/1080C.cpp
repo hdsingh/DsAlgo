@@ -13,6 +13,7 @@ typedef vector<vector<ll>> vvl;
 typedef vector<string> vs;
 typedef vector<bool> vb;
 typedef pair<int, int> pii;
+typedef pair<ll,ll> pll;
 const int mod = 1e9 + 7;
 template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
 template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
@@ -27,46 +28,94 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
+#define b first
+#define w second
+
+#define x first
+#define y second
+
+ll m,n;
+vl x(5), y(5);
+
+// b,w (0,1)
+pll calc(ll x1, ll y1, ll x2, ll y2){
+    ll H = (x2-x1+1);
+    ll W = (y2-y1+1);
+    ll tot = H*W;
+
+    int cur = ((x1&1)==(y1&1));
+
+    pll out;
+    if(tot%2==0){
+        out.b = out.w = tot/2;
+    }else{
+        out.b = (tot+1)/2, out.w = tot/2;
+        if(cur) swap(out.b, out.w);
+    }
+    return out;
+}
+
+
+struct rec{
+    ll l,d,r,u;
+    // x1, y1, x2, y2
+};
+
+rec merge(rec a,rec b){
+    rec res;
+    res.l=max(a.l,b.l);
+    res.r=min(a.r,b.r);
+    res.d=max(a.d,b.d);
+    res.u=min(a.u,b.u);
+    return res;
+}
+
+
+
+
 int main(){
+    // pll p = calc(1,1, 3,3);
+    // debp(p);
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n,m;
-    cin>>n>>m;
-    vvi a(n+1, vi(m+1)); 
-    fore(i,1,n+1)
-        fore(j,1,m+1)
-            cin>>a[i][j];
-
-    vvi dp1(n+2,vi(m+2)), dp2, dp3, dp4;
-    dp2 = dp3 = dp4 = dp1;
-
-    // print_vv(a);
-
-    for(int i=1; i<=n; ++i)
-        for(int j=1; j<=m; ++j)
-            max_self(dp1[i][j], a[i][j] + max(dp1[i-1][j], dp1[i][j-1]));
-
-    for(int i=1; i<=n; ++i)
-        for(int j=m; j>=1; --j)
-            max_self(dp2[i][j], a[i][j] + max(dp2[i-1][j], dp2[i][j+1]));
-    
-    for(int i=n; i>=1; --i)
-        for(int j=1; j<=m; ++j)
-            max_self(dp3[i][j], a[i][j] + max(dp3[i+1][j], dp3[i][j-1]));
-    
-    for(int i=n; i>=1; --i)
-        for(int j=m; j>=1; --j)
-            max_self(dp4[i][j], a[i][j] + max(dp4[i+1][j], dp4[i][j+1]));
-
-    int mx = 0;
-    for(int i=2; i<n; ++i)
-        for(int j=2; j<m; ++j){
-            int c1 = (dp1[i-1][j] + dp4[i+1][j]) + (dp3[i][j-1] + dp2[i][j+1]);
-            int c2 = (dp1[i][j-1] + dp4[i][j+1]) + (dp3[i+1][j] + dp2[i-1][j]);
-            max_self(mx, max(c1,c2));
+    int t;
+    cin>>t;
+    while(t--){
+        cin>>m>>n;
+        fore(i,1,5){
+            cin>>x[i]>>y[i];
         }
-    
-    cout<<mx<<endl;
-    
 
+        pll tbw = calc(1,1,n,m);
+        pll ww = calc(x[1],y[1],x[2], y[2]);
+        pll bb = calc(x[3],y[3],x[4],y[4]);
+        tbw.b-=ww.b;
+        tbw.w+=ww.b;
+
+        tbw.w-=bb.w;
+        tbw.b+=bb.w;
+        
+        rec r1{x[1],y[1], x[2], y[2]};
+        rec r2{x[3],y[3], x[4], y[4]};
+
+        rec r3 = merge(r1,r2);
+        pll o1 = {r3.l, r3.d};
+        pll o2 = {r3.r, r3.u};
+        bool ok = false;
+        if(o1.x<=o2.x && o1.y<=o2.y)
+            ok = true;
+        
+        
+        if(ok){
+            pll inter = calc(o1.x, o1.y, o2.x, o2.y);
+
+            tbw.w-=inter.b;
+            tbw.b+=inter.b;
+        }
+
+
+        cout<<tbw.w<<" "<<tbw.b<<"\n";
+
+        
+    }
     return 0;
 }

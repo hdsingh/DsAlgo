@@ -101,3 +101,6 @@ int main(){
     cout<<knapSackwithSTL3(W, wts, val, n)<<endl;
     return 0;
 }
+
+// Example: 
+// 1. https://codeforces.com/problemset/problem/741/B

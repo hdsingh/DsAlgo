@@ -63,6 +63,9 @@
 
 `Segments Comparison`:
 1. [C. Nested Segments](https://codeforces.com/problemset/problem/976/C)
+2. [C. Maximal Intersection](https://codeforces.com/problemset/problem/1029/C)
+3. [C. Rectangles](https://codeforces.com/contest/1028/problem/C)
+4. [C. Masha and two friends](https://codeforces.com/problemset/problem/1080/C)
 
 `Segment Tree`:
 1. [Basic Template](https://leetcode.com/articles/a-recursive-approach-to-segment-trees-range-sum-queries-lazy-propagation/)

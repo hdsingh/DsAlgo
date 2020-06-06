@@ -27,46 +27,62 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
+#include<ext/pb_ds/assoc_container.hpp>
+#include<ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+
+template <typename T>
+using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
+
+
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n,m;
-    cin>>n>>m;
-    vvi a(n+1, vi(m+1)); 
-    fore(i,1,n+1)
-        fore(j,1,m+1)
-            cin>>a[i][j];
-
-    vvi dp1(n+2,vi(m+2)), dp2, dp3, dp4;
-    dp2 = dp3 = dp4 = dp1;
-
-    // print_vv(a);
-
-    for(int i=1; i<=n; ++i)
-        for(int j=1; j<=m; ++j)
-            max_self(dp1[i][j], a[i][j] + max(dp1[i-1][j], dp1[i][j-1]));
-
-    for(int i=1; i<=n; ++i)
-        for(int j=m; j>=1; --j)
-            max_self(dp2[i][j], a[i][j] + max(dp2[i-1][j], dp2[i][j+1]));
-    
-    for(int i=n; i>=1; --i)
-        for(int j=1; j<=m; ++j)
-            max_self(dp3[i][j], a[i][j] + max(dp3[i+1][j], dp3[i][j-1]));
-    
-    for(int i=n; i>=1; --i)
-        for(int j=m; j>=1; --j)
-            max_self(dp4[i][j], a[i][j] + max(dp4[i+1][j], dp4[i][j+1]));
-
-    int mx = 0;
-    for(int i=2; i<n; ++i)
-        for(int j=2; j<m; ++j){
-            int c1 = (dp1[i-1][j] + dp4[i+1][j]) + (dp3[i][j-1] + dp2[i][j+1]);
-            int c2 = (dp1[i][j-1] + dp4[i][j+1]) + (dp3[i+1][j] + dp2[i-1][j]);
-            max_self(mx, max(c1,c2));
+    int n;
+    while(cin>>n){
+        vector<pii> a(n); // {val, idx}
+        forn(i,n){
+            cin>>a[i].first;
+            a[i].second = i;
         }
-    
-    cout<<mx<<endl;
-    
+
+        vector<pii> oa = a; // orignal a
+
+        sort(all(a), [&](pii &p1, pii &p2){
+            if(p1.first==p2.first)
+                return p1.second<p2.second;
+            return p1.first>p2.first;
+        }); 
+
+        // print_vp(a);
+
+        int m;
+        cin>>m;
+        // sort queries by len and pos;
+        vi ans(m);
+        vvi qs(m, vi(3)); // len, pos, id
+        forn(i,m){
+            cin>>qs[i][0]>>qs[i][1];
+            qs[i][2] = i;
+        }
+
+        sort(all(qs), [&](vi &v1, vi &v2){
+            if(v1[0]==v2[0]) return v1[1]<v2[1];
+            return v1[0]<v2[0];
+        });
+
+        // Aim: insert the elements in ss, and get the index at pos-1
+        ordered_set<int> ss;
+        int len = 0;
+        forn(i,m){
+            while(len<qs[i][0])
+                ss.insert(a[len++].second);
+
+            int l = qs[i][0], pos = qs[i][1], id = qs[i][2];
+            ans[id] = oa[*ss.find_by_order(pos-1)].first;
+        }
+
+        for(auto x: ans) cout<<x<<"\n";
+    }
 
     return 0;
 }

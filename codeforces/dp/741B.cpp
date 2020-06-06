@@ -27,60 +27,97 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-const int nax = 3e5+10;
-int n,X,Y;
-vvi adj(nax);
+int n,m,W;
+vvi adj;
+vi grp;
+int g;
 
-// int , T/F
-pii dfs(int x, int p,int op){
-    if(x==op) return {0,0};
-    pii here = {1,1};
+void dfs(int x){
+    grp[x] = g;
     for(auto ad: adj[x]){
-        if(ad==p) continue;
-        pii cur = dfs(ad,x,op);
-        if(cur.second==0) 
-            here.second = 0;
-        else{
-            here.first+=cur.first;
+        if(!grp[ad]){
+            dfs(ad);
         }
     }
-
-    return here;
 }
 
-ll c2(ll x){
-    if(x<2) return 0;
-    return x*(x-1);
-}
-
-ll mul(ll a, ll b){
-    if(a<=0 || b<=0) return 0;
-    return a*b;
-}
-
-
+// 1. Form groups
+// 2. for each group, gsum and bsum, represents total wt and beauty of its members
+// 3  Knapsack dp:
+// 4. For every group besides the standard options, the extra options we have here is
+// Instead of taking the entire group, try including its members singly
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    cin>>n>>X>>Y;
-    int u,v;
-    forn(i,n-1){
-        cin>>u>>v;
-        adj[u].pb(v); adj[v].pb(u);
+    while(cin>>n>>m>>W){
+        adj.clear(); adj.resize(n+1);
+        vi w(n+1), b(n+1);
+        fore(i,1,n+1) cin>>w[i];
+        fore(i,1,n+1) cin>>b[i];
+
+        grp.clear(); grp.resize(n+1);
+        g = 1;
+
+        int x,y;
+        forn(i,m){
+            cin>>x>>y;
+            adj[x].pb(y), adj[y].pb(x);
+        }
+
+        // print_vv(adj);
+
+        fore(i,1,n+1){
+            if(!grp[i]){
+                dfs(i);
+                ++g;
+            }
+        }
+
+        vvi grps(g);
+        fore(i,1,n+1) grps[grp[i]].pb(i);
+        // print_vv(grps);
+        vi gsum(g), bsum(g);
+        fore(i,1,g){
+            for(auto x: grps[i]){
+                gsum[i]+=w[x];
+                bsum[i]+=b[x];
+            }
+        }
+        // print(gsum);
+        // print(bsum);
+
+        vvi dp(g, vi(W+1));
+        for(int i=1; i<g; ++i){
+            for(int wt = 1; wt<=W; ++wt){
+                dp[i][wt] = dp[i-1][wt];
+                if(wt>=gsum[i])
+                    max_self(dp[i][wt], bsum[i] + dp[i-1][wt - gsum[i]]);
+
+                // extra option
+                for(auto x: grps[i]){
+                    if(wt>=w[x])
+                        max_self(dp[i][wt], b[x] + dp[i-1][wt - w[x]]);
+                }
+            }
+        }
+
+        cout<<dp[g-1][W]<<endl;
+
     }
-
-    pii F = dfs(X, 0, Y);
-    pii B = dfs(Y, 0, X);
-    ll ff = F.first, bb = B.first;
-
-    // Can Choose
-    // deb(ff,bb);
-    // deb(c2(bb), c2(ff), c2(n-(bb+ff)),  mul(ff, n-(ff+bb)), mul(bb, n-bb), mul(n-(bb+ff),bb));
-    // ll ans = c2(bb) + c2(ff) + c2(n-(bb+ff)) + mul(ff, n-(ff+bb)) + mul(bb, n-bb) + mul(n-(bb+ff),bb) + mul(n-(bb+ff),ff) ;
-    // cout<<ans<<endl;
-
-    // Cannot choose (B to F)
-    ll ans = c2(n) - mul(bb, ff);
-    cout<<ans<<endl;
-
     return 0;
 }
+
+// // O(nW) time, O(nW) space
+// int knapSackwithSTL2(int W, vi &wt, vi &val, int n){
+
+//     int i,w;
+//     vector<vi> dp(n+1, vi(W+1, 0));
+
+//     for(i=1; i<=n; i++){
+//         for(w=1; w<=W; w++){
+//             dp[i][w] = dp[i-1][w];
+//             if(wt[i-1]<=w)
+//                 dp[i][w] = max(dp[i][w], val[i-1] + dp[i-1][ w - wt[i-1] ]);                
+//         }
+//     }
+//     return dp[n][W];
+// }

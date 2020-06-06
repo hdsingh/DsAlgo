@@ -27,46 +27,54 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
+// Imagine a rect, having its starting col at c
+// So the farthest it could be extended is, the number of ones we 
+// have at the front.
+// The max downwards it could be extended is the max times we have at least the
+// same forward length at the front.
+// Also if we have the continuos forward one as x, the x-1 are also availabel here
+// In the end for a col, max front we can extend forward is c, and
+// the max downwards we ca extend is cnt[col][c]. hence c*cnt[col][c]
+
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n,m;
-    cin>>n>>m;
-    vvi a(n+1, vi(m+1)); 
-    fore(i,1,n+1)
-        fore(j,1,m+1)
-            cin>>a[i][j];
-
-    vvi dp1(n+2,vi(m+2)), dp2, dp3, dp4;
-    dp2 = dp3 = dp4 = dp1;
-
-    // print_vv(a);
-
-    for(int i=1; i<=n; ++i)
-        for(int j=1; j<=m; ++j)
-            max_self(dp1[i][j], a[i][j] + max(dp1[i-1][j], dp1[i][j-1]));
-
-    for(int i=1; i<=n; ++i)
-        for(int j=m; j>=1; --j)
-            max_self(dp2[i][j], a[i][j] + max(dp2[i-1][j], dp2[i][j+1]));
-    
-    for(int i=n; i>=1; --i)
-        for(int j=1; j<=m; ++j)
-            max_self(dp3[i][j], a[i][j] + max(dp3[i+1][j], dp3[i][j-1]));
-    
-    for(int i=n; i>=1; --i)
-        for(int j=m; j>=1; --j)
-            max_self(dp4[i][j], a[i][j] + max(dp4[i+1][j], dp4[i][j+1]));
-
-    int mx = 0;
-    for(int i=2; i<n; ++i)
-        for(int j=2; j<m; ++j){
-            int c1 = (dp1[i-1][j] + dp4[i+1][j]) + (dp3[i][j-1] + dp2[i][j+1]);
-            int c2 = (dp1[i][j-1] + dp4[i][j+1]) + (dp3[i+1][j] + dp2[i-1][j]);
-            max_self(mx, max(c1,c2));
+    int n, m; char c;
+    while(cin>>n>>m){
+        vvi a(n, vi(m));
+        forn(i,n){
+            forn(j,m){
+                cin>>c;
+                a[i][j] = (c-'0');
+            }
         }
-    
-    cout<<mx<<endl;
-    
 
+        vvi cnt(m, vi(m+1)); // col, cnt
+        forn(i,n){
+            int ones = 0;
+            for(int j=m-1; j>=0; --j){
+                if(a[i][j]==1)
+                    ++ones;
+                else 
+                    ones = 0;
+
+                cnt[j][ones]++;
+            }
+        }
+
+        forn(col,m){
+            for(int l=m-1; l>=0; --l){
+                cnt[col][l]+=cnt[col][l+1];
+            }
+        }
+
+        int ans = 0;
+        forn(col,m){
+            fore(c,1,m+1)
+                max_self(ans, c*cnt[col][c]);
+        }
+
+        cout<<ans<<endl;
+
+    }
     return 0;
 }

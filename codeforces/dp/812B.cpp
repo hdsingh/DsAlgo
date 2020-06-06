@@ -27,46 +27,39 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
+const int L = 0;
+const int R = 1;
+
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n,m;
-    cin>>n>>m;
-    vvi a(n+1, vi(m+1)); 
-    fore(i,1,n+1)
-        fore(j,1,m+1)
-            cin>>a[i][j];
+    int n, m;
+    while(cin>>n>>m){
+        vector<string> a(n);
+        forn(i,n) cin>>a[n-1-i];
 
-    vvi dp1(n+2,vi(m+2)), dp2, dp3, dp4;
-    dp2 = dp3 = dp4 = dp1;
+        vvi  dp(n+1, vi(2));
+        dp[0][L] = 0;
+        dp[0][R] = m*n;
 
-    // print_vv(a);
-
-    for(int i=1; i<=n; ++i)
-        for(int j=1; j<=m; ++j)
-            max_self(dp1[i][j], a[i][j] + max(dp1[i-1][j], dp1[i][j-1]));
-
-    for(int i=1; i<=n; ++i)
-        for(int j=m; j>=1; --j)
-            max_self(dp2[i][j], a[i][j] + max(dp2[i-1][j], dp2[i][j+1]));
-    
-    for(int i=n; i>=1; --i)
-        for(int j=1; j<=m; ++j)
-            max_self(dp3[i][j], a[i][j] + max(dp3[i+1][j], dp3[i][j-1]));
-    
-    for(int i=n; i>=1; --i)
-        for(int j=m; j>=1; --j)
-            max_self(dp4[i][j], a[i][j] + max(dp4[i+1][j], dp4[i][j+1]));
-
-    int mx = 0;
-    for(int i=2; i<n; ++i)
-        for(int j=2; j<m; ++j){
-            int c1 = (dp1[i-1][j] + dp4[i+1][j]) + (dp3[i][j-1] + dp2[i][j+1]);
-            int c2 = (dp1[i][j-1] + dp4[i][j+1]) + (dp3[i+1][j] + dp2[i-1][j]);
-            max_self(mx, max(c1,c2));
+        int ans = 0;
+        forn(i,n){
+            int l = m+1, r = -1;
+            forn(j,m+2)
+                if(a[i][j]=='1')
+                    l = min(j,l), r = max(j,r);
+            
+            // has one
+            if(l<=r){
+                ans = min(dp[i][L] + r, dp[i][R] + (m+1 - l));
+                dp[i+1][L] = min(dp[i][L] + 2*r , dp[i][R] + m+1 ) + 1;
+                dp[i+1][R] = min(dp[i][L] + m+1, dp[i][R] + (m+1 - l)*2) + 1;
+            }else{
+                dp[i+1][L] = dp[i][L] + 1;
+                dp[i+1][R] = dp[i][R] + 1;
+            }
         }
-    
-    cout<<mx<<endl;
-    
 
+        cout<<ans<<endl;
+    }
     return 0;
 }

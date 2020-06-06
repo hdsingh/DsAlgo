@@ -29,44 +29,38 @@ template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<en
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n,m;
-    cin>>n>>m;
-    vvi a(n+1, vi(m+1)); 
-    fore(i,1,n+1)
-        fore(j,1,m+1)
-            cin>>a[i][j];
-
-    vvi dp1(n+2,vi(m+2)), dp2, dp3, dp4;
-    dp2 = dp3 = dp4 = dp1;
-
-    // print_vv(a);
-
-    for(int i=1; i<=n; ++i)
-        for(int j=1; j<=m; ++j)
-            max_self(dp1[i][j], a[i][j] + max(dp1[i-1][j], dp1[i][j-1]));
-
-    for(int i=1; i<=n; ++i)
-        for(int j=m; j>=1; --j)
-            max_self(dp2[i][j], a[i][j] + max(dp2[i-1][j], dp2[i][j+1]));
-    
-    for(int i=n; i>=1; --i)
-        for(int j=1; j<=m; ++j)
-            max_self(dp3[i][j], a[i][j] + max(dp3[i+1][j], dp3[i][j-1]));
-    
-    for(int i=n; i>=1; --i)
-        for(int j=m; j>=1; --j)
-            max_self(dp4[i][j], a[i][j] + max(dp4[i+1][j], dp4[i][j+1]));
-
-    int mx = 0;
-    for(int i=2; i<n; ++i)
-        for(int j=2; j<m; ++j){
-            int c1 = (dp1[i-1][j] + dp4[i+1][j]) + (dp3[i][j-1] + dp2[i][j+1]);
-            int c2 = (dp1[i][j-1] + dp4[i][j+1]) + (dp3[i+1][j] + dp2[i-1][j]);
-            max_self(mx, max(c1,c2));
+    int n;
+    while(cin>>n){
+        vi l(n+2), r(n+2);
+        forn(i,n){
+            cin>>l[i]>>r[i];
         }
-    
-    cout<<mx<<endl;
-    
 
+        vi prel(n+2), prer(n+2), sufl(n+2), sufr(n+2);
+        prel[0] = sufl[n] = 0;
+        prer[0] = sufr[n] = INT_MAX;
+
+        forn(i,n){
+            prel[i+1] = max(prel[i], l[i]);
+            prer[i+1] = min(prer[i], r[i]);
+        }
+
+        for(int i=n-1; i>=0; --i){
+            sufl[i] = max(sufl[i+1], l[i]);
+            sufr[i] = min(sufr[i+1], r[i]);
+        }
+        
+        // print(l,1);
+        // print(r);print(prel); print(prer);
+        // print(sufl);
+        // print(sufr);
+        int ans = 0;
+        forn(i,n){
+            int lt = max(prel[i], sufl[i+1]);
+            int rt = min(prer[i], sufr[i+1]);
+            ans = max(ans, rt-lt);
+        }
+        cout<<ans<<endl;
+    }
     return 0;
 }

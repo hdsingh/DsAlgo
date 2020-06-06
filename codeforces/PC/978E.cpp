@@ -3,8 +3,8 @@ using namespace std;
 #define forn(i, n) for(int i = 0; i < int(n); i++)
 #define fore(i, l, r) for(int i = int(l); i < int(r); i++)
 #define pb push_back
-#define deb(x) cout << #x <<  " " << x << endl;
 #define all(x) x.begin(), x.end()
+#define sz(a) int((a).size())
 typedef long long ll;
 typedef vector<int> vi;
 typedef vector<vector<int>> vvi;
@@ -13,46 +13,27 @@ typedef vector<vector<ll>> vvl;
 typedef vector<string> vs;
 typedef vector<bool> vb;
 typedef pair<int, int> pii;
-const int inf = 1e9 + 5;
-
-template <typename T>void print(T v){ for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(2)<<*i<<" ";cout<<endl; }
-template <typename T>void print_vv(T v, bool same_line=true){for(auto i= 0; i<v.size(); i++){cout<<"{";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(3)<<v[i][j]<<",";}cout<<"},";if(same_line) cout<<endl;}cout<<endl;}
+const int mod = 1e9 + 7;
 
 int main(){
-    int n, w, x;
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    ll n,w;
     while(cin>>n>>w){
-        int b = 0;
-        int minB = INT_MAX;
-        int maxB = INT_MIN;
-        
-        while(n--){
-            cin>>x;
-            b+=x;
-            minB = min(b, minB);
-            maxB = max(b, maxB);
+        vl a(n);
+        forn(i,n) cin>>a[i];
+        partial_sum(all(a), a.begin());
+        ll mx = 0, mn = 0;
+        for(auto x: a){
+            mx = max(mx,x);
+            mn = min(mn,x);
         }
-
-        if(-minB > w || maxB>w){
+        ll r = w - mx; // max that we can have in bus are (capacity - max_present_at any pt)
+        ll l = -mn; // (since( mn is -ve) , (-mn is +ve), so we need to have at least mn people intialy only then |mn| people can off)
+        if(l<=r){
+            cout<<r-l+1<<endl;
+        }else{
             cout<<0<<endl;
-            return 0;
         }
-
-        int l, r;
-        if(minB<0)
-            l = -minB;
-        else
-            l = 0;
-        
-        if(maxB<=0)
-            r = w;
-        else 
-            r = w - maxB;
-        
-        // deb(l); deb(r);
-        cout<<max(0, r-l+1)<<endl;
-
-        // cout<<endl;
-
     }
     return 0;
 }
