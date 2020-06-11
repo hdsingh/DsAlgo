@@ -27,37 +27,37 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-// Last represents the pos that is valid
-// valid: Starting from the next pos, all subarray sums have not been seen,
-// Initially it is 0,(1 based indexing), when the sum is seen(i.e becoms 0 in a range)
-// we add (len-1) elements, ignoring the seen[sum]+1 th, so that the sum inside is valid
-// last would be updated with the max valid position.
+// min cuts required by a rec of size n,m
+// If it is already a square, then no cuts are req
+// Try to cut a rectangle into two rects of all possible shapes
+// horizontally and vertically
+// min cuts of cur rect = 1 + cut of sub rec1 + cuts of sub rec2
 int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n;
-    while(cin>>n){
-        vl a(n+1);
-        fore(i,1,n+1) cin>>a[i];
-        
-        map<ll,int> seen;
-        seen[0] = 0;
-        int last = 0;
-        ll ans = 0, sum = 0;
+    int n,m;
+    while(cin>>n>>m){
+        vvi dp(n+1, vi(m+1, n*m));
 
-        fore(i,1,n+1){
-            sum+=a[i];
-            if(seen.count(sum)){
-                int spos = max(last, seen[sum]+1);
-                ans+=(i - spos);
-                last = spos;
-            }else{
-                ans+=(i-last);
-            }     
-            seen[sum] = i;
+        for(int i=1; i<=n; ++i){
+            for(int j=1; j<=m; ++j){
+                if(i==j) dp[i][j] = 0; // if already a square no cut required
+
+                // for a rectangle of i*j, we can make horizontal and vertical cuts
+
+                // cut it horizontally at h : h*j, (i-h)*j
+                for(int h=1; h<i; h++)
+                    min_self(dp[i][j], 1 + dp[h][j] + dp[i-h][j]);
+                
+                // cut it vertically at v : i*v, i*(j-v)
+
+                for(int v=1; v<j; ++v)
+                    min_self(dp[i][j], 1 + dp[i][v] + dp[i][j-v]);
+            }
         }
 
-        cout<<ans<<endl;
-        
+        // print_vv(dp);
+
+        cout<<dp[n][m]<<endl;
+
     }
     return 0;
 }

@@ -27,37 +27,40 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-// Last represents the pos that is valid
-// valid: Starting from the next pos, all subarray sums have not been seen,
-// Initially it is 0,(1 based indexing), when the sum is seen(i.e becoms 0 in a range)
-// we add (len-1) elements, ignoring the seen[sum]+1 th, so that the sum inside is valid
-// last would be updated with the max valid position.
+const int inf = 1e5;
+
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n;
-    while(cin>>n){
-        vl a(n+1);
-        fore(i,1,n+1) cin>>a[i];
+    string s,t;
+    while(cin>>s>>t){
+        int n = s.size(), m = t.size();
         
-        map<ll,int> seen;
-        seen[0] = 0;
-        int last = 0;
-        ll ans = 0, sum = 0;
+        // vvi dp(n+1,vi(m+1));
+        // // cost to transform till s[i] into t[j];
+        // fore(i,1,n+1) dp[i][0] = i;
+        // fore(j,1,m+1) dp[0][j] = j;
 
-        fore(i,1,n+1){
-            sum+=a[i];
-            if(seen.count(sum)){
-                int spos = max(last, seen[sum]+1);
-                ans+=(i - spos);
-                last = spos;
-            }else{
-                ans+=(i-last);
-            }     
-            seen[sum] = i;
+        // fore(i,1,n+1){
+        //     fore(j,1,m+1){
+        //         int add = dp[i][j-1] + 1;
+        //         int rem = dp[i-1][j] + 1;
+        //         int rep = dp[i-1][j-1] + (s[i-1]!=t[j-1]);
+        //         dp[i][j] = min({add,rem,rep});
+        //     }
+        // }
+
+        // cout<<dp[n][m]<<endl;
+
+        vvi dp(n+1, vi(m+1,inf));
+        dp[0][0] = 0; 
+        forn(i,n+1){
+            forn(j,m+1){
+                if(j) min_self(dp[i][j], dp[i][j-1] + 1);
+                if(i) min_self(dp[i][j], dp[i-1][j] + 1);
+                if(i && j) min_self(dp[i][j], dp[i-1][j-1] +  (s[i-1]!=t[j-1]));
+            }
         }
-
-        cout<<ans<<endl;
-        
+        cout<<dp[n][m]<<endl;
     }
     return 0;
 }

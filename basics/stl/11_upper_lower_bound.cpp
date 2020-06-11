@@ -46,5 +46,16 @@ int main(){
     cout<<(it !=a.end() ? to_string(*it) : "Not Found")<<endl;
     cout<<distance(a.begin(), it)<<endl<<endl;
 
+    // Better method for first less than or equal
+    a = {1,3,4,7,7,9,10};
+    multiset<int, greater<int>> s(all(a));
+    print(s);
+    auto pos = s.upper_bound(4); // first less
+    deb(*pos);
+    pos = s.lower_bound(4); // first less or equal
+    deb(*pos);
+    pos = s.lower_bound(5);
+    deb(*pos);
+
     return 0;
 }

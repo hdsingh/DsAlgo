@@ -24,7 +24,16 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
-// a + b = a^b + 2*(a&b)  - (1)
+// a+b = a^b + 2*(a&b)  -(1)
+// S = xr + 2*A -> S = xr + A + A
+// (S-xr)/2 = A
+//  a    b    xr    A
+//  0   0     0     0
+//  1   0     1     0
+//  0   1     1     0
+//  1   1     0     1
+// By observation: for any two numbers (xr&A) ==0
+// So by (1) xr+A == xr^A
 int main(){
     ll xr, sum;
     while(cin>>xr>>sum){

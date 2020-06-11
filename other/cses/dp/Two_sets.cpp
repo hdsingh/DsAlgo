@@ -27,37 +27,43 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-// Last represents the pos that is valid
-// valid: Starting from the next pos, all subarray sums have not been seen,
-// Initially it is 0,(1 based indexing), when the sum is seen(i.e becoms 0 in a range)
-// we add (len-1) elements, ignoring the seen[sum]+1 th, so that the sum inside is valid
-// last would be updated with the max valid position.
 int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
     int n;
     while(cin>>n){
-        vl a(n+1);
-        fore(i,1,n+1) cin>>a[i];
-        
-        map<ll,int> seen;
-        seen[0] = 0;
-        int last = 0;
-        ll ans = 0, sum = 0;
+        int sum = n*(n+1)/2;
+        if(sum&1){
+            cout<<0<<endl;
+            continue;
+        }
+        sum/=2;
 
-        fore(i,1,n+1){
-            sum+=a[i];
-            if(seen.count(sum)){
-                int spos = max(last, seen[sum]+1);
-                ans+=(i - spos);
-                last = spos;
-            }else{
-                ans+=(i-last);
-            }     
-            seen[sum] = i;
+        // 2d
+        // vvl dp(n, vl(sum+1));
+        // // # of ways to form a sum s, using first i elements;
+        // dp[0][0] = 1;
+
+        // fore(i,1,n){
+        //     fore(s, 0, sum+1){
+        //         dp[i][s] = dp[i-1][s];
+        //         if(s-i>=0)
+        //         add_self(dp[i][s], dp[i-1][s-i]);
+        //     }
+        // }
+
+        // cout<<dp[n-1][sum]<<endl;
+
+        vl dp(sum+1);
+        dp[0] = 1;
+        fore(i,1,n){
+            for(int s=sum; s-i>=0; --s){
+                add_self(dp[s], dp[s-i]);
+            }
         }
 
-        cout<<ans<<endl;
-        
+        cout<<dp[sum]<<endl;
+        // print(dp);
+
     }
+    
     return 0;
 }

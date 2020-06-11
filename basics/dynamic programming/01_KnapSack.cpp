@@ -69,6 +69,7 @@ int knapSackwithSTL2(int W, vi &wt, vi &val, int n){
     return dp[n][W];
 }
 
+// Better reference: Cses/Book_Shop
 // O(nW) time, O(W) space
 int knapSackwithSTL3(int W, vi &wt, vi &val, int n){
 
@@ -104,3 +105,6 @@ int main(){
 
 // Example: 
 // 1. https://codeforces.com/problemset/problem/741/B
+// 2. cses/Book_Shop
+// 3. cses/Two_sets
+// 4. [C. Buns](https://codeforces.com/contest/106/problem/C

@@ -19,17 +19,18 @@ const int inf = 1e9 + 5;
 template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<v.size(); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(w)<<*i<<" ";cout<<endl;}
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 
+// More efficient compared to LIS2, since uses vector instead of multiset
 int LIS1(vi &a){
-    vi tail;
+    vi dp;
     for(auto x: a){
-        auto it = lower_bound(all(tail), x);
-        if(it==tail.end())
-            tail.push_back(x);
+        auto it = lower_bound(all(dp), x);
+        if(it==dp.end())
+            dp.push_back(x);
         else 
             *it = x;
     }
-    print(tail);
-    return tail.size();
+    // print(dp);
+    return dp.size();
 }
 
 int LIS2(vi &a){

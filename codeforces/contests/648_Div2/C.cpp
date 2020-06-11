@@ -27,37 +27,56 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-// Last represents the pos that is valid
-// valid: Starting from the next pos, all subarray sums have not been seen,
-// Initially it is 0,(1 based indexing), when the sum is seen(i.e becoms 0 in a range)
-// we add (len-1) elements, ignoring the seen[sum]+1 th, so that the sum inside is valid
-// last would be updated with the max valid position.
+int n;
+
+int fwd(int f, int t){
+    if(t==f) return 0;
+    if(t>f)
+        return t-f;
+    return n-f+t;
+}
+
+int bwd(int f, int t){
+    if(f==t) return 0;
+    if(f>t) return f-t;
+    return f+n-t;
+}
+
+int solve(vi &a, vi&b){
+    vi pos(n+1);
+    fore(i,1,n+1){
+        pos[a[i]] = i;
+    }
+
+    vi m1(n+1), m2(n+1);
+    fore(i,1,n+1){
+        m1[fwd(i, pos[b[i]])]++;
+        m2[bwd(i, pos[b[i]])]++;
+    }
+
+    // print_m(m1);
+    // print_m(m2);
+
+    int mx = 1;
+    mx = *max_element(all(m1));
+    mx = *max_element(all(m2));
+    // for(auto p: m1) mx = max(mx, p.second);
+    // for(auto p: m2) mx = max(mx, p.second);
+    return mx;
+}
+
+
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n;
+    
     while(cin>>n){
-        vl a(n+1);
+        vi a(n+1), b(n+1);
         fore(i,1,n+1) cin>>a[i];
-        
-        map<ll,int> seen;
-        seen[0] = 0;
-        int last = 0;
-        ll ans = 0, sum = 0;
+        fore(i,1,n+1) cin>>b[i];
 
-        fore(i,1,n+1){
-            sum+=a[i];
-            if(seen.count(sum)){
-                int spos = max(last, seen[sum]+1);
-                ans+=(i - spos);
-                last = spos;
-            }else{
-                ans+=(i-last);
-            }     
-            seen[sum] = i;
-        }
-
-        cout<<ans<<endl;
-        
+        int m1 = solve(a,b);
+        int m2 = solve(b,a);
+        cout<<max(m1,m2)<<endl;
     }
     return 0;
 }
