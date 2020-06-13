@@ -137,6 +137,25 @@ public:
         return out;   
     }
 };
+
+class Solution {
+public:
+    int subarraysDivByK(vector<int>& A, int K) {
+        vector<int> cnt(K);
+        cnt[0] = 1;
+        int sum = 0, ans = 0;
+        
+        for(auto x: A){
+            sum+=x;
+            int rem = (sum%K + K)%K;
+            if(cnt[rem])
+                ans+=cnt[rem];
+            cnt[rem]++;
+        }
+        
+        return ans;
+    }
+};
 // @lc code=end
 
 int main(){
