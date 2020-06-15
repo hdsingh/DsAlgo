@@ -59,57 +59,68 @@ typedef std::vector<vector<int>> vvi;
 
 // @lc code=start
 
-class Solution {
+class Solution0 {
 public:
     bool canPartition(vector<int>& nums) {
+        int sum = accumulate(all(nums),0);
         int n = nums.size();
-        int sum = accumulate(nums.begin(), nums.end(), 0);
-        if(sum%2) return 0;
-        int sum_2 = sum/2;
+        if(sum%2) return false;
+        sum/=2;
+        vector<vb> dp(n+1, vb(sum+1));
+        dp[0][0] = 1;
+    
+        for(int i=1; i<=n; ++i){
+            for(int s=0; s<=sum; ++s){
+                dp[i][s] = dp[i-1][s];
 
-        vi K(sum_2+1, 0);
-        K[0] = 1;
-        
-        for(int i=1; i<=n; i++){
-            for(int j=sum_2; j>=nums[i-1]; j--){
-                K[j] = K[j] ||  K[ j-nums[i-1] ];
+                if(s-nums[i-1]>=0  && dp[i-1][s-nums[i-1]])
+                dp[i][s] = 1;
             }
-            if(K[sum_2]) return true;
         }
 
-        return K[sum_2];
+        return dp[n][sum];
     }
 };
 
-// Using Knapsack 2d
+
 class Solution1 {
 public:
     bool canPartition(vector<int>& nums) {
+        int sum = accumulate(all(nums),0);
         int n = nums.size();
-        int sum = accumulate(nums.begin(), nums.end(), 0);
-        if(sum%2) return 0;
-        int sum_2 = sum/2;
-
-        vvi K(n+1, vi(sum_2+1, 0));
-        K[0][0] = 1;
-
-        for(int i=0; i<=n; i++)
-            K[i][0] = 1;
+        if(sum%2) return false;
+        sum/=2;
+        vb dp(sum+1);
+        dp[0] = 1;
         
-        for(int i=1; i<=n; i++){
-            for(int j=1; j<=sum_2; j++){
-                K[i][j] = K[i-1][j];
-                if(nums[i-1]<=j)
-                    K[i][j] = max(K[i][j], K[i-1][ j-nums[i-1] ]);
+        for(int i=1; i<=n; ++i){
+            for(int s=sum; s>=0; --s){
+                if(s-nums[i-1]>=0 && dp[s-nums[i-1]])
+                    dp[s] = true;
             }
         }
         
-        // print_vv(K);
-
-        return K[n][sum_2]; 
-    
+        return dp[sum];
     }
 };
+
+// Better implementation using bits
+class Solution {
+public:
+    bool canPartition(vector<int>& nums) {
+        const int nax = 100;
+        const int nsz = 200;
+        int sum = accumulate(nums.begin(), nums.end(),0);
+        if(sum&1) return false;
+
+        bitset<nax*nsz/2 + 1> bits(1);
+        for(auto x: nums)
+            bits|= (bits<<x);
+        
+        return bits[sum/2];
+    }
+};
+
 // @lc code=end
 int main(){
     Solution sol;

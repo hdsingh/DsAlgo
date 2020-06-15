@@ -107,3 +107,6 @@ int main(){
 
     return 0;
 }
+
+// https://codeforces.com/problemset/problem/126/B
+// [Prefix-Suffix Palindrome](https://codeforces.com/contest/1326/problem/D2)

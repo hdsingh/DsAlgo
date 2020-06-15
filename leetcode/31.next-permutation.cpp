@@ -66,6 +66,28 @@ public:
 
     }
 };
+
+bool next_permutation1(vi &a){
+    int n = a.size();
+    if(n==1) return false;
+    // find the location of decreasing seq starts
+    int i = n-1;
+    while(i && a[i-1]>=a[i]) --i;
+    
+    if(i==0){
+        reverse(all(a));
+        return false;
+    }
+    --i;
+
+    // find the element next to i from end, greater than a[i]
+    int j = n-1;
+    while(a[j]<=a[i]) --j;
+    swap(a[i], a[j]);    
+
+    reverse(a.begin()+i+1, a.end());
+    return true;
+}
 // @lc code=end
 
 int main(){
