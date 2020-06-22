@@ -27,50 +27,28 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-ll calc(ll x, ll y, ll z){
-    return (x-y)*(x-y) + (y-z)*(y-z) + (z-x)*(z-x);
-}
-
-
-ll find_min(vi &red, vi &blue, vi &green){
-    ll mn = LONG_LONG_MAX;
-    for(auto y: green){
-        auto rr = upper_bound(all(red),y);
-        if(rr==red.begin()) continue;
-        --rr;
-        auto bb = lower_bound(all(blue),y);
-        if(bb==blue.end()) continue;
-        ll cur = calc(*rr, y, *bb);
-        min_self(mn, cur);
-    }
-    return mn;
-}
-
-
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
     int t;
     cin>>t;
     while(t--){
-        int nr, ng,nb;
-        cin>>nr>>ng>>nb;
-        vi red(nr), green(ng), blue(nb);
-        forn(i,nr) cin>>red[i];
-        forn(i,ng) cin>>green[i];
-        forn(i,nb) cin>>blue[i];
-        sort(all(red)); sort(all(green)), sort(all(blue));
-
-
-        ll mn = LONG_LONG_MAX;
-        min_self(mn, find_min(red, green, blue));
-        min_self(mn, find_min(red, blue, green));
-        min_self(mn, find_min(green, blue, red));
-        min_self(mn, find_min(green, red, blue));
-        min_self(mn, find_min(blue, red, green));
-        min_self(mn, find_min(blue, green, red));
-
-        cout<<mn<<endl;
-        
+        int n; cin>>n;
+        vi a(n); forn(i,n) cin>>a[i];
+        int obad = 0, ebad =0;
+        forn(i,n){
+            if(i&1){
+                if(i%2!=a[i]%2)
+                    ++obad;
+            }else{
+                if(i%2!=a[i]%2)
+                    ++ebad;
+            }
+        }
+        if(obad==ebad){
+            cout<<obad<<endl;
+        }else{
+            cout<<-1<<endl;
+        }
     }
     return 0;
 }

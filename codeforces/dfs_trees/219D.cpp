@@ -27,50 +27,59 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-ll calc(ll x, ll y, ll z){
-    return (x-y)*(x-y) + (y-z)*(y-z) + (z-x)*(z-x);
-}
+int n;
+const int nax = 2e5+10;
+// int nax = 6;
+vector<vector<pii>> adj(nax);
+vi dp(nax);
+vvi ans(nax);
 
-
-ll find_min(vi &red, vi &blue, vi &green){
-    ll mn = LONG_LONG_MAX;
-    for(auto y: green){
-        auto rr = upper_bound(all(red),y);
-        if(rr==red.begin()) continue;
-        --rr;
-        auto bb = lower_bound(all(blue),y);
-        if(bb==blue.end()) continue;
-        ll cur = calc(*rr, y, *bb);
-        min_self(mn, cur);
+void dfs1(int x, int p){
+    for(auto ad: adj[x]){
+        if(ad.first==p) continue;
+        dfs1(ad.first,x);
+        dp[x]+=dp[ad.first] + !(ad.second);
     }
-    return mn;
 }
 
+void dfs2(int x, int p){
+    ans[dp[x]].pb(x);
+    // deb(x,dp[x]);
+    for(auto ad: adj[x]){
+        int child = ad.first, starts_x = ad.second;
+        if(child==p) continue;
+
+        dp[x]-=(dp[child]+!starts_x);
+        dp[child]+=(dp[x] + starts_x);
+
+        dfs2(child,x);
+
+        dp[child]-=(dp[x] + starts_x);
+        dp[x]+=(dp[child]+!starts_x);
+    }
+}
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int t;
-    cin>>t;
-    while(t--){
-        int nr, ng,nb;
-        cin>>nr>>ng>>nb;
-        vi red(nr), green(ng), blue(nb);
-        forn(i,nr) cin>>red[i];
-        forn(i,ng) cin>>green[i];
-        forn(i,nb) cin>>blue[i];
-        sort(all(red)); sort(all(green)), sort(all(blue));
-
-
-        ll mn = LONG_LONG_MAX;
-        min_self(mn, find_min(red, green, blue));
-        min_self(mn, find_min(red, blue, green));
-        min_self(mn, find_min(green, blue, red));
-        min_self(mn, find_min(green, red, blue));
-        min_self(mn, find_min(blue, red, green));
-        min_self(mn, find_min(blue, green, red));
-
-        cout<<mn<<endl;
-        
+    cin>>n;    
+    int u,v;
+    forn(i,n-1){
+        cin>>u>>v;
+        adj[u].pb({v,1}), adj[v].pb({u,0});
     }
+    dfs1(1,0);
+    // print(dp,1);
+
+    dfs2(1,0);
+    
+    forn(i,nax){
+        if(sz(ans[i])){
+            cout<<i<<"\n";
+            sort(all(ans[i]));
+            print(ans[i]);
+            break;
+        }
+    }
+
     return 0;
 }

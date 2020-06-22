@@ -27,50 +27,72 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-ll calc(ll x, ll y, ll z){
-    return (x-y)*(x-y) + (y-z)*(y-z) + (z-x)*(z-x);
-}
-
-
-ll find_min(vi &red, vi &blue, vi &green){
-    ll mn = LONG_LONG_MAX;
-    for(auto y: green){
-        auto rr = upper_bound(all(red),y);
-        if(rr==red.begin()) continue;
-        --rr;
-        auto bb = lower_bound(all(blue),y);
-        if(bb==blue.end()) continue;
-        ll cur = calc(*rr, y, *bb);
-        min_self(mn, cur);
+// Permutation of combination
+// Choose the balls of each color for a set
+// For each combination find the probability.
+class Solution {
+    vi a;
+    int k, half;
+    double tot, good;
+    vvi C;
+    const int N = 8;
+public:
+    double getProbability(vector<int>& balls) {
+        C.assign(N, vi(N,0));
+        C[0][0] = 1;
+        for(int i=1; i<N; ++i){
+            C[i][0] = C[i][i] = 1;
+            for(int j=1; j<N; ++j)
+                C[i][j] = C[i-1][j-1] + C[i-1][j];
+        }
+    
+        a = balls;
+        k = a.size();
+        half = accumulate(a.begin(), a.end(),0)/2;
+        tot = 0, good = 0;
+        // vi used(k);
+        dfs(0,0,0,0,1);
+        return good/tot;
     }
-    return mn;
-}
+    
+    // sum = tot balls in first set,
+    // A = distinct balls in part A;
+    // B = distinct balls in part B
+    void dfs(int pos, int sum, int A, int B, double p){
+        if(pos==k){
+            // print(used);
+            // deb(A,B);
+            if(sum==half){
+                good+=(A==B)*p;
+                tot+=p;
+            }
+            return;
+        }
 
+        for(int cnt=0; cnt<=a[pos] && cnt+sum<=half; ++cnt){
+            int nxA = A + (cnt>0);
+            int nxB = B + (a[pos] - cnt >0);
+            dfs(pos+1,sum+cnt,nxA, nxB, p*C[a[pos]][cnt]);
+        }
+    }    
+};
 
 int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int t;
-    cin>>t;
-    while(t--){
-        int nr, ng,nb;
-        cin>>nr>>ng>>nb;
-        vi red(nr), green(ng), blue(nb);
-        forn(i,nr) cin>>red[i];
-        forn(i,ng) cin>>green[i];
-        forn(i,nb) cin>>blue[i];
-        sort(all(red)); sort(all(green)), sort(all(blue));
+    Solution sol; vi balls; double out;
+    balls = {1,1};
+    out = sol.getProbability(balls); printf("%.10f\n", out);
 
+    balls = {2,1,1};
+    out = sol.getProbability(balls); printf("%.10f\n", out);
 
-        ll mn = LONG_LONG_MAX;
-        min_self(mn, find_min(red, green, blue));
-        min_self(mn, find_min(red, blue, green));
-        min_self(mn, find_min(green, blue, red));
-        min_self(mn, find_min(green, red, blue));
-        min_self(mn, find_min(blue, red, green));
-        min_self(mn, find_min(blue, green, red));
+    balls = {1,2,1,2};
+    out = sol.getProbability(balls); printf("%.10f\n", out);
 
-        cout<<mn<<endl;
-        
-    }
+    balls = {3,2,1};
+    out = sol.getProbability(balls); printf("%.10f\n", out);
+
+    balls = {6,6,6,6,6,6};
+    out = sol.getProbability(balls); printf("%.10f\n", out);
+
     return 0;
 }

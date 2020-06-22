@@ -72,6 +72,17 @@ public:
 
 };
 
+// for integer, only base speacific, here for 10
+// for other bases pass base coverted number
+bool isPal(int x){
+    int n = 0, m =x;
+    while(x){
+        n = n*10 + x%10;
+        x/=10;
+    }
+    return n==m;
+}
+
 int main(){
     Solution sol;
     int times;

@@ -94,6 +94,7 @@
 1. Re-rooting : 
    - [F. Maximum White Subtree](https://codeforces.com/contest/1324/problem/F)
    - [F. Tree with Maximum Cost](https://codeforces.com/contest/1092/problem/F)
+   - [D. Choosing Capital for Treeland](https://codeforces.com/problemset/problem/219/D)
 2. Other:
    - [F - LIS on Tree](https://atcoder.jp/contests/abc165/tasks/abc165_f)
 

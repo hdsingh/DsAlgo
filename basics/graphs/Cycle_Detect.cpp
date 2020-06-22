@@ -82,3 +82,29 @@ int main(){
 }
 
 // https://codeforces.com/problemset/problem/1027/D
+
+
+// https://codeforces.com/problemset/problem/698/B
+const int nax = 2e5+10;
+int n, root, grp,ans;
+vi grps(nax), par(nax);
+
+void dfs1(int x){
+    ++grp;
+    while(grps[x]==0){
+        grps[x] = grp;
+        x = par[x];
+    }
+
+    if(grps[x]==grp){
+        // is a cycle , do handling
+        
+        if(!root){
+            root = x;
+        }
+        if(par[x]!=root){
+            par[x] = root;
+            ++ans;
+        }
+    }
+}

@@ -27,50 +27,58 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-ll calc(ll x, ll y, ll z){
-    return (x-y)*(x-y) + (y-z)*(y-z) + (z-x)*(z-x);
-}
-
-
-ll find_min(vi &red, vi &blue, vi &green){
-    ll mn = LONG_LONG_MAX;
-    for(auto y: green){
-        auto rr = upper_bound(all(red),y);
-        if(rr==red.begin()) continue;
-        --rr;
-        auto bb = lower_bound(all(blue),y);
-        if(bb==blue.end()) continue;
-        ll cur = calc(*rr, y, *bb);
-        min_self(mn, cur);
+class Solution {
+public:
+    string validIPAddress(string ip) {
+        // ip4
+        int n = ip.size();
+        if(count(all(ip),'.')==3){
+            if(ip.front()=='.' || ip.back()=='.') return "Neither";
+            int i =  0;
+            while(i<n){
+                string b;
+                int j = i;
+                while(j<n && ip[j]!='.'){
+                    b+=ip[j++];
+                }
+                j++; // skip .
+                i = j;
+                if(b.size()==0 || b.size()>3 || (b.size()>1 && b.front()=='0')) return "Neither";
+                for(auto c: b){
+                    bool ok = ('0'<=c && c<='9');
+                    if(!ok) return "Neither";
+                }
+                int num = stoi(b);
+                if(num>255) return "Neither";
+            }
+            return "IPv4";
+        }else if(count(all(ip),':')==7){
+            if(ip.front()==':' || ip.back()==':') return "Neither";
+            int i = 0;
+            while(i<n){
+                string b;
+                int j = i;
+                while(j<n && ip[j]!=':'){
+                    b+=ip[j++];
+                }
+                j++; // skip ':'
+                i = j;
+                if(b.size()==0 || b.size()>4) return "Neither";
+                for(auto c: b){
+                    bool ok = (('A'<=c && c<='F') || ('a'<=c && c<='f') || ('0'<=c && c<='9'));
+                    if(!ok) return "Neither";
+                    
+                }
+            }
+            return "IPv6";
+        }
+        return "Neither";
     }
-    return mn;
-}
+};
+
 
 
 int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int t;
-    cin>>t;
-    while(t--){
-        int nr, ng,nb;
-        cin>>nr>>ng>>nb;
-        vi red(nr), green(ng), blue(nb);
-        forn(i,nr) cin>>red[i];
-        forn(i,ng) cin>>green[i];
-        forn(i,nb) cin>>blue[i];
-        sort(all(red)); sort(all(green)), sort(all(blue));
-
-
-        ll mn = LONG_LONG_MAX;
-        min_self(mn, find_min(red, green, blue));
-        min_self(mn, find_min(red, blue, green));
-        min_self(mn, find_min(green, blue, red));
-        min_self(mn, find_min(green, red, blue));
-        min_self(mn, find_min(blue, red, green));
-        min_self(mn, find_min(blue, green, red));
-
-        cout<<mn<<endl;
-        
-    }
+    
     return 0;
 }

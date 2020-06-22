@@ -34,6 +34,17 @@ void precalc(){
 
 }
 
+const int N = 10;
+void precalc2(){
+    // vvl C(N, vl(N));
+    C[0][0] = 1;
+    for(int i=1; i<N; ++i){
+        C[i][0] = C[i][i] = 1;
+        for(int j=1; j<N; ++j)
+            C[i][j] = C[i-1][j-1] + C[i-1][j];
+    }
+}
+
 int main(){
     precalc();
     

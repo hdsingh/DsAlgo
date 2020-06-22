@@ -48,6 +48,18 @@ vi computeLPSArray(string s){
     return pi;
 }
 
+// Simpler 
+vi compute(string s){
+    int i = 1, len = 0, m = s.size();
+    vi pi(m);
+    while(i<m){
+        if(s[len]==s[i]) pi[i++] = ++len;
+        else if(len) len = pi[len-1];
+        else ++i;
+    }
+    return pi;
+}
+
 // Another implementation
 // Ref: https://cp-algorithms.com/string/prefix-function.html
 
