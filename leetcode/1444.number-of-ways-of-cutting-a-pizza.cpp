@@ -27,50 +27,61 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-string s;
-const int inf = 1e9;
+// after each cut the remaining piece of pizza always 
+// has the lower right coordinate at (rows-1,cols-1).
+class Solution {
+    int n,m,k;
+    vvi pre;
+    int dp[51][51][11];
+public:
+    int ways(vector<string>& pizza, int K) {
+        n = pizza.size(), m = pizza[0].size();
+        k = K;
+        pre.assign(n+1, vi(m+1,0));
+        // pre : tot apples in pizza[r: ][c: ]
 
-ll solve(int x, int y){
-    vvi dp(10,vi(10, inf));
-    // min steps needed to move from a to b
-
-    forn(a,10){
-        forn(cntx,10){
-            forn(cnty,10){
-                int b = (a + cntx*x + cnty*y)%10;
-                if(cntx+cnty>0){
-                    min_self(dp[a][b], cntx + cnty);
-                }
+        for(int i=n-1; i>=0; --i){
+            for(int j=m-1; j>=0; --j){
+                pre[i][j] = pre[i+1][j] + pre[i][j+1] - pre[i+1][j+1] + (pizza[i][j]=='A');
             }
         }
-    }
-    
-    ll ans = 0;
-    int n = s.size();
-    forn(i,n-1){
-        if(dp[s[i]-'0'][s[i+1]-'0']>=inf) return -1;
-        ans+=dp[s[i]-'0'][s[i+1]-'0']-1;
+        memset(dp, -1, sizeof(dp));
+        return dfs(0,0,0);        
     }
 
-    return ans;
-}
+    int dfs(int r, int c, int cuts){
+        if(pre[r][c]==0) return 0; // if this part has no apple (invalid)
+        if(cuts==k-1) return 1;
+        if(~dp[r][c][cuts]) return dp[r][c][cuts];
+
+        int ans = 0;
+        // horizontal cuts
+        for(int nr = r+1; nr<n; ++nr){
+            if(pre[r][c] - pre[nr][c]>0){
+                add_self(ans, dfs(nr, c, cuts+1));
+            }
+        }
+
+        // vertical cuts
+        for(int nc = c+1; nc<m; ++nc){
+            if(pre[r][c] - pre[r][nc]>0)
+                add_self(ans, dfs(r, nc, cuts+1));
+        }
+    
+        return dp[r][c][cuts] = ans;
+    }
+};
 
 int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    cin>>s;    
-    vvl ans(10,vl(10));
-    forn(i,10){
-        forn(j,10){
-            ans[i][j] = solve(i,j);
-        }
-    }
-    // print_vv(ans);
-    for(auto &x: ans){
-        for(auto &xx: x){
-            cout<<xx<<" ";
-        }
-        cout<<"\n";
-    }
-    
+    Solution sol; vs pizza; int k, out;
+    pizza = { "A..","AAA","..." }, k = 3;
+    out = sol.ways(pizza,k); deb(out);
+    pizza = { "A..","AA.","..." }, k = 3;
+    out = sol.ways(pizza,k); deb(out);
+    pizza = { "A..","A..","..." }, k = 1;
+    out = sol.ways(pizza,k); deb(out);
+    pizza = { ".A..A","A.A..","A.AA.","AAAA.","A.AA." }, k = 5;
+    out = sol.ways(pizza,k); deb(out);
+
     return 0;
 }

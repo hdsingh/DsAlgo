@@ -24,7 +24,7 @@ public:
         root = new TrieNode();
     }
 
-    void insert(string word){
+    void insert(string &word){
         TrieNode* cur = root;
         for(auto x: word){
             if(!cur->ch[x-'a'])
@@ -34,7 +34,7 @@ public:
         cur->eow = true;
     }
 
-    bool search(string word){
+    bool search(string &word){
         TrieNode* cur = root;
         for(auto x: word){
             if(!cur->ch[x-'a']) return false;
@@ -101,3 +101,6 @@ int main(){
     
     return 0;
 }
+
+// https://codeforces.com/problemset/problem/271/D
+// https://codeforces.com/contest/455/problem/B

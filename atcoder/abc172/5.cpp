@@ -27,50 +27,48 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-string s;
-const int inf = 1e9;
+const int MAXN = 5e5+10;
+vl fact(MAXN), inv(MAXN), finv(MAXN);
 
-ll solve(int x, int y){
-    vvi dp(10,vi(10, inf));
-    // min steps needed to move from a to b
-
-    forn(a,10){
-        forn(cntx,10){
-            forn(cnty,10){
-                int b = (a + cntx*x + cnty*y)%10;
-                if(cntx+cnty>0){
-                    min_self(dp[a][b], cntx + cnty);
-                }
-            }
-        }
+void precalc(){
+    int n = MAXN;
+    fact[0] = finv[0] = inv[1] = 1;
+    fore(i, 2, n)
+        inv[i] = (mod - (mod/i) * inv[mod%i] % mod) % mod;
+    fore(i, 1, n){
+        fact[i] = fact[i-1] * i % mod;
+        finv[i] = finv[i-1] * inv[i] % mod;
     }
-    
-    ll ans = 0;
-    int n = s.size();
-    forn(i,n-1){
-        if(dp[s[i]-'0'][s[i+1]-'0']>=inf) return -1;
-        ans+=dp[s[i]-'0'][s[i+1]-'0']-1;
-    }
-
-    return ans;
 }
 
+ll C(int n, int r){
+    if(n<r || r<0) return 0;
+    return fact[n] * finv[r]%mod * finv[n-r]%mod;
+}
+
+// By PIE:
+// 1. Ways to form A
+// C(M,N) * N!
+// 2. For a particular seq A derangements of B
+// If at least j are equal
+// (-1)^^i * ( C(n,j)*C(m-j, n-j)*(n-j)! )
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    cin>>s;    
-    vvl ans(10,vl(10));
-    forn(i,10){
-        forn(j,10){
-            ans[i][j] = solve(i,j);
+    precalc();
+    ll n,m;
+    while(cin>>n>>m){
+        ll ans = 0;
+        ll cur = 1;
+        forn(i,n+1){
+            // ans+= cur*C(n,i)*C(m-i, n-i)*fact[n-i];
+            ans = (ans + cur* (C(n,i) * C(m-i, n-i)%mod * fact[n-i]%mod ) + mod)%mod;
+            cur*=-1;
         }
+
+        ll waysA = C(m,n)*fact[n]%mod;
+        ans = (ans*waysA)%mod;
+
+        cout<<ans%mod<<endl;
     }
-    // print_vv(ans);
-    for(auto &x: ans){
-        for(auto &xx: x){
-            cout<<xx<<" ";
-        }
-        cout<<"\n";
-    }
-    
     return 0;
 }

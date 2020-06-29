@@ -27,50 +27,44 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-string s;
-const int inf = 1e9;
-
-ll solve(int x, int y){
-    vvi dp(10,vi(10, inf));
-    // min steps needed to move from a to b
-
-    forn(a,10){
-        forn(cntx,10){
-            forn(cnty,10){
-                int b = (a + cntx*x + cnty*y)%10;
-                if(cntx+cnty>0){
-                    min_self(dp[a][b], cntx + cnty);
+class Solution {
+public:
+    vector<string> getFolderNames(vector<string>& names) {
+        vector<string> ans;
+        map<string, int> seen;
+    
+        for(auto name: names){
+            if(seen.count(name)){
+                int k = seen[name];
+                string num = '(' + to_string(k) + ')';
+                while(seen.count(name+num)){
+                    ++k;
+                    num = '(' + to_string(k) + ')';
                 }
+                seen[name+num] = 1;
+                seen[name] = k+1;
+                ans.push_back(name+num);
+            }else{
+                seen[name] = 1;
+                ans.push_back(name);
             }
         }
-    }
-    
-    ll ans = 0;
-    int n = s.size();
-    forn(i,n-1){
-        if(dp[s[i]-'0'][s[i+1]-'0']>=inf) return -1;
-        ans+=dp[s[i]-'0'][s[i+1]-'0']-1;
-    }
 
-    return ans;
-}
+        return ans;
+    }
+};
 
 int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    cin>>s;    
-    vvl ans(10,vl(10));
-    forn(i,10){
-        forn(j,10){
-            ans[i][j] = solve(i,j);
-        }
+    Solution sol;
+    vector<vector<string>> aa = {
+    {"pes","fifa","gta","pes(2019)"},
+    {"gta","gta(1)","gta","avalon"},
+    {"onepiece","onepiece(1)","onepiece(2)","onepiece(3)","onepiece"},
+    {"wano","wano","wano","wano"},
+    {"kaido","kaido(1)","kaido","kaido(1)"},
+    };
+    for(auto a: aa){
+        vs out = sol.getFolderNames(a); print(out);
     }
-    // print_vv(ans);
-    for(auto &x: ans){
-        for(auto &xx: x){
-            cout<<xx<<" ";
-        }
-        cout<<"\n";
-    }
-    
     return 0;
 }

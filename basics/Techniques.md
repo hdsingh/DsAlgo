@@ -11,6 +11,7 @@
 `Combinatorics`:
 1. [Notes 1](https://www.askiitians.com/maths/permutation-and-combination.html)
 2. [Notes 2](https://www.careerbless.com/aptitude/qa/permutations_combinations_imp7.php)
+3. [F - Strivore](https://atcoder.jp/contests/abc171/tasks/abc171_f)
 
 
 `Connected Components of Complement Graph`:
@@ -25,6 +26,10 @@
 
 `Digit DP`:
 1. [Digit Sum](https://atcoder.jp/contests/dp/tasks/dp_s)
+
+
+`Hashing`:
+1. [1044. Longest Duplicate Substring](https://leetcode.com/problems/longest-duplicate-substring)
 
 
 `Kadane DP`:
@@ -56,8 +61,13 @@
 1. [E - Divisible Substring](https://atcoder.jp/contests/abc158/tasks/abc158_e)
 2. [D - Multiple of 2019](https://atcoder.jp/contests/abc164/tasks/abc164_d)
 
+
 `Precesion`:
 1. [Distance bw endpoints of the hands](https://atcoder.jp/contests/abc168/tasks/abc168_c)
+
+
+`Principle of Inclusion Exclusion`:
+1. [E - NEQ](https://atcoder.jp/contests/abc172/tasks/abc172_e)
 
 
 `Random`:

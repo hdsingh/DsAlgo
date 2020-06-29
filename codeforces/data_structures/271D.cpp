@@ -27,50 +27,58 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
+vi is_good(26);
+int n, k;
 string s;
-const int inf = 1e9;
+int ans;
 
-ll solve(int x, int y){
-    vvi dp(10,vi(10, inf));
-    // min steps needed to move from a to b
+struct TrieNode{
+    TrieNode* ch[26] = {};
+};
 
-    forn(a,10){
-        forn(cntx,10){
-            forn(cnty,10){
-                int b = (a + cntx*x + cnty*y)%10;
-                if(cntx+cnty>0){
-                    min_self(dp[a][b], cntx + cnty);
-                }
-            }
-        }
+TrieNode* root;
+
+void insert(int pos){
+    auto cur = root;
+    for(int i=pos; i<n; ++i){
+        if(!cur->ch[s[i]-'a'])
+            cur->ch[s[i]-'a'] = new TrieNode();
+        cur = cur->ch[s[i]-'a'];
     }
-    
-    ll ans = 0;
-    int n = s.size();
-    forn(i,n-1){
-        if(dp[s[i]-'0'][s[i+1]-'0']>=inf) return -1;
-        ans+=dp[s[i]-'0'][s[i+1]-'0']-1;
-    }
-
-    return ans;
 }
 
+void count(TrieNode* cur, int depth, int bad){
+    if(depth>0 && bad<=k) ++ans;
+    if(bad>k || !cur) return;
+    
+    for(int i=0; i<26; ++i){
+        if(cur->ch[i]){
+            count(cur->ch[i], depth+1, bad+(!is_good[i]));
+        }
+    }
+}
+
+// i. Insert all the substrings (i to n), 
+// i. Count the nodes which have formed
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    cin>>s;    
-    vvl ans(10,vl(10));
-    forn(i,10){
-        forn(j,10){
-            ans[i][j] = solve(i,j);
+    while(cin>>s){
+        root = new TrieNode();
+        n = s.size();
+        forn(i,26){
+            char c; cin>>c;
+            is_good[i] = (c=='1');
         }
+        cin>>k;
+
+        forn(i,n)
+            insert(i);
+        
+        ans = 0;
+        count(root, 0, 0);
+
+        cout<<ans<<endl;
+
     }
-    // print_vv(ans);
-    for(auto &x: ans){
-        for(auto &xx: x){
-            cout<<xx<<" ";
-        }
-        cout<<"\n";
-    }
-    
     return 0;
 }

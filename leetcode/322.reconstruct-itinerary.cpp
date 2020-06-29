@@ -27,50 +27,48 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-string s;
-const int inf = 1e9;
+// Yet to understand eulerian paths, in directed and undirected graph
 
-ll solve(int x, int y){
-    vvi dp(10,vi(10, inf));
-    // min steps needed to move from a to b
-
-    forn(a,10){
-        forn(cntx,10){
-            forn(cnty,10){
-                int b = (a + cntx*x + cnty*y)%10;
-                if(cntx+cnty>0){
-                    min_self(dp[a][b], cntx + cnty);
-                }
-            }
+class Solution {
+    map<string, multiset<string>> target;
+    vector<string> path;
+public:
+    vector<string> findItinerary(vector<vector<string>>& tickets) {
+        path.clear();
+        for(auto tic: tickets)
+            target[tic[0]].insert(tic[1]);
+        
+        for(auto p: target){
+            cout<<p.first<<" :";
+            print(p.second);
+            cout<<"\n";
         }
-    }
-    
-    ll ans = 0;
-    int n = s.size();
-    forn(i,n-1){
-        if(dp[s[i]-'0'][s[i+1]-'0']>=inf) return -1;
-        ans+=dp[s[i]-'0'][s[i+1]-'0']-1;
+        
+        dfs("JFK");
+        reverse(path.begin(), path.end());
+        print(path);
+        return path;
     }
 
-    return ans;
-}
+    void dfs(string st){
+        deb(st);
+        while(target[st].size()){
+            auto nx = target[st].begin();
+            string nxt = *nx;
+            deb(nxt);
+            target[st].erase(nx);
+            dfs(nxt);
+        }
+        deb("Pushed :", st);
+        path.push_back(st);
+    }
+};
+
 
 int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    cin>>s;    
-    vvl ans(10,vl(10));
-    forn(i,10){
-        forn(j,10){
-            ans[i][j] = solve(i,j);
-        }
-    }
-    // print_vv(ans);
-    for(auto &x: ans){
-        for(auto &xx: x){
-            cout<<xx<<" ";
-        }
-        cout<<"\n";
-    }
-    
+    vector<vs> ss = 
+    {{"JFK","SFO"},{"JFK","ATL"},{"SFO","ATL"},{"ATL","JFK"},{"ATL","SFO"}};
+    Solution sol;
+    sol.findItinerary(ss);
     return 0;
 }

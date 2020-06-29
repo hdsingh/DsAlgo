@@ -81,3 +81,6 @@ int main(){
     
     return 0;
 }
+
+// https://atcoder.jp/contests/abc172/tasks/abc172_e
+// https://atcoder.jp/contests/abc171/tasks/abc171_f

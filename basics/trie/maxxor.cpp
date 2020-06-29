@@ -48,3 +48,5 @@ int main(){
     insert(0); // imp step in initialisation
 
 }
+
+// https://codeforces.com/problemset/problem/706/D

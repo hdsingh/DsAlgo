@@ -27,50 +27,66 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-string s;
-const int inf = 1e9;
+const int MAXN = 2e6+10;
+vl fact(MAXN), inv(MAXN), finv(MAXN);
 
-ll solve(int x, int y){
-    vvi dp(10,vi(10, inf));
-    // min steps needed to move from a to b
 
-    forn(a,10){
-        forn(cntx,10){
-            forn(cnty,10){
-                int b = (a + cntx*x + cnty*y)%10;
-                if(cntx+cnty>0){
-                    min_self(dp[a][b], cntx + cnty);
-                }
-            }
-        }
+void precalc(){
+    int n = MAXN;
+    fact[0] = finv[0] = inv[1] = 1;
+    fore(i, 2, n)
+        inv[i] = (mod - (mod/i) * inv[mod%i] % mod) % mod;
+    fore(i, 1, n){
+        fact[i] = fact[i-1] * i % mod;
+        finv[i] = finv[i-1] * inv[i] % mod;
     }
-    
-    ll ans = 0;
-    int n = s.size();
-    forn(i,n-1){
-        if(dp[s[i]-'0'][s[i+1]-'0']>=inf) return -1;
-        ans+=dp[s[i]-'0'][s[i+1]-'0']-1;
-    }
-
-    return ans;
 }
 
+ll C(int n, int r){
+    if(n<r || r<0) return 0;
+    return fact[n] * finv[r]%mod * finv[n-r]%mod;
+}
+
+ll powMod(ll n, ll p) {
+    assert(p>=0);
+    ll res = 1;
+    while (p) {
+        if (p & 1) (res *= n) %= mod;
+          (n *= n) %= mod;
+        p >>= 1;
+    }
+    return res;
+}
+
+const int Z = 26;
+// the result is T = |s| + K
+// tot - invalid
+// z^^26 - invalid
+// Lets say a string has max prefix len in it as l
+// Ex _ _ _ _ and abc
+// if 'a' appears len becomes 1
+// if 'a', 'b' appears len becoms 2
+// 'a', 'b', 'c' cant appear
+// We can count lens from 0 to len-1
+// invalid = (C(T, l)* (z-1)^^(t-l))
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    cin>>s;    
-    vvl ans(10,vl(10));
-    forn(i,10){
-        forn(j,10){
-            ans[i][j] = solve(i,j);
-        }
-    }
-    // print_vv(ans);
-    for(auto &x: ans){
-        for(auto &xx: x){
-            cout<<xx<<" ";
-        }
-        cout<<"\n";
-    }
+    precalc();
     
+    ll k; string s;
+    while(cin>>k>>s){
+        ll n = s.size();
+        ll t = n + k;
+
+        ll invalid = 0;
+        forn(len, n){
+            ll cur =  C(t, len) * powMod(Z-1, t-len) %mod;
+            add_self(invalid, cur);
+        }
+
+        ll ans = powMod(Z,t);
+        ans = (ans - invalid + mod)%mod;
+        cout<<ans<<endl;
+    }
     return 0;
 }

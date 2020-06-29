@@ -27,50 +27,58 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-string s;
-const int inf = 1e9;
+// Bw two positions having same value choose a pos with 0, 
+// such that it is as close as possible to the last seen( 2nd end)
+// So that if some other value appearing later wants to use some pos, it is able
+class Solution {
+    int ex = 1e9-21311; // replace with some random value
+    // int ex = 0;
+public:
+    vector<int> avoidFlood(vector<int>& a) {
+        int n = a.size();
+        vi ans(n,ex);
+        set<int> zpos; 
+        map<int,int> last_seen;
 
-ll solve(int x, int y){
-    vvi dp(10,vi(10, inf));
-    // min steps needed to move from a to b
-
-    forn(a,10){
-        forn(cntx,10){
-            forn(cnty,10){
-                int b = (a + cntx*x + cnty*y)%10;
-                if(cntx+cnty>0){
-                    min_self(dp[a][b], cntx + cnty);
+        bool valid = 1;
+        for(int i=n-1; i>=0; --i){
+            if(!a[i]){
+                zpos.insert(i);
+            }else{
+                ans[i] = -1;
+                if(last_seen.count(a[i])){
+                    int at = last_seen[a[i]];
+                    auto pos = zpos.upper_bound(at);
+                    if(pos!=zpos.begin()){
+                        --pos;
+                        ans[*pos] = a[i];
+                        zpos.erase(pos);
+                    }else{
+                        valid = 0;
+                    }
                 }
+                last_seen[a[i]] = i;
             }
         }
-    }
-    
-    ll ans = 0;
-    int n = s.size();
-    forn(i,n-1){
-        if(dp[s[i]-'0'][s[i+1]-'0']>=inf) return -1;
-        ans+=dp[s[i]-'0'][s[i+1]-'0']-1;
-    }
 
-    return ans;
-}
+        if(!valid) return {};
+        return ans;
+    }
+};
 
 int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    cin>>s;    
-    vvl ans(10,vl(10));
-    forn(i,10){
-        forn(j,10){
-            ans[i][j] = solve(i,j);
-        }
+    Solution sol;
+    vvi as = {
+        {1,0,2,0},
+        {1,2,3,4},
+        {1,2,0,0,2,1},
+        {1,2,0,1,2},
+        {69,0,0,0,69},
+        {10,20,20},
+        { 1,0,2,0,2,1 },
+    } ;
+    for(auto a: as){
+        vi out = sol.avoidFlood(a); print(out);
     }
-    // print_vv(ans);
-    for(auto &x: ans){
-        for(auto &xx: x){
-            cout<<xx<<" ";
-        }
-        cout<<"\n";
-    }
-    
     return 0;
 }

@@ -64,48 +64,6 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
-class Solution1 {
-public:
-    vector<int> nextGreaterElements(vector<int>& a) {
-        const int n = a.size();
-        if(n==0) return a;
-        vi res(n);
-        int mx = *max_element(all(a));
-        vector<int> lastPos; // indexes as stack
-        
-        for(int i=n-1; i>=0; i--){
-            if(a[i]==mx){
-                res[i] = -1;
-                lastPos.clear();
-                lastPos.push_back(i);
-            }else{
-                while(lastPos.size() && a[lastPos.back()]<=a[i]){
-                    lastPos.pop_back();
-                }
-                if(lastPos.size()){
-                    res[i] = a[lastPos.back()];
-                    lastPos.push_back(i);
-                }else{ //(lastPos.empty())
-                    // iterate over the circular array till we are able to find element
-                    for(int j=1; j<=n; j++){
-                        int c_j = (i+j)%n; //circular j
-                        if(a[c_j]>a[i]){
-                            res[i] = a[c_j];
-                            lastPos.push_back(c_j);
-                            lastPos.push_back(i);
-                            break;
-                        }
-                    }
-                }
-            }
-            // cout<<i<<" : ";
-            // print(lastPos);
-        }
-        return res;
-    }
-};
-// @lc code=end
-
 // Better implementation
 class Solution {
 public:
@@ -121,6 +79,31 @@ public:
             lastPos.push(i%n);
         }
         return res;
+    }
+};
+
+// find the next greater elements in forst iteration
+// ans fill + update in second
+class Solution {
+public:
+    vector<int> nextGreaterElements(vector<int>& a) {
+        int n  = a.size();
+        vi nx_gr, ans(n);
+        for(int i=n-1; i>=0; --i){
+            while(nx_gr.size() && a[nx_gr.back()]<=a[i])
+                nx_gr.pop_back();
+            nx_gr.push_back(i);
+        }
+    
+        for(int i=n-1; i>=0; --i){
+            while(nx_gr.size() && a[nx_gr.back()]<=a[i])
+                nx_gr.pop_back();
+            
+            ans[i] = nx_gr.empty() ? -1 : a[nx_gr.back()];
+            nx_gr.push_back(i);
+        }
+    
+        return ans;
     }
 };
 
