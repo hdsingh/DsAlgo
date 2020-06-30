@@ -27,90 +27,48 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-
-class Hashs{
-    int n;
-    const int p = 31;
-    const int m = 1e9 + 9;
-    vl h, p_pow;
-public:
-    Hashs(string &s){
-        n = s.size();
-        p_pow.assign(n+1,0); h.assign(n+1,0);
-        p_pow[0] = 1;
-        for(int i=1; i<n; ++i)
-            p_pow[i] = (p_pow[i-1]*p)%m;
-        
-        for(int i=0; i<n; ++i)  
-            h[i+1] = (h[i] + (s[i]-'a'+1)*p_pow[i])%m;
-    }
-
-    ll find(int l, int r){
-        ll cur = (h[r+1] - h[l] + m)%m;
-        return (cur*p_pow[n-1-l])%m;
-    }
-};
-
 class Solution {
-    int ans;
 public:
-    string longestDupSubstring(string s) {
-        ans = -1;
-        int n = s.size();
-        Hashs hashed(s);
-        
-        int l = 0, r = n+1;
-        while(1+l<r){
-            int mid = l + (r-l)/2;
-            if(has_rep_len(mid, s, hashed))
-                l = mid;
-            else
-                r = mid;
-        }
+    int findMaxValueOfEquation(vector<vector<int>>& points, int k) {
+        int n = points.size();
 
-        if(ans==-1) return "";
-        return s.substr(ans,l);
-    }
-
-    bool has_rep_len(int len, string &s, Hashs &hashed){
-        int n = s.size();
-        // set<ll> seen;
-        auto compare = [&](int p1, int p2){
-            for(int i=0; i<len; ++i)
-                if(s[p1+i]!=s[p2+i]) return false;
-            return true;
+        auto cmp = [&](pair<int,int> p1, pair<int,int> p2){
+            if(p1.first==p2.first) return p1.second<p2.second;
+            return p1.first>p2.first;
         };
-    
-        unordered_map<ll, vector<int>> seen;
-        // compare all strings of "len" 
-        for(int i=0; i<=n-len; ++i){
-            ll cur_h = hashed.find(i,i+len-1);
-
-            if(seen.count(cur_h)){
-                for(auto pos: seen[cur_h]){
-                    if(compare(i,pos)){
-                        ans = i;
-                        return true;
-                    }
-                }
-            }else seen[cur_h].push_back(i);
-
-        }
         
-        return false;
+        set<pair<int,int>, decltype(cmp)> s(cmp);
+        int ans = INT_MIN;
+        for(int i=0, j=1; i<n; ++i){
+            while(j<n && points[j][0]-points[i][0]<=k){
+                s.insert({points[j][0] + points[j][1], points[j][0]});
+                ++j;
+            }
+            s.erase({points[i][0] + points[i][1], points[i][0]});
+            while(s.size() && s.begin()->second-points[i][0]>k){
+                s.erase(s.begin());
+            }
+            if(s.size()){
+                auto top = *s.begin();
+                int cur = points[i][1] - points[i][0] + top.first;
+                ans = max(ans,cur);
+            }
+        }
+        return ans;
     }
 };
 
 int main(){
-    Solution sol; 
-    vs ss = {
-        "banana",
-        "",
-    };
-    for(auto s: ss){
-        string out = sol.longestDupSubstring(s);
-        deb(out);
-    }
+    Solution sol; vvi points; int k, out;
+    points = {{1,3},{2,0},{5,10},{6,-10}}, k = 1;
+    out = sol.findMaxValueOfEquation(points,k); deb(out);
+    points = {{0,0},{3,0},{9,2}}, k = 3; 
+    out = sol.findMaxValueOfEquation(points,k); deb(out);
+    points = {{-19,-12},{-13,-18},{-12,18},
+                {-11,-8},{-8,2},{-7,12},{-5,16},{-3,9},
+                {1,-7},{5,-4},{6,-20},{10,4},{16,4},
+                {19,-9},{20,19}}, k = 6;
 
+    out = sol.findMaxValueOfEquation(points,k); deb(out);
     return 0;
 }

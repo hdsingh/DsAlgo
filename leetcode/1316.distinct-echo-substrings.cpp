@@ -27,7 +27,6 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-
 class Hashs{
     int n;
     const int p = 31;
@@ -51,66 +50,39 @@ public:
     }
 };
 
+// 2 eq strings have eq hash, however if 2 hases are eq, 
+// strings may or  may not equate.
 class Solution {
-    int ans;
 public:
-    string longestDupSubstring(string s) {
-        ans = -1;
+    int distinctEchoSubstrings(string s) {
         int n = s.size();
-        Hashs hashed(s);
-        
-        int l = 0, r = n+1;
-        while(1+l<r){
-            int mid = l + (r-l)/2;
-            if(has_rep_len(mid, s, hashed))
-                l = mid;
-            else
-                r = mid;
-        }
+        Hashs H(s);
+        set<ll> seen;
 
-        if(ans==-1) return "";
-        return s.substr(ans,l);
-    }
 
-    bool has_rep_len(int len, string &s, Hashs &hashed){
-        int n = s.size();
-        // set<ll> seen;
-        auto compare = [&](int p1, int p2){
-            for(int i=0; i<len; ++i)
-                if(s[p1+i]!=s[p2+i]) return false;
-            return true;
-        };
-    
-        unordered_map<ll, vector<int>> seen;
-        // compare all strings of "len" 
-        for(int i=0; i<=n-len; ++i){
-            ll cur_h = hashed.find(i,i+len-1);
-
-            if(seen.count(cur_h)){
-                for(auto pos: seen[cur_h]){
-                    if(compare(i,pos)){
-                        ans = i;
-                        return true;
-                    }
-                }
-            }else seen[cur_h].push_back(i);
-
+        for(int l=0; l<n; ++l){
+            for(int len=2; l+len<=n; len+=2){
+                int r = l + len-1;
+                int mid = (l+r)/2;
+                ll h1 = H.find(l,mid);
+                ll h2 = H.find(mid+1, l+len-1);
+                // deb(l,mid,l+len-1);
+                if(h1==h2) seen.insert({h1});
+            }
         }
         
-        return false;
+        return seen.size();
     }
 };
 
 int main(){
-    Solution sol; 
+    Solution sol;
     vs ss = {
-        "banana",
-        "",
+        "abcabcabc",
+        "leetcodeleetcode",
     };
     for(auto s: ss){
-        string out = sol.longestDupSubstring(s);
-        deb(out);
+        int out = sol.distinctEchoSubstrings(s); deb(out);
     }
-
     return 0;
 }

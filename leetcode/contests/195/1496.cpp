@@ -27,90 +27,26 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-
-class Hashs{
-    int n;
-    const int p = 31;
-    const int m = 1e9 + 9;
-    vl h, p_pow;
-public:
-    Hashs(string &s){
-        n = s.size();
-        p_pow.assign(n+1,0); h.assign(n+1,0);
-        p_pow[0] = 1;
-        for(int i=1; i<n; ++i)
-            p_pow[i] = (p_pow[i-1]*p)%m;
-        
-        for(int i=0; i<n; ++i)  
-            h[i+1] = (h[i] + (s[i]-'a'+1)*p_pow[i])%m;
-    }
-
-    ll find(int l, int r){
-        ll cur = (h[r+1] - h[l] + m)%m;
-        return (cur*p_pow[n-1-l])%m;
-    }
-};
-
 class Solution {
-    int ans;
 public:
-    string longestDupSubstring(string s) {
-        ans = -1;
-        int n = s.size();
-        Hashs hashed(s);
-        
-        int l = 0, r = n+1;
-        while(1+l<r){
-            int mid = l + (r-l)/2;
-            if(has_rep_len(mid, s, hashed))
-                l = mid;
-            else
-                r = mid;
+    bool isPathCrossing(string path) {
+        set<pair<int,int>> seen;
+        int x = 0, y = 0;
+        map<char,int> dx, dy;
+        dx['N'] = 0, dx['E'] = 1, dx['S'] = 0, dx['W'] = -1;
+        dy['N'] = 1, dy['E'] = 0, dy['S'] = -1, dy['W'] = 0;
+
+        seen.insert({0,0});
+        for(auto c: path){
+            x+=dx[c], y+=dy[c];
+            if(seen.count({x,y})) return true;
+            seen.insert({x,y});
         }
-
-        if(ans==-1) return "";
-        return s.substr(ans,l);
-    }
-
-    bool has_rep_len(int len, string &s, Hashs &hashed){
-        int n = s.size();
-        // set<ll> seen;
-        auto compare = [&](int p1, int p2){
-            for(int i=0; i<len; ++i)
-                if(s[p1+i]!=s[p2+i]) return false;
-            return true;
-        };
-    
-        unordered_map<ll, vector<int>> seen;
-        // compare all strings of "len" 
-        for(int i=0; i<=n-len; ++i){
-            ll cur_h = hashed.find(i,i+len-1);
-
-            if(seen.count(cur_h)){
-                for(auto pos: seen[cur_h]){
-                    if(compare(i,pos)){
-                        ans = i;
-                        return true;
-                    }
-                }
-            }else seen[cur_h].push_back(i);
-
-        }
-        
         return false;
     }
 };
 
 int main(){
-    Solution sol; 
-    vs ss = {
-        "banana",
-        "",
-    };
-    for(auto s: ss){
-        string out = sol.longestDupSubstring(s);
-        deb(out);
-    }
-
+    
     return 0;
 }
