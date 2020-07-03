@@ -12,6 +12,7 @@
 1. [Notes 1](https://www.askiitians.com/maths/permutation-and-combination.html)
 2. [Notes 2](https://www.careerbless.com/aptitude/qa/permutations_combinations_imp7.php)
 3. [F - Strivore](https://atcoder.jp/contests/abc171/tasks/abc171_f)
+4. [D. New Year and the Permutation Concatenation](https://codeforces.com/problemset/problem/1091/D)
 
 
 `Connected Components of Complement Graph`:
