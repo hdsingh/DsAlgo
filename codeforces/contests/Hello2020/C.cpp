@@ -3,8 +3,8 @@ using namespace std;
 #define forn(i, n) for(int i = 0; i < int(n); i++)
 #define fore(i, l, r) for(int i = int(l); i < int(r); i++)
 #define pb push_back
-#define deb(x) cout << #x <<  " " << x << endl;
 #define all(x) x.begin(), x.end()
+#define sz(a) int((a).size())
 typedef long long ll;
 typedef vector<int> vi;
 typedef vector<vector<int>> vvi;
@@ -13,68 +13,42 @@ typedef vector<vector<ll>> vvl;
 typedef vector<string> vs;
 typedef vector<bool> vb;
 typedef pair<int, int> pii;
-const int inf = 1e9 + 5;
+int mod = 1e9 + 7;
+template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
+template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
+template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
 
-template <typename T>void print(T v){ for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(2)<<*i<<" ";cout<<endl; }
-template <typename T>void print_vv(T v, bool same_line=true){for(auto i= 0; i<v.size(); i++){cout<<"{";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(3)<<v[i][j]<<",";}cout<<"},";if(same_line) cout<<endl;}cout<<endl;}
+#define _deb(x) cout<<x;
+void _print() {cerr << "]\n";} template <typename T, typename... V>void _print(T t, V... v) {_deb(t); if (sizeof...(v)) cerr << ", "; _print(v...);}
+#define deb(x...) cerr << "[" << #x << "] = ["; _print(x)
+template <class T, class U> void print_m(const map<T,U> &m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
+template<class T, class U>void debp(const pair<T, U> &pr, bool end_line=1){cout<<"{"<<pr.first<<" "<<pr.second<<"}"; cout<<(end_line ? "\n" : ", ");}
+template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cout<<"Empty"<<endl; return;}if(!sep_line) cout<<"{ ";for(auto x: vp) debp(x,sep_line);if(!sep_line) cout<<"}\n";cout<<endl;}
+template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
+template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-const int MAXN = 250010;
-vl fact(MAXN), inv(MAXN), finv(MAXN);
-
-void precalc(int mod){
-    int n = MAXN;
-    
-    fact[0] = finv[0] = inv[1] = 1;
-
-    fore(i, 1, n){
-        fact[i] = fact[i-1] * i % mod;
-    }
-}
-
+// for a particular len l,
+// since we want a framed seg, the only way is to select len consec elements
+// Out of n elements theis could be done in (n-l+1) ways,
+// and now permute the seleced consec elements(len!),
+// ans complete outer seq (inner seq treated as single + outer n-l elements)
+// hence (n-l+1)!
+// This process will be repeated for each len.
 int main(){
-    ll n, mod;
-    while(cin>>n>>mod){
-        precalc(mod);
-        ll ans = 0;
-        for(int i=1; i<=n; i++){
-            ans += (i * fact[i]%mod * fact[n-i+1]%mod)%mod;
-            ans%=mod;
-        }
-        cout<<ans<<endl;
-    }
-}
-
-// Brute force
-int main2(){
-    int n, m;
-    while(cin>>n){
-        vi a;
-        fore(i, 1, n+1)
-            a.pb(i);
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    ll n,m;
+    while(cin>>n>>m){
+        vl fact(2*n+10);
+        fact[0] = 1;
+        fore(i,1,2*n+10)
+            fact[i] = fact[i-1] * i %m;
         
-        ll happy = 0;
-        deb(n);
-        map<int, int> cnt;
-        do{
-            int fs = 0; // framed segment
-            for(int l=0; l<n; l++){
-                for(int r=l; r<n; r++){
-                    // cout<<l<<" "<<r<<endl;
-                    int mx = *max_element(a.begin() + l, a.begin() + r+1);
-                    int mn = *min_element(a.begin() + l, a.begin() + r+1);
-
-                    if((mx - mn) == (r-l))
-                        fs++;
-                }
-            }
-            // deb(fs);
-            cnt[fs]++;
-            happy +=fs;
-        }while(next_permutation(all(a)));
-
-        // for(auto a: cnt)    
-        //     cout<<a.first<<" : "<<a.second<<endl;
-        cout<<n<<" : "<<happy<<endl<<endl<<endl;;
+        ll ans = 0;
+        fore(l,1,n+1){
+            (ans+=(n-l+1)*fact[n-l+1]%m*fact[l])%=m;
+        }  
+    
+        cout<<ans<<"\n";
     }
     return 0;
 }

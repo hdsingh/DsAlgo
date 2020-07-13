@@ -63,6 +63,11 @@
 2. [D - Multiple of 2019](https://atcoder.jp/contests/abc164/tasks/abc164_d)
 
 
+`Parity of Permutation`:
+1. [D. Inversion Counting](https://codeforces.com/problemset/problem/911/D)
+2. [B. Petr and Permutations](https://codeforces.com/contest/986/problem/B)
+
+
 `Precesion`:
 1. [Distance bw endpoints of the hands](https://atcoder.jp/contests/abc168/tasks/abc168_c)
 
@@ -113,3 +118,6 @@
 1. [LeetCode](https://leetcode.com/tag/trie/)
 2. [B - A Lot of Games](https://codeforces.com/contest/455/problem/B)
 
+
+`Good`:
+1. [D. Dima and Hares](https://codeforces.com/problemset/problem/358/D)

@@ -27,40 +27,77 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-// max: try to greedily fill as much places as possible.
-// min: check at i, if  exists ++cnt, i+=3, else ++i;
-int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n;
-    while(cin>>n){
-        vi cnt(n+4);
-        vi a(n); forn(i,n){
-            cin>>a[i];
-            cnt[a[i]]++;
+class Node {
+public:
+    int val;
+    Node *prev, *next, *child;
+};
+
+class Solution0 {
+public:
+    Node* flatten(Node* head, Node* rest = nullptr) {
+        if(!head) return head;  
+        head->next = flatten(head->child, flatten(head->next, rest));
+        if(head->next) head->next->prev = head;
+        head->child = nullptr;
+        return head;        
+    }
+};
+
+class Solution {
+public:
+    Node* flatten(Node* head) {
+        if(!head) return head;
+        Node* orig = head;
+        stack<Node*> stk;
+        while(head->next || head->child || !stk.empty()){
+            // since this node doesn't have a next and child, pop
+            // from the prev heads and add
+            if(!head->next && !head->child){
+                head->next = stk.top(), stk.pop();
+                head->next->prev = head;
+            }
+            // keep moving forward till the node has next but doesn't have a child
+            while(head->next && !head->child) head = head->next;
+            
+            // save the next if present to be used later and start processing the child
+            if(head->next) stk.push(head->next);
+            if(!head->child) continue;
+            head->next = head->child;
+            head->next->prev = head;
+            head->child = nullptr;
         }
-    
-        sort(all(a));
-        set<int> mxs;
-        for(auto x: a){
-            if(!mxs.count(x-1)){
-                mxs.insert(x-1);
-            }else if(!mxs.count(x)){
-                mxs.insert(x);
-            }else if(!mxs.count(x+1)){
-                mxs.insert(x+1);
+
+        return orig;
+    }
+};
+
+// O(2n) worst case complexity.
+// Whenever we find a child connect its last node in straight chain 
+// with the next node of cur.(hence flattening only one level at a time).
+class Solution {
+public:
+    Node* flatten(Node* head) {
+        for(auto cur = head; cur; cur = cur->next){
+            if(cur->child){
+                auto cur_next = cur->next;
+                cur->next = cur->child;
+                cur->next->prev = cur;
+                cur->child = nullptr;
+
+                auto child = cur->next;
+                while(child->next) child = child->next;
+
+                child->next = cur_next;
+                if(cur_next) cur_next->prev = child;
             }
         }
 
-        int min_cnt = 0;
-        int i = 1;
-        while(i<=n){
-            if(cnt[i]){
-                min_cnt++;
-                i+=3;
-            }else ++i;
-        }
-
-        cout<<min_cnt<<" "<<sz(mxs)<<"\n";
+        return head;
     }
+};
+
+int main(){
+    
     return 0;
 }

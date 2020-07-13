@@ -27,40 +27,40 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-// max: try to greedily fill as much places as possible.
-// min: check at i, if  exists ++cnt, i+=3, else ++i;
-int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n;
-    while(cin>>n){
-        vi cnt(n+4);
-        vi a(n); forn(i,n){
-            cin>>a[i];
-            cnt[a[i]]++;
-        }
-    
-        sort(all(a));
-        set<int> mxs;
-        for(auto x: a){
-            if(!mxs.count(x-1)){
-                mxs.insert(x-1);
-            }else if(!mxs.count(x)){
-                mxs.insert(x);
-            }else if(!mxs.count(x+1)){
-                mxs.insert(x+1);
+const int inf = 1e9+10;
+
+// TLE: need to implement using bit.
+// Assumption: it is always better to replace the earliest digit 
+// with some lowest possible digit.
+class Solution {
+public:
+    string minInteger(string num, int k) {
+        int n = num.size();
+        
+        for(int i=0; i<n && k>0; ++i){
+            int pos = i;
+            for(int j=i+1; j<n; ++j){
+                if(j-i>k) break;
+                if(num[j]<num[pos])
+                    pos = j;
             }
+
+            char mn = num[pos];
+            for(int j=pos; j>i; --j){
+                num[j] = num[j-1];
+            }
+            num[i] = mn; 
+            k-=(pos-i);           
         }
 
-        int min_cnt = 0;
-        int i = 1;
-        while(i<=n){
-            if(cnt[i]){
-                min_cnt++;
-                i+=3;
-            }else ++i;
-        }
-
-        cout<<min_cnt<<" "<<sz(mxs)<<"\n";
+        // deb(num);
+    
+        return num;
     }
+};
+
+int main(){
+    Solution sol; string s; int k;
+    sol.minInteger("4321", 4);
     return 0;
 }

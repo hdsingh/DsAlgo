@@ -27,43 +27,39 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-// for an element at a[i], it is possible for it to be
-// kth element of the sequence only if is divisible by k,
-// So we need to find its divisors.
-// Also its divisor d, will be extended by the number of elements that 
-// are present at d-1
-// Also we need to consider the divisors in reverse manner,
-// Since modiying the the seq len of smaller first will affect the larger 
-// length, so calc divs in rev(bigger first)
-const int nax = 1e6 + 10;
-vvi divs(nax+1);
-void precalc(){
-    for(int i=nax-1; i>=1; --i){
-        for(int j=i; j<nax;j+=i)
-            divs[j].pb(i);
+const int nax = 1e6+10;
+
+vi divs(int x){
+    vi out;
+    for(int d1=1; d1*d1<=x; ++d1){
+        if(x%d1==0){
+            int d2 = x/d1;
+            out.pb(d1);
+            if(d1!=d2) out.pb(d2);
+        }
     }
+    sort(all(out));
+    return out;
 }
 
+// each number will can only be at k if it has k as divisor
+// Also starting from lowest div(1), replace it with 1 + divs[2],
+// which means (since the number is div by 1, hence 1 seq),
+// + all the seq of twos will be extended.
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    precalc();
-
     int n;
     while(cin>>n){
         vi a(n); forn(i,n) cin>>a[i];
-
         vi dp(nax);
-        dp[0] = 1;
-        for(auto x: a){
-            for(auto  div: divs[x]){
-                add_self(dp[div], dp[div-1]);
+
+        for(int i=n-1; i>=0; --i){
+            for(auto d: divs(a[i])){
+                add_self(dp[d], 1 + dp[d+1]);
             }
         }
 
-        ll ans = 0;
-        fore(i,1,nax)
-            add_self(ans, dp[i]);
-        cout<<ans<<endl;
-
+        cout<<dp[1]<<"\n";
     }
+    return 0;
 }

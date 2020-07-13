@@ -27,40 +27,59 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-// max: try to greedily fill as much places as possible.
-// min: check at i, if  exists ++cnt, i+=3, else ++i;
+vi calc_diff(vi &a){
+    int n = sz(a);
+    vi out(n-1);
+    for(int i=1; i<n; ++i){
+        out[i-1] = a[i] - a[i-1];
+    }
+    return out;
+}
+
+vi prefix_function(vi &s){
+    int m = s.size();
+    vi pi(m); int len = 0;
+    for(int i=1; i<m; ++i){
+        while(len>0 && s[i]!=s[len]) len = pi[len-1];
+        if(s[i]==s[len]) ++len;
+        pi[i] = len;
+    }
+    return pi;
+}
+
+int kmpSearch(vi &a, vi &b){
+    int matches = 0;
+    int n = sz(a), m = sz(b);
+    vi pi = prefix_function(b);
+    int len = 0;
+    for(int i=0; i<n; ++i){
+        while(len>0 && a[i]!=b[len]) len = pi[len-1];
+        if(a[i]==b[len]) ++len;
+        if(len==m){
+            ++matches;
+            len = pi[len-1];
+        }
+    }
+    
+    return matches;
+}
+
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n;
-    while(cin>>n){
-        vi cnt(n+4);
-        vi a(n); forn(i,n){
-            cin>>a[i];
-            cnt[a[i]]++;
+    int n,m;
+    while(cin>>n>>m){
+        vi a(n), b(m);
+        forn(i,n) cin>>a[i];
+        forn(i,m) cin>>b[i];
+        if(m==1){
+            cout<<n<<"\n";
+            continue;
         }
+        vi adiff = calc_diff(a), bdiff = calc_diff(b);
     
-        sort(all(a));
-        set<int> mxs;
-        for(auto x: a){
-            if(!mxs.count(x-1)){
-                mxs.insert(x-1);
-            }else if(!mxs.count(x)){
-                mxs.insert(x);
-            }else if(!mxs.count(x+1)){
-                mxs.insert(x+1);
-            }
-        }
-
-        int min_cnt = 0;
-        int i = 1;
-        while(i<=n){
-            if(cnt[i]){
-                min_cnt++;
-                i+=3;
-            }else ++i;
-        }
-
-        cout<<min_cnt<<" "<<sz(mxs)<<"\n";
+        // kmp pattern matching
+        int matches = kmpSearch(adiff, bdiff);
+        cout<<matches<<"\n";
     }
     return 0;
 }

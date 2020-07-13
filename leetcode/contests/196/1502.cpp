@@ -27,40 +27,20 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-// max: try to greedily fill as much places as possible.
-// min: check at i, if  exists ++cnt, i+=3, else ++i;
-int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n;
-    while(cin>>n){
-        vi cnt(n+4);
-        vi a(n); forn(i,n){
-            cin>>a[i];
-            cnt[a[i]]++;
-        }
-    
-        sort(all(a));
-        set<int> mxs;
-        for(auto x: a){
-            if(!mxs.count(x-1)){
-                mxs.insert(x-1);
-            }else if(!mxs.count(x)){
-                mxs.insert(x);
-            }else if(!mxs.count(x+1)){
-                mxs.insert(x+1);
-            }
-        }
-
-        int min_cnt = 0;
-        int i = 1;
-        while(i<=n){
-            if(cnt[i]){
-                min_cnt++;
-                i+=3;
-            }else ++i;
-        }
-
-        cout<<min_cnt<<" "<<sz(mxs)<<"\n";
+class Solution {
+public:
+    bool canMakeArithmeticProgression(vector<int>& arr) {
+        int n = arr.size();
+        sort(arr.begin(), arr.end());
+        int d = arr[1] - arr[0];
+        bool ok  =1;
+        for(int i=1; i<n; ++i)
+            ok&=(arr[i] - arr[i-1]==d);
+        return ok;
     }
+};
+
+int main(){
+    
     return 0;
 }

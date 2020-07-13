@@ -27,40 +27,83 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-// max: try to greedily fill as much places as possible.
-// min: check at i, if  exists ++cnt, i+=3, else ++i;
-int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n;
-    while(cin>>n){
-        vi cnt(n+4);
-        vi a(n); forn(i,n){
-            cin>>a[i];
-            cnt[a[i]]++;
+class Solution0 {
+public:
+    int numSubmat(vector<vector<int>>& a) {
+        int n = a.size(), m = a[0].size();
+        
+        int ans = 0;
+        for(int up=0; up<n; ++up){
+            vi dp(m, 1);
+            for(int down=up; down<n; ++down){
+                for(int col=0; col<m; ++col){
+                    dp[col]&=a[down][col];
+                }
+                ans+=count_1d(dp);
+            }
         }
-    
-        sort(all(a));
-        set<int> mxs;
-        for(auto x: a){
-            if(!mxs.count(x-1)){
-                mxs.insert(x-1);
-            }else if(!mxs.count(x)){
-                mxs.insert(x);
-            }else if(!mxs.count(x+1)){
-                mxs.insert(x+1);
+        return ans;
+    }
+
+    int count_1d(vi &a){
+        int res = 0, len = 0;
+        for(int i=0; i<a.size(); ++i){
+            len = (a[i] ? len + 1 : 0);
+            res+=len;
+        }
+        return res;
+    }
+};
+
+class Solution {
+public:
+    int numSubmat(vector<vector<int>>& a) {
+        int n = a.size(), m = a[0].size();
+
+        for(int i=1; i<n; ++i){
+            for(int j=0; j<m; ++j){
+                if(a[i][j])
+                    a[i][j]+=a[i-1][j];
             }
         }
 
-        int min_cnt = 0;
-        int i = 1;
-        while(i<=n){
-            if(cnt[i]){
-                min_cnt++;
-                i+=3;
-            }else ++i;
-        }
+        // print_vv(a);
+        
+        int ans = 0;
+        for(int i=0; i<n; ++i){
+            stack<int> stk;
+            vi sum(m);
 
-        cout<<min_cnt<<" "<<sz(mxs)<<"\n";
+            for(int j=0; j<m; ++j){
+                while(stk.size() && a[i][stk.top()]>=a[i][j]) 
+                    stk.pop();
+                
+                if(stk.size()){
+                    int prev = stk.top();
+                    sum[j] = sum[prev];
+                    sum[j] += a[i][j] * (j-prev);
+                }else{
+                    sum[j] = a[i][j]*(j+1);
+                }
+                stk.push(j);
+            }
+            // print(sum);
+            ans+=accumulate(all(sum),0);
+        }
+        
+        // deb(ans);
+        return ans;
     }
+};
+
+int main(){
+    Solution sol;
+    vvi mat;
+    mat = {{1,0,1},
+            {1,1,0},
+            {1,1,0}};
+    // mat = {{1,1},
+    //        {1,0}};
+    sol.numSubmat(mat);
     return 0;
 }

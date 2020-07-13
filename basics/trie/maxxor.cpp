@@ -45,8 +45,9 @@ int maxxor(int x){
 
 int main(){
     root = new trie();
-    insert(0); // imp step in initialisation
+    insert(0); // imp step in initialisation, (may be)
 
 }
 
 // https://codeforces.com/problemset/problem/706/D
+// https://codeforces.com/problemset/problem/923/C
