@@ -13,7 +13,7 @@ typedef vector<vector<ll>> vvl;
 typedef vector<string> vs;
 typedef vector<bool> vb;
 typedef pair<int, int> pii;
-const int mod = 1e6 + 3;
+const int mod = 1e9 + 7;
 template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
 template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
 template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
@@ -27,72 +27,24 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-const int MAXN = 1e6;
-vl fact(MAXN), inv(MAXN), finv(MAXN);
-
-void precalc(){
-    int n = MAXN;
-    fact[0] = finv[0] = inv[1] = 1;
-    fore(i, 2, n)
-        inv[i] = (mod - (mod/i) * inv[mod%i] % mod) % mod;
-    fore(i, 1, n){
-        fact[i] = fact[i-1] * i % mod;
-        finv[i] = finv[i-1] * inv[i] % mod;
-    }
-}
-
-ll C(int n, int r){
-    if(n<r || r<0) return 0;
-    return fact[n] * finv[r]%mod * finv[n-r]%mod;
-}
-
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    precalc();
-    int n, col;
-    while(cin>>n>>col){
-        ll ans = 0;
-        fore(i,1,col+1){
-            add_self(ans, C(n+i-1, i));
-        }
-        cout<<ans<<"\n";
-    }
-    return 0;
-}
-
-// Better explantion:
-// choose 1 cell, 2 cells, 3 cells .... C cells to place the bricks
-// For a single choose condition, example for c cells this will be
-// x1 + x2 + x3 + xc = n
-// And the solution of this equation is known C(n+k-1, k)
-// hence for each i from 1 to C summation C(n+k-i, i).
-
-// Used dp solution to see the pattern and generate the formula
-int main0(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    ll n, C;
-    while(cin>>n>>C){
-        vvl dp(C+1, vl(n+1));
-        // # of ways if till cth col, j bricks have been placed
-        dp[0][0] = 1;
-
-        for(int c=1; c<=C; ++c){
-            forn(prev, n+1){
-                fore(cur, prev, n+1){
-                    add_self(dp[c][cur], dp[c-1][prev]);
-                }
-            }
-        }
-
-        // print_vv(dp);
+    int n;
+    while(cin>>n){
+        vi a(n); forn(i,n) cin>>a[i];
+        sort(all(a)); reverse(all(a));
         
-        int ans = 0;
-        forn(i,n+1){
-            add_self(ans, dp[C][i]);
-        }
-        add_self(ans,-1);
+        ll sum = a[0];
+        ll times = n-2;
 
-        cout<<ans<<"\n";
+        fore(i,1,n){
+            if(times==0) break;
+            sum+=a[i]; --times;
+            if(times==0) break;
+            sum+=a[i]; --times;
+        }
+
+        cout<<sum<<"\n";
     }
     return 0;
 }

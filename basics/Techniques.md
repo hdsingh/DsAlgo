@@ -4,6 +4,10 @@
 1. [Minimum Cost to Make at Least One Valid Path in a Grid](https://leetcode.com/problems/minimum-cost-to-make-at-least-one-valid-path-in-a-grid/description/)
 
 
+`Binary Search`:
+1. [Best Position for a Service Centre](https://leetcode.com/problems/best-position-for-a-service-centre/)
+
+
 `Bitmasks`:
 1. [Little Pony and Harmony Chest](https://codeforces.com/contest/453/problem/B)
 
@@ -13,6 +17,8 @@
 2. [Notes 2](https://www.careerbless.com/aptitude/qa/permutations_combinations_imp7.php)
 3. [F - Strivore](https://atcoder.jp/contests/abc171/tasks/abc171_f)
 4. [D. New Year and the Permutation Concatenation](https://codeforces.com/problemset/problem/1091/D)
+5. [Christmas Stocking Theorem](https://mathworld.wolfram.com/ChristmasStockingTheorem.html) (Sum on Diagonal).
+6. [Combinatorial_identity](https://artofproblemsolving.com/wiki/index.php/Combinatorial_identity)
 
 
 `Connected Components of Complement Graph`:
