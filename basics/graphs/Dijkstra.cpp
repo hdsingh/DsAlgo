@@ -3,10 +3,8 @@ using namespace std;
 #define forn(i, n) for(int i = 0; i < int(n); i++)
 #define fore(i, l, r) for(int i = int(l); i < int(r); i++)
 #define pb push_back
-#define deb(x) cout<<#x<<" "<<x<<endl;
-#define deb2(x, y) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<endl;
-#define deb3(x, y, z) cout<<#x<<" "<<x<<" "<<#y<<" "<<y<<" "<<#z<<" "<<z<<endl;
 #define all(x) x.begin(), x.end()
+#define sz(a) int((a).size())
 typedef long long ll;
 typedef vector<int> vi;
 typedef vector<vector<int>> vvi;
@@ -20,68 +18,75 @@ template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) 
 template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
 template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
 
-template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<v.size(); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(w)<<*i<<" ";cout<<endl;}
-template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
-template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
+#define _deb(x) cout<<x;
+void _print() {cerr << "]\n";} template <typename T, typename... V>void _print(T t, V... v) {_deb(t); if (sizeof...(v)) cerr << ", "; _print(v...);}
+#define deb(x...) cerr << "[" << #x << "] = ["; _print(x)
+template <class T, class U> void print_m(const map<T,U> &m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
+template<class T, class U>void debp(const pair<T, U> &pr, bool end_line=1){cout<<"{"<<pr.first<<" "<<pr.second<<"}"; cout<<(end_line ? "\n" : ", ");}
+template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cout<<"Empty"<<endl; return;}if(!sep_line) cout<<"{ ";for(auto x: vp) debp(x,sep_line);if(!sep_line) cout<<"}\n";cout<<endl;}
+template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
+template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-const int inf = 1e9;
-vector<vector<pii>> adj;
+typedef pair<ll, ll> pll;
 
-void dijkstra(int src, int dest, vi &dist, vi &par){
-    int n = adj.size();
-    vb visited(n);
-    dist.assign(n, inf);
-    par.assign(n, -1);
+void dijkstra(int n, int m, int src, int dest){
+    const ll inf = 1e18L;
+    vector<vector<pll>> adj(n+1); // {w, to}
+    int x, y; ll w;
+    forn(i,m){
+        cin>>x>>y>>w;
+        adj[x].push_back({w,y}); adj[y].push_back({w,x});
+    }
 
+    vi par(n+1,-1);
+    vl dist(n+1, inf);
+    vb vis(n+1);
+
+    priority_queue<pll, vector<pll>, greater<pll>> pq; // {w, to}
+    // int src  = 1;
     dist[src] = 0;
-    priority_queue<pii, vector<pii>, greater<pii>> q;
-    q.push({0,src});
+    pq.push({0, src});
 
-    while(!q.empty()){
-        int d = q.top().first;
-        int v = q.top().second;
-        q.pop();
-        visited[v] = true;
-        
-        // We already found a better path before we got to
-        // processing this node so we can ignore it.
-        if(dist[v] < d) continue;
+    while(!pq.empty()){
+        auto [d, node] = pq.top(); pq.pop();
+        vis[node] = 1;
+        if(d > dist[node]) continue;
 
-        for(auto edge: adj[v]){
-            int to = edge.first;
-            int len = edge.second;
+        for(auto ad: adj[node]){
+            auto [len, to] = ad;
+            if(vis[to]) continue;
 
-            // You cannot get a shorter path by revisiting
-            // a node you have already visited before.
-            if(visited[to]) continue;
-
-            if(dist[v] + len < dist[to]){
-                dist[to] = dist[v] + len;
-                par[to] = v;
-                q.push({dist[to], to});
+            if(dist[node] + len < dist[to]){
+                dist[to] = dist[node] + len;
+                pq.push({dist[to], to});
+                par[to] = node;
             }
         }
 
-        // If we know the end, we can break when end is found
-        if(v==dest) break;
+        if(node==dest) break;
     }
 
-    if(!visited[dest]){
-        cout<<-1<<endl; return;
+    if(!vis[dest]){
+        cout<<-1<<"\n"; return;
     }
 
-	vi path;
-    for(int v = dest; v!=src; v = par[v])
-        path.push_back(v);
-    path.push_back(src);
-
+    vi path;
+    int p = dest;
+    while(p!=-1){
+        path.push_back(p);
+        p = par[p];
+    }
     reverse(all(path));
     print(path);
 }
 
 int main(){
-    
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    int n, m;
+    cin>>n>>m;
+    dijkstra(n,m,1,n);
     return 0;
 }
 
+// https://codeforces.com/problemset/problem/20/C 
 // https://codeforces.com/problemset/problem/1076/D

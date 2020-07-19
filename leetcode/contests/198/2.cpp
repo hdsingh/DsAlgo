@@ -27,47 +27,41 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-vl fact(20);
-ll ans = 0;
-
-void solve(int x, vi cnt){
-    if(x==10){
-        // calc
-        int tot = accumulate(all(cnt),0);
-        ll res = (tot - cnt[0]) * fact[tot-1];
-        for(auto c: cnt) res/=fact[c];
-        ans+=res;
-
-        return;
+class Solution {
+    vvi adj;
+    vi ans;
+    int n;
+    string labels;
+    vvi cnt;
+public:
+    vector<int> countSubTrees(int N, vector<vector<int>>& edges, string L) {
+        labels = L;
+        n = N;
+        adj.clear(); adj.resize(n); ans.clear(); ans.resize(n);
+        cnt.clear(); cnt.resize(n, vi(26));
+        for(auto ed: edges){
+            adj[ed[0]].push_back(ed[1]);
+            adj[ed[1]].push_back(ed[0]);
+        }
+        dfs(0, -1);
+        return ans;
     }
 
-    if(cnt[x]==0){
-        solve(x+1, cnt);
-        return;
+    void dfs(int x, int p){
+        cnt[x][labels[x]-'a']++;
+        for(auto ad: adj[x]){
+            if(ad==p) continue;
+            dfs(ad, x);
+            for(int i=0; i<26; ++i)
+                cnt[x][i]+=cnt[ad][i];
+        }
+        ans[x] = cnt[x][labels[x]-'a'];
     }
+    
+};
 
-    for(int use = 1; use<=cnt[x]; ++use){
-        vi ncnt = cnt;
-        ncnt[x] = use;
-        solve(x+1, ncnt);
-    }
-}
-
-// Start with full (all included) and then decrease at each number.
-// In order to vary the cnt of  each number from 1 to actual cnt.
 int main(){
-    fact[0] = 1;
-    fore(i,1,20) fact[i] = fact[i-1]*i;
-
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    string s;
-    while(cin>>s){
-        ans = 0;
-        vi cnt(10);
-        for(auto x: s) cnt[x-'0']++;
-
-        solve(0, cnt);
-        cout<<ans<<"\n";
-    }
+    
     return 0;
 }

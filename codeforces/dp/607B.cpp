@@ -27,7 +27,13 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-const int inf = 1e3;
+// Ways in which a pal can be extended
+// 1. if a[i]==a[i+1] then reduce (a[i], a[i+1]) + reduce remaining
+// 2. ...l..k......r
+// if a[l]==a[k] (l+1<k<=r) it could be reduced along with the palindrome
+// inside. (remember in case of no preper palindrome, a char of len 1 is always a pal)
+// along with which a[l](pal)a[r]  (pal could be single c) can be reduce without any cost
+// + cost of reducing the remaining seq from a[k+1] to a[r].
 
 // Important step:
 // while minimising of collapsing from i to j
@@ -37,35 +43,33 @@ const int inf = 1e3;
 // we will not add +1 here because of this example
 // 1 2 3 1 : the steps required here are 2, not 3
 // bec remove 3 -> 1 2 1 . (2 steps)
+const int inf = 1e8;
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
     int n;
     while(cin>>n){
-        vi a(n+1);
-        fore(i,1,n+1) cin>>a[i];
-
+        vi a(n+1); fore(i,1,n+1) cin>>a[i];
         vvi dp(n+2, vi(n+2));
 
-        for(int i=n; i>=1; --i){
-            dp[i][i] = 1;
-            for(int j=i+1; j<=n; ++j){
-                dp[i][j] = inf;
-                min_self(dp[i][j], 1 + dp[i+1][j]);
-            
-                if(a[i]==a[i+1])
-                    min_self(dp[i][j], 1 + dp[i+2][j]);
+        for(int l=n; l>=1; --l){
+            dp[l][l] = 1;
+            for(int r=l+1; r<=n; ++r){
+                dp[l][r] = inf;
+                min_self(dp[l][r], 1 + dp[l+1][r]);
+
+                if(a[l]==a[l+1]) 
+                    min_self(dp[l][r], dp[l+2][r] + 1);
                 
-                for(int k=i+2; k<=j; ++k){
-                    if(a[i]==a[k])
-                        min_self(dp[i][j], dp[i+1][k-1] + dp[k+1][j]);
+                for(int k=l+2; k<=r; ++k){
+                    if(a[l]==a[k])
+                        min_self(dp[l][r], dp[l+1][k-1] + dp[k+1][r]);
                 }
             }
         }
-       
-        // print(a,1);
-        // print_vv(dp);
 
-        cout<<dp[1][n]<<endl;
+        // print_vv(dp);
+        cout<<dp[1][n]<<"\n";
     }
+    
     return 0;
 }

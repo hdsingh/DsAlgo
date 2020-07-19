@@ -33,6 +33,8 @@
 
 `Digit DP`:
 1. [Digit Sum](https://atcoder.jp/contests/dp/tasks/dp_s)
+2. [C. Classy Numbers](https://codeforces.com/contest/1036/problem/C)
+3. [GONE](https://www.spoj.com/problems/GONE/)
 
 
 `Hashing`:
@@ -58,6 +60,7 @@
 2. [1425. Constrained Subset Sum](https://leetcode.com/problems/constrained-subset-sum/)
 3. [862. Shortest Subarray with Sum at Least K](https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/)
 4. [C2. Skyscrapers](https://codeforces.com/contest/1313/problem/C2)
+5. [B. Mike and Feet](https://codeforces.com/problemset/problem/547/B)
 
 
 `MST`:
@@ -76,6 +79,11 @@
 
 `Precesion`:
 1. [Distance bw endpoints of the hands](https://atcoder.jp/contests/abc168/tasks/abc168_c)
+
+
+`Pigeonhole Principle`:
+1. [E. Maximum Subsequence Value](https://codeforces.com/contest/1365/problem/E)
+2. [C. Pashmak and Buses](https://codeforces.com/contest/459/problem/C)
 
 
 `Principle of Inclusion Exclusion`:

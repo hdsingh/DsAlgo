@@ -27,6 +27,9 @@ template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout
 // All the 0-weighted nodes form connected components
 // Hence if the total con comps are k, then k-1 addtitonal 
 // nodes will be required to connect them
+// Brute force modification, don't check the nodes which have 
+// already been included in the MST, because they will be connected,
+// otherwise they would have removed this node.
 const int nax = 1e5+10;
 int n,m,u,v;
 vector<set<int>> adj(nax);

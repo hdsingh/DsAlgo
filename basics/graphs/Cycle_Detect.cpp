@@ -108,3 +108,40 @@ void dfs1(int x){
         }
     }
 }
+
+// https://codeforces.com/contest/1205/problem/B
+// Brute force but required in some cases.
+// Disconnect the edge bw i and j, and find the dist 
+// bw them. if the dist is non-inf, the cycle len is dist+1;
+
+const int inf = 1e9;
+vi dist;
+int find_dist(int src, int ed){
+    forn(i,n) dist[i] = inf;
+
+    dist[src] = 0;
+    queue<int> q;
+    q.push(src);
+
+    while(size(q)){
+        auto top = q.front(); q.pop();
+        for(auto ad: adj[top]){
+            if(top==src && ad==ed) continue; // disconnection.
+            
+            if(dist[ad]>dist[top]+1){
+                dist[ad] = dist[top]+1;
+                q.push(ad);
+            }
+        }
+    }
+
+    return dist[ed];
+}
+
+// forn(i,n){
+//     fore(j,i+1,n){
+//         if(connected){
+//                 min_self(min_clen, find_dist(i,j)+1);
+//         }
+//     }
+// }

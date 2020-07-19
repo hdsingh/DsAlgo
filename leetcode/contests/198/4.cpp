@@ -27,47 +27,45 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-vl fact(20);
-ll ans = 0;
+// The and can decrease or remain same. It can never increase
+// In case it remains same, we can stop moving forward.
+// Since the same and can be obtained from i+1,
+// In case it decreases, we move forward, in hope of more decrease.
+// Since for a start at i, the and can decrease at most 20-23 times
+// depending upon log2(1e7);
+class Solution {
+public:
+    int closestToTarget(vector<int>& a, int X) {
+        int n = a.size();
+        int ans = 1e7;
+        for(int i=0; i<n; ++i){
+            int d = a[i];
+            int cur = abs(X-d);
+            min_self(ans, cur);
 
-void solve(int x, vi cnt){
-    if(x==10){
-        // calc
-        int tot = accumulate(all(cnt),0);
-        ll res = (tot - cnt[0]) * fact[tot-1];
-        for(auto c: cnt) res/=fact[c];
-        ans+=res;
-
-        return;
+            for(int j=i+1; j<n; ++j){
+                int nd = d&a[j];
+                cur = abs(X-nd);
+                min_self(ans, cur);
+                if(nd==d) break;
+                d = nd;
+            }
+        }
+        return ans;
     }
+};
 
-    if(cnt[x]==0){
-        solve(x+1, cnt);
-        return;
-    }
-
-    for(int use = 1; use<=cnt[x]; ++use){
-        vi ncnt = cnt;
-        ncnt[x] = use;
-        solve(x+1, ncnt);
-    }
-}
-
-// Start with full (all included) and then decrease at each number.
-// In order to vary the cnt of  each number from 1 to actual cnt.
 int main(){
-    fact[0] = 1;
-    fore(i,1,20) fact[i] = fact[i-1]*i;
-
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    string s;
-    while(cin>>s){
-        ans = 0;
-        vi cnt(10);
-        for(auto x: s) cnt[x-'0']++;
+    vi arr ; int target, out;
+    Solution sol;
+    arr = {9,12,3,7,15}, target = 5;
+    // arr = {9,12,3,3,7,3,1}, target = 5;
+    out = sol.closestToTarget(arr, target); deb(out);
+    arr = {1000000,1000000,1000000}, target = 1;
+    out = sol.closestToTarget(arr, target); deb(out);
+    arr = {1,2,4,8,16}, target = 0;
+    out = sol.closestToTarget(arr, target); deb(out);
 
-        solve(0, cnt);
-        cout<<ans<<"\n";
-    }
     return 0;
 }

@@ -27,47 +27,66 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-vl fact(20);
-ll ans = 0;
+const int nax = 100;
+vb isPrime(nax,1);
 
-void solve(int x, vi cnt){
-    if(x==10){
-        // calc
-        int tot = accumulate(all(cnt),0);
-        ll res = (tot - cnt[0]) * fact[tot-1];
-        for(auto c: cnt) res/=fact[c];
-        ans+=res;
-
-        return;
-    }
-
-    if(cnt[x]==0){
-        solve(x+1, cnt);
-        return;
-    }
-
-    for(int use = 1; use<=cnt[x]; ++use){
-        vi ncnt = cnt;
-        ncnt[x] = use;
-        solve(x+1, ncnt);
+void precalc(){
+    isPrime[0] = isPrime[1] = 0;
+    for(int i=2; i*i<nax; ++i){
+        if(isPrime[i]){
+            for(int j=i*i; j<nax; j+=i)
+                isPrime[j] = 0;
+        }
     }
 }
 
-// Start with full (all included) and then decrease at each number.
-// In order to vary the cnt of  each number from 1 to actual cnt.
+int dp[20][100][2]; // (pos, sum, tight from beg till pos)
+
+int find_cnt(int num){
+    string s = to_string(num);
+    int n = sz(s);
+
+    memset(dp, 0, sizeof(dp));
+    dp[n][0][0] = dp[n][0][1] = 1;
+
+    for(int i=n-1; i>=0; --i){
+        for(int sum=0; sum<100; ++sum){
+            for(int tight : {0,1}){
+                int cd = (s[i] - '0');
+                if(tight){
+                    for(int d=0; d<=cd; ++d)
+                        if(sum-d>=0)
+                            dp[i][sum][1] += (d==cd) ? dp[i+1][sum-d][1] : dp[i+1][sum-d][0];
+                }else{
+                    for(int d=0; d<10; ++d)
+                        if(sum-d>=0)
+                            dp[i][sum][0] += dp[i+1][sum-d][0];
+                }
+            }
+        }
+    }    
+
+    int ans = 0;
+    for(int i=0; i<100; ++i)
+        if(isPrime[i])
+            ans+=dp[0][i][1];
+    return ans;
+}
+
 int main(){
-    fact[0] = 1;
-    fore(i,1,20) fact[i] = fact[i-1]*i;
-
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    string s;
-    while(cin>>s){
-        ans = 0;
-        vi cnt(10);
-        for(auto x: s) cnt[x-'0']++;
+    precalc();
 
-        solve(0, cnt);
+    int T;
+    cin>>T;
+    while(T--){
+        int l, r;
+        cin>>l>>r;
+        int ans = find_cnt(r) - find_cnt(l-1);
         cout<<ans<<"\n";
     }
+    
     return 0;
 }
+
+// similar to [C. Classy Numbers](https://codeforces.com/contest/1036/problem/C)

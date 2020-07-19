@@ -74,3 +74,29 @@ int main(){
     }
     return 0;
 }
+
+int main1(){
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    int T;
+    cin>>T;
+    while(T--){
+        int n, k; cin>>n>>k;
+        string s; cin>>s;
+        int tot = count(all(s),'1');
+        int ans = tot; // turn all off , total off
+
+        forn(i,k){
+            int dif = 0;
+            for(int j=i; j<n; j+=k){
+                if(s[j]=='1')
+                    ++dif;
+                else    
+                    --dif;
+                dif = max(dif, 0);
+                min_self(ans, tot - dif);                 
+            }
+        }
+        cout<<ans<<"\n";
+    }
+    return 0;
+}
