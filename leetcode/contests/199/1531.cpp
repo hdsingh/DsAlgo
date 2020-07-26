@@ -27,41 +27,63 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-ll calc(ll n){
-	--n;
-	ll ans = 0;
-	ll p2 = 1;
-	while(1){
-		ll cur = (n+p2)/(2*p2);
-		cur*=p2;
-		ans+=cur;
-		if(!cur) break;
-		p2<<=1;
-	}
+// min len that can be obtined starting from ith pos,
+class Solution {
+    const int inf = 1e5;
+    int n, K;
+    string s;
+    vvi dp;
+public:
+    int getLengthOfOptimalCompression(string s, int K) {
+        this->s = s;
+        this->K = K;
+        dp.clear();
+        dp.resize(200+2, vi(200,-1));
+        n = s.size();
+        return dfs(0,0);
+    }
 
-	return ans;
-}
+    int dfs(int pos, int k){
+        int origK = k;
+        if(k>K) return inf;
+        if(pos==n) return 0;
+        if(dp[pos][k]!=-1) return dp[pos][k];
 
-// Draw a binary table and see what needs to be connected
-// 1. all the adj odds will be connected with cost 1
-// 2. now some of the pairs of these odds will be connected using cost 2
-// ex: (0,1) with (2,3).
-// Also it is always possible to connect a group with the prev, irrespective of 
-// whether it is complete or not.
-// 3. some of these will be connected with 4 (0 to 3) with (4,7)
-// speicifcally, 
-// for any n:
-// 1 : (n+1)/2   *1
-// 2 : (n+2)/4   *2
-// 3 : (n+4)/8   *4
-// 4 : (n+8)/16  *8 ... so on.
-//  + verification with brute force kruskal
+        // delete this 
+        int ans = inf;
+        min_self(ans, dfs(pos+1, k+1));
+
+        // start from here and take c conseq,
+        // deleting the other elements not equal to s[pos] in between
+
+        auto find_clen = [&](int cons){
+            if(cons==1) return 1;
+            if(cons<10) return 2;
+            return 3;
+        };
+
+        int c = 0;
+        for(int i=pos; i<n; ++i){
+            if(s[i]==s[pos]) ++c;
+            else ++k;
+            int clen = find_clen(c);
+            min_self(ans, clen + dfs(i+1, k));
+        }
+
+        return dp[pos][origK] = ans;
+    }
+};
+
 
 int main(){
-	ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-	ll n;
-	while(cin>>n){
-		cout<<calc(n)<<"\n";
-	}
-	return 0;
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    Solution sol; string s; int k, out;
+    s = "aaabcccd", k = 2;
+    out = sol.getLengthOfOptimalCompression(s,k); deb(out);
+    s = "aabbaa", k = 2;
+    out = sol.getLengthOfOptimalCompression(s,k); deb(out);
+    s = "aaaaaaaaaaa", k = 0;
+    out = sol.getLengthOfOptimalCompression(s,k); deb(out);
+
+    return 0;
 }

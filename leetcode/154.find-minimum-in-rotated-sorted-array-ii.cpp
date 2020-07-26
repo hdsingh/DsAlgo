@@ -79,6 +79,50 @@ public:
     }
 };
 
+// The pivot will lie in the unsorted part,
+// [4,5,6,7,1,2,3]
+// if a[mid]>a[rt](ex: 7>3), i.e unsorted it lies from [mid+1, rt]
+// else if a[lt]>a[mid] (unsorted), it lies from [lt+1, mid] (ex 4>1)
+// else the entire array is sorted i.e a[l]<=a[mid]<=a[rt]
+// So decrease rt.
+class Solution {
+public:
+    int findMin(vector<int>& a) {
+        int n = a.size();
+        int lt = 0, rt = n-1;
+        while(lt<rt){
+            int mid = lt + (rt-lt)/2;
+            if(a[mid]>a[rt])
+                lt = mid+1;
+            else if(a[lt]>a[mid])
+                rt = mid, ++lt;
+            else 
+                --rt;
+        }
+        return a[lt];
+    }
+};
+
+// Draw a graph and observe.
+class Solution {
+public:
+    int findMin(vector<int>& a) {
+        int n = a.size();
+        int lt = 0, rt = n-1;
+        while(lt<rt){
+            int mid = lt + (rt-lt)/2;
+            if(a[mid]>a[rt])
+                lt = mid+1;
+            else if(a[mid]<a[rt])
+                rt = mid;
+            else 
+                --rt;
+        }
+        return a[rt];
+    }
+};
+
+
 // @lc code=end
 int main(){
     Solution sol;

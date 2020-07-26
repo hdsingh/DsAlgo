@@ -30,6 +30,8 @@ vi color, par;
 int cycle_start, cycle_end;
 
 // has cycle
+// "void" dfs works better, setting and restting has_cycle globally.
+// ex: 711D
 bool dfs(int x){
     color[x] = 1;
     for(auto ad: adj[x]){
