@@ -10,6 +10,10 @@ typedef vector<int> vi;
 typedef vector<vector<int>> vvi;
 typedef vector<ll> vl;
 typedef vector<vector<ll>> vvl;
+typedef vector<string> vs;
+typedef vector<bool> vb;
+typedef pair<int, int> pii;
+const int mod = 1e9 + 7;
 template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
 template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
 template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
@@ -32,8 +36,7 @@ int main(){
     fore(k,1,n+1)
         fore(i,1,n+1)
             fore(j,1,n+1)
-                if(dist[i][k]<inf && dist[k][j]<inf)
-                    min_self(dist[i][j], dist[i][k] + dist[k][j]);
+                min_self(dist[i][j], dist[i][k] + dist[k][j]);
 
     forn(i,q){
         int x, y; cin>>x>>y;
