@@ -30,6 +30,7 @@ template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<en
 #define x first
 #define y second
  
+//  Another method, used  in Movies Festival II.
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
     int n;

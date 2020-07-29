@@ -27,96 +27,42 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-class Solution {
-public:
-    vector<double> medianSlidingWindow(vector<int>& a, int k) {
-        multiset<int> window(a.begin(), a.begin()+k);
-        auto mid = next(window.begin(), k/2);
-        int n = a.size();
-        vector<double> medians;
-        for(int i=k; ; ++i){
-            double med = ((double)*mid + *prev(mid, 1 - k%2))/2;
-            medians.push_back(med);
+vvi adj;
+vb vis;
 
-            if(i==n) return medians;
-
-            window.insert(a[i]);
-            if(a[i]<*mid)
-                --mid;
-            
-            if(a[i-k]<=*mid)
-                ++mid;
-            window.erase(window.lower_bound(a[i-k]));
-        }
-
+void dfs(int x, int p){
+    vis[x] = 1;
+    for(auto ad: adj[x]){
+        if(x==p) continue;
+        if(!vis[ad])
+            dfs(ad,x);
     }
-};
-
-class Solution {
-    multiset<int> lo, hi;
-public:
-    vector<double> medianSlidingWindow(vector<int>& a, int k) {
-        int n = a.size();
-        vector<double> out;
-
-        for(int i=0; i<=n; ++i){
-            if(i>=k){
-                out.push_back(median());
-                remove(a[i-k]);
-            }
-            if(i==n) break;
-            add(a[i]);
-        }
-
-        return out;
-    }
-
-    void add(int x){
-        if(lo.empty()){
-            lo.insert(x);
-            return;
-        }
-        
-        if(x<*lo.rbegin()){
-            lo.insert(x);
-        }else{
-            hi.insert(x);
-        }
-
-        balance();
-    }
-
-    void remove(int x){
-        if(x<=*lo.rbegin()){
-            assert(lo.find(x)!=lo.end());
-            lo.erase(lo.find(x));
-        }else{
-            assert(hi.find(x)!=hi.end());
-            hi.erase(hi.find(x));
-        }
-        balance();
-    }
-
-    void balance(){
-        if(lo.size()){
-            hi.insert(*lo.rbegin());
-            lo.erase(lo.find(*lo.rbegin()));
-        }
-
-        while(hi.size()>lo.size()){
-            lo.insert(*hi.begin());
-            hi.erase(hi.begin());
-        }
-    }
-
-    double median(){
-        if(lo.size()>hi.size())
-            return *lo.rbegin();
-        return ((double)*lo.rbegin() + *hi.begin())/2;
-    }
-};
+}
 
 int main(){
-    
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    int n,m;
+    while(cin>>n>>m){
+        adj.clear(); adj.resize(n+1);
+        vis.assign(n+1,0);
+        forn(i,m){
+            int x, y; cin>>x>>y;
+            adj[x].pb(y), adj[y].pb(x);
+        }        
+
+        int comps = 0;
+        vi starts;
+        fore(i,1,n+1){
+            if(!vis[i]){
+                ++comps;
+                starts.pb(i);
+                dfs(i, 0);
+            }
+        }
+        cout<<comps-1<<"\n";
+        fore(i,1,sz(starts)){
+            cout<<starts[i-1]<<" "<<starts[i]<<"\n";
+        }
+    }
     return 0;
 }

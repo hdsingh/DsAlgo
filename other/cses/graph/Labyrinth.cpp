@@ -27,96 +27,78 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-class Solution {
-public:
-    vector<double> medianSlidingWindow(vector<int>& a, int k) {
-        multiset<int> window(a.begin(), a.begin()+k);
-        auto mid = next(window.begin(), k/2);
-        int n = a.size();
-        vector<double> medians;
-        for(int i=k; ; ++i){
-            double med = ((double)*mid + *prev(mid, 1 - k%2))/2;
-            medians.push_back(med);
+#define x first
+#define y second
 
-            if(i==n) return medians;
-
-            window.insert(a[i]);
-            if(a[i]<*mid)
-                --mid;
-            
-            if(a[i-k]<=*mid)
-                ++mid;
-            window.erase(window.lower_bound(a[i-k]));
-        }
-
-    }
+const map<vi, char> dirs = {
+    {{-1,0},'U'},
+    {{0,1},'R'},
+    {{1,0},'D'},
+    {{0,-1},'L'},
 };
 
-class Solution {
-    multiset<int> lo, hi;
-public:
-    vector<double> medianSlidingWindow(vector<int>& a, int k) {
-        int n = a.size();
-        vector<double> out;
-
-        for(int i=0; i<=n; ++i){
-            if(i>=k){
-                out.push_back(median());
-                remove(a[i-k]);
-            }
-            if(i==n) break;
-            add(a[i]);
-        }
-
-        return out;
-    }
-
-    void add(int x){
-        if(lo.empty()){
-            lo.insert(x);
-            return;
-        }
-        
-        if(x<*lo.rbegin()){
-            lo.insert(x);
-        }else{
-            hi.insert(x);
-        }
-
-        balance();
-    }
-
-    void remove(int x){
-        if(x<=*lo.rbegin()){
-            assert(lo.find(x)!=lo.end());
-            lo.erase(lo.find(x));
-        }else{
-            assert(hi.find(x)!=hi.end());
-            hi.erase(hi.find(x));
-        }
-        balance();
-    }
-
-    void balance(){
-        if(lo.size()){
-            hi.insert(*lo.rbegin());
-            lo.erase(lo.find(*lo.rbegin()));
-        }
-
-        while(hi.size()>lo.size()){
-            lo.insert(*hi.begin());
-            hi.erase(hi.begin());
-        }
-    }
-
-    double median(){
-        if(lo.size()>hi.size())
-            return *lo.rbegin();
-        return ((double)*lo.rbegin() + *hi.begin())/2;
-    }
-};
 
 int main(){
-    
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    int n, m;
+    while(cin>>n>>m){
+        vs grid(n+2, string(m+2,'#'));
+        vector<vector<pii>> par(n+2, vector<pii>(m+2));
+        vs saveDir(n+2, string(m+2,'.'));
+        pii pA, pB;
+        fore(i,1,n+1){
+            fore(j,1,m+1){
+                cin>>grid[i][j];
+                if(grid[i][j]=='A'){
+                    pA = {i,j};
+                }else if(grid[i][j]=='B'){
+                    pB = {i,j};
+                }
+            }
+        }
+
+        vector<pii> q;
+        q.pb(pA);
+        grid[pA.x][pA.y] = '#';
+
+        int steps = 0;
+        bool found = 0;
+        while(sz(q)){
+            if(found) break;
+            vector<pii> nq;
+            ++steps;
+            for(auto top: q){
+                if(found) break;
+                for(auto dir: dirs){
+                    int nx = top.x + dir.x[0];
+                    int ny = top.y + dir.x[1];
+                    if(grid[nx][ny]=='#') continue;
+                    nq.pb({nx,ny});
+                    par[nx][ny] = top;
+                    saveDir[nx][ny] = dir.y;
+                    if(grid[nx][ny]=='B'){
+                        found = 1; break;
+                    }
+                    grid[nx][ny] = '#';
+                }
+            }
+            q = nq;
+        }
+
+        if(!found){
+            cout<<"NO\n"; continue;
+        }
+        cout<<"YES\n";
+        string ans;
+        pii cur = pB;
+        while(cur!=pA){
+            ans+=saveDir[cur.x][cur.y];
+            cur = par[cur.x][cur.y];
+        }
+        reverse(all(ans));
+        cout<<steps<<"\n"<<ans<<"\n";
+
+    }
     return 0;
 }
+

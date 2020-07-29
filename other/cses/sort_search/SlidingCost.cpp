@@ -27,41 +27,24 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
+// Extending the sol to sliding window median.
+// Since we know the elements less then cur median
+// and more than cur median (lo and hi),
+// we can keep track of their sum.
 class Solution {
+    multiset<ll> lo, hi;
+    ll losum, hisum;
 public:
-    vector<double> medianSlidingWindow(vector<int>& a, int k) {
-        multiset<int> window(a.begin(), a.begin()+k);
-        auto mid = next(window.begin(), k/2);
+    vector<ll> medianSlidingWindow(vector<int>& a, int k) {
         int n = a.size();
-        vector<double> medians;
-        for(int i=k; ; ++i){
-            double med = ((double)*mid + *prev(mid, 1 - k%2))/2;
-            medians.push_back(med);
-
-            if(i==n) return medians;
-
-            window.insert(a[i]);
-            if(a[i]<*mid)
-                --mid;
-            
-            if(a[i-k]<=*mid)
-                ++mid;
-            window.erase(window.lower_bound(a[i-k]));
-        }
-
-    }
-};
-
-class Solution {
-    multiset<int> lo, hi;
-public:
-    vector<double> medianSlidingWindow(vector<int>& a, int k) {
-        int n = a.size();
-        vector<double> out;
+        vector<ll> out;
+        losum = 0, hisum = 0;
 
         for(int i=0; i<=n; ++i){
             if(i>=k){
-                out.push_back(median());
+                ll med = median();
+                ll sum = (sz(lo)*med - losum) + (hisum - sz(hi)*med);
+                out.push_back(sum);
                 remove(a[i-k]);
             }
             if(i==n) break;
@@ -71,52 +54,68 @@ public:
         return out;
     }
 
-    void add(int x){
+    void add(ll x){
         if(lo.empty()){
             lo.insert(x);
+            losum+=x;
             return;
         }
         
         if(x<*lo.rbegin()){
             lo.insert(x);
+            losum+=x;
         }else{
             hi.insert(x);
+            hisum+=x;
         }
 
         balance();
     }
 
-    void remove(int x){
+    void remove(ll x){
         if(x<=*lo.rbegin()){
             assert(lo.find(x)!=lo.end());
             lo.erase(lo.find(x));
+            losum-=x;
         }else{
             assert(hi.find(x)!=hi.end());
             hi.erase(hi.find(x));
+            hisum-=x;
         }
         balance();
     }
 
     void balance(){
         if(lo.size()){
-            hi.insert(*lo.rbegin());
-            lo.erase(lo.find(*lo.rbegin()));
+            hisum+=*lo.rbegin();
+            hi.insert(*lo.rbegin()); 
+        
+            losum-=*lo.rbegin();
+            lo.erase(lo.find(*lo.rbegin())); 
         }
 
         while(hi.size()>lo.size()){
+            losum+=*hi.begin();
             lo.insert(*hi.begin());
+
+            hisum-=*hi.begin();
             hi.erase(hi.begin());
         }
     }
 
-    double median(){
-        if(lo.size()>hi.size())
-            return *lo.rbegin();
-        return ((double)*lo.rbegin() + *hi.begin())/2;
+    ll median(){
+        return *lo.rbegin();
     }
 };
 
 int main(){
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    Solution sol;
+    int n, k; cin>>n>>k;
+    vi a(n);
+    forn(i,n) cin>>a[i];
+    vl out = sol.medianSlidingWindow(a,k);
+    print(out);
     
     return 0;
 }

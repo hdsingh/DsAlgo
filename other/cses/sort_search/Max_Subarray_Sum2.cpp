@@ -27,96 +27,34 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-class Solution {
-public:
-    vector<double> medianSlidingWindow(vector<int>& a, int k) {
-        multiset<int> window(a.begin(), a.begin()+k);
-        auto mid = next(window.begin(), k/2);
-        int n = a.size();
-        vector<double> medians;
-        for(int i=k; ; ++i){
-            double med = ((double)*mid + *prev(mid, 1 - k%2))/2;
-            medians.push_back(med);
-
-            if(i==n) return medians;
-
-            window.insert(a[i]);
-            if(a[i]<*mid)
-                --mid;
-            
-            if(a[i-k]<=*mid)
-                ++mid;
-            window.erase(window.lower_bound(a[i-k]));
-        }
-
-    }
-};
-
-class Solution {
-    multiset<int> lo, hi;
-public:
-    vector<double> medianSlidingWindow(vector<int>& a, int k) {
-        int n = a.size();
-        vector<double> out;
-
-        for(int i=0; i<=n; ++i){
-            if(i>=k){
-                out.push_back(median());
-                remove(a[i-k]);
-            }
-            if(i==n) break;
-            add(a[i]);
-        }
-
-        return out;
-    }
-
-    void add(int x){
-        if(lo.empty()){
-            lo.insert(x);
-            return;
-        }
-        
-        if(x<*lo.rbegin()){
-            lo.insert(x);
-        }else{
-            hi.insert(x);
-        }
-
-        balance();
-    }
-
-    void remove(int x){
-        if(x<=*lo.rbegin()){
-            assert(lo.find(x)!=lo.end());
-            lo.erase(lo.find(x));
-        }else{
-            assert(hi.find(x)!=hi.end());
-            hi.erase(hi.find(x));
-        }
-        balance();
-    }
-
-    void balance(){
-        if(lo.size()){
-            hi.insert(*lo.rbegin());
-            lo.erase(lo.find(*lo.rbegin()));
-        }
-
-        while(hi.size()>lo.size()){
-            lo.insert(*hi.begin());
-            hi.erase(hi.begin());
-        }
-    }
-
-    double median(){
-        if(lo.size()>hi.size())
-            return *lo.rbegin();
-        return ((double)*lo.rbegin() + *hi.begin())/2;
-    }
-};
-
+// Think in terms of partial sum.
+// check for each valid position, what is the max sum that could be formed
+// It is simply the max_sum in range[l..r] - pre[i-1];
+// It could be done by using a multiset to keep track of the window of 
+// elements.
 int main(){
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    int n, l, r;
+    while(cin>>n>>l>>r){
+        vl a(n+1); fore(i,1,n+1) cin>>a[i];
+        partial_sum(all(a), a.begin());
+        
+
+        multiset<ll> s;
+        for(int i=l; i<=r; ++i) s.insert(a[i]);
+        ll mx = *s.rbegin();
     
+        for(int i=2; i<=n; ++i){
+            s.erase(s.find(a[l++]));
+            if(r<n) s.insert(a[++r]);
+            if(s.empty()) break;
+        
+            ll cur = *s.rbegin() - a[i-1];
+            max_self(mx, cur);
+
+        }
+
+        cout<<mx<<"\n";
+    }
     return 0;
 }

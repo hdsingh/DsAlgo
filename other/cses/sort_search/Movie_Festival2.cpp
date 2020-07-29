@@ -26,97 +26,46 @@ template<class T, class U>void debp(const pair<T, U> &pr, bool end_line=1){cout<
 template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cout<<"Empty"<<endl; return;}if(!sep_line) cout<<"{ ";for(auto x: vp) debp(x,sep_line);if(!sep_line) cout<<"}\n";cout<<endl;}
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
+// #define ar array
+typedef array<int,3> ar;
+const int arv = 1;
+const int dept = 0;
+const int id = 2;
 
-class Solution {
-public:
-    vector<double> medianSlidingWindow(vector<int>& a, int k) {
-        multiset<int> window(a.begin(), a.begin()+k);
-        auto mid = next(window.begin(), k/2);
-        int n = a.size();
-        vector<double> medians;
-        for(int i=k; ; ++i){
-            double med = ((double)*mid + *prev(mid, 1 - k%2))/2;
-            medians.push_back(med);
-
-            if(i==n) return medians;
-
-            window.insert(a[i]);
-            if(a[i]<*mid)
-                --mid;
-            
-            if(a[i-k]<=*mid)
-                ++mid;
-            window.erase(window.lower_bound(a[i-k]));
-        }
-
-    }
-};
-
-class Solution {
-    multiset<int> lo, hi;
-public:
-    vector<double> medianSlidingWindow(vector<int>& a, int k) {
-        int n = a.size();
-        vector<double> out;
-
-        for(int i=0; i<=n; ++i){
-            if(i>=k){
-                out.push_back(median());
-                remove(a[i-k]);
-            }
-            if(i==n) break;
-            add(a[i]);
-        }
-
-        return out;
-    }
-
-    void add(int x){
-        if(lo.empty()){
-            lo.insert(x);
-            return;
-        }
-        
-        if(x<*lo.rbegin()){
-            lo.insert(x);
-        }else{
-            hi.insert(x);
-        }
-
-        balance();
-    }
-
-    void remove(int x){
-        if(x<=*lo.rbegin()){
-            assert(lo.find(x)!=lo.end());
-            lo.erase(lo.find(x));
-        }else{
-            assert(hi.find(x)!=hi.end());
-            hi.erase(hi.find(x));
-        }
-        balance();
-    }
-
-    void balance(){
-        if(lo.size()){
-            hi.insert(*lo.rbegin());
-            lo.erase(lo.find(*lo.rbegin()));
-        }
-
-        while(hi.size()>lo.size()){
-            lo.insert(*hi.begin());
-            hi.erase(hi.begin());
-        }
-    }
-
-    double median(){
-        if(lo.size()>hi.size())
-            return *lo.rbegin();
-        return ((double)*lo.rbegin() + *hi.begin())/2;
-    }
-};
-
+// based on room allocation.
 int main(){
-    
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    int n, k;
+    while(cin>>n>>k){
+        int ans2 = 0;
+        vector<int> ans(n);
+        vector<ar> a(n); //{dept, arrive}
+        forn(i,n) cin>>a[i][arv]>>a[i][dept], a[i][id] = i;
+        sort(all(a));// based on dept
+        for(auto x: a){
+            auto [dep, av, id] = x;
+            deb(av, dep);
+        }
+
+        set<ar> s; // {dept, room id}
+        forn(i,n){
+            auto it = s.upper_bound({a[i][arv]});
+            if(it!=s.begin()){
+                --it;
+                ans[a[i][id]] = (*it)[1];
+                s.erase(it);
+            }else{
+                ans[a[i][id]] = sz(s);
+            }
+
+            if(sz(s)<k){
+                deb(ans[a[i][id]]+1);
+                s.insert({a[i][dept], ans[a[i][id]]});
+                ++ans2;
+            }
+        }
+
+        cout<<ans2<<"\n";
+    }
     return 0;
 }
