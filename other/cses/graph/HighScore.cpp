@@ -13,6 +13,7 @@ typedef vector<vector<ll>> vvl;
 typedef vector<string> vs;
 typedef vector<bool> vb;
 typedef pair<int, int> pii;
+typedef pair<ll,ll> pll;
 const int mod = 1e9 + 7;
 template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
 template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
@@ -27,69 +28,78 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-typedef pair<ll, ll> pll;
+int n, m;
+const ll inf = 1e18l;
 
-void dijkstra(int n, int m, int src, int dest){
-    const ll inf = 1e18L;
-    vector<vector<pll>> adj(n+1); // {w, to}
-    int x, y; ll w;
+void SPFA(){
+    cin>>n>>m;
+    vector<vector<pll>> adj(n+1); // {to, w}
     forn(i,m){
-        cin>>x>>y>>w;
-        adj[x].push_back({w,y}); adj[y].push_back({w,x});
+        int x, y, w; cin>>x>>y>>w;
+        adj[x].pb({y,w});
     }
-
-    vi par(n+1,-1);
-    vl dist(n+1, inf);
-    vb vis(n+1);
-
-    priority_queue<pll, vector<pll>, greater<pll>> pq; // {w, to}
-    // int src  = 1;
+    vl dist(n+1, -inf);
+    vb inq(n+1); vi cnt(n+1), par(n+1, -1);
+    queue<int> q;
+    int src = 1;
     dist[src] = 0;
-    pq.push({0, src});
+    q.push(src);
 
-    while(!pq.empty()){
-        auto [d, node] = pq.top(); pq.pop();
-        vis[node] = 1;
-        if(d > dist[node]) continue;
+    int x; // vertex in cycle
+    bool has_cycle = 0;
+    while(sz(q)){
+        if(has_cycle) break;
+        int top = q.front(); q.pop();
+        inq[top] = 0;
 
-        for(auto ad: adj[node]){
-            auto [len, to] = ad;
-            if(vis[to]) continue;
-
-            if(dist[node] + len < dist[to]){
-                dist[to] = dist[node] + len;
-                pq.push({dist[to], to});
-                par[to] = node;
+        for(auto ad: adj[top]){
+            auto [to, len] = ad;
+            if(dist[top]+len> dist[to]){
+                dist[to] = dist[top] + len;
+                par[to] = top;
+                if(!inq[to]){
+                    q.push(to);
+                    inq[to] = 1;
+                    cnt[to]++;
+                    if(cnt[to]>=n){
+                        x = to;
+                        has_cycle = 1;
+                        break;
+                    }
+                }
             }
         }
-
-        if(node==dest) break;
     }
 
-    if(!vis[dest]){
-        cout<<-1<<"\n"; return;
-    }
+    if(!has_cycle){
+        cout<<dist[n]<<"\n";
+    }else{
+        // find a node present in cycle
+        forn(i,n) x = par[x]; // since it is in cycle
+        // if from this node present in cycle
+        // it is possible to reach n(dest) then we can
+        // get arbitrarily large val
 
-    vi path;
-    int p = dest;
-    while(p!=-1){
-        path.push_back(p);
-        p = par[p];
+        vb vis(n+1);
+        queue<int> q;
+        vis[x] = 1;
+        q.push(x);
+
+        while(sz(q)){
+            int top = q.front(); q.pop();
+            for(auto ad: adj[top]){
+                int to = ad.first;
+                if(vis[to]) continue;
+                vis[to] = 1;
+                q.push(to);
+            }
+        }
+        cout<<(vis[n] ? -1 : dist[n])<<"\n";
     }
-    reverse(all(path));
-    print(path);
 }
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n, m;
-    cin>>n>>m;
-    dijkstra(n,m,1,n);
+    SPFA();
     return 0;
 }
-
-// https://codeforces.com/problemset/problem/20/C 
-// https://codeforces.com/problemset/problem/1076/D
-// https://cses.fi/problemset/task/1195/ (Flight Discounts)
-// https://cses.fi/problemset/task/1671 (Shortest Routes)
-// https://cses.fi/problemset/task/1196/ (Flight Routes)

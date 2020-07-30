@@ -27,69 +27,78 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-typedef pair<ll, ll> pll;
+int n, m;
+vvi adj;
+vi indeg, ord;
+vi cols;
+bool has_cycle;
 
-void dijkstra(int n, int m, int src, int dest){
-    const ll inf = 1e18L;
-    vector<vector<pll>> adj(n+1); // {w, to}
-    int x, y; ll w;
-    forn(i,m){
-        cin>>x>>y>>w;
-        adj[x].push_back({w,y}); adj[y].push_back({w,x});
+void kahns(){
+    queue<int> q;
+    fore(i,1,n+1){
+        if(indeg[i]==0) q.push(i);
     }
 
-    vi par(n+1,-1);
-    vl dist(n+1, inf);
-    vb vis(n+1);
-
-    priority_queue<pll, vector<pll>, greater<pll>> pq; // {w, to}
-    // int src  = 1;
-    dist[src] = 0;
-    pq.push({0, src});
-
-    while(!pq.empty()){
-        auto [d, node] = pq.top(); pq.pop();
-        vis[node] = 1;
-        if(d > dist[node]) continue;
-
-        for(auto ad: adj[node]){
-            auto [len, to] = ad;
-            if(vis[to]) continue;
-
-            if(dist[node] + len < dist[to]){
-                dist[to] = dist[node] + len;
-                pq.push({dist[to], to});
-                par[to] = node;
-            }
+    int cnt = 0;
+    while(sz(q)){
+        int top = q.front(); q.pop();
+        ord.pb(top);
+        cnt++;
+        for(auto ad: adj[top]){
+            indeg[ad]--;
+            if(indeg[ad]==0)
+                q.push(ad);
         }
-
-        if(node==dest) break;
+    }
+    if(cnt!=n){
+        cout<<"IMPOSSIBLE\n";
+    }else{
+        print(ord);
     }
 
-    if(!vis[dest]){
-        cout<<-1<<"\n"; return;
-    }
+}
 
-    vi path;
-    int p = dest;
-    while(p!=-1){
-        path.push_back(p);
-        p = par[p];
+void dfs(int x){
+    cols[x] = 1;
+    for(auto ad: adj[x]){
+        if(cols[ad]==0)
+            dfs(ad);
+        else if(cols[ad]==1){
+            has_cycle = 1;
+            return;
+        }
     }
-    reverse(all(path));
-    print(path);
+    cols[x] = 2;
+    ord.pb(x);
+}
+
+void topsort(){
+    fore(i,1,n+1)
+        if(cols[i]==0)
+            dfs(i);
+
+    if(has_cycle){
+        cout<<"IMPOSSIBLE\n";
+    }else{
+        reverse(all(ord));
+        print(ord);
+    }
+    
 }
 
 int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n, m;
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);   
     cin>>n>>m;
-    dijkstra(n,m,1,n);
+    adj.resize(n+1); indeg.assign(n+1,0); cols.assign(n+1,0);
+    forn(i,m){
+        int x, y; cin>>x>>y;
+        adj[x].pb(y);
+        indeg[y]++;
+    }
+    // method 1
+    // kahns();
+
+    // method 2
+    topsort();
     return 0;
 }
-
-// https://codeforces.com/problemset/problem/20/C 
-// https://codeforces.com/problemset/problem/1076/D
-// https://cses.fi/problemset/task/1195/ (Flight Discounts)
-// https://cses.fi/problemset/task/1671 (Shortest Routes)
-// https://cses.fi/problemset/task/1196/ (Flight Routes)

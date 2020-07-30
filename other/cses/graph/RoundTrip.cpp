@@ -46,9 +46,7 @@ bool dfs(int x, int p){
                 cur = par[cur];
             }
             cycle.pb(ad);
-
-            if(sz(cycle)>2) return 1;
-            else cycle.clear();
+            return 1;
         }
     }
 

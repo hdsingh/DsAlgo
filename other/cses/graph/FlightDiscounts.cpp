@@ -28,17 +28,12 @@ template <typename T>void print(const T &v, bool show_index = false){int w = 2;i
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
 typedef pair<ll, ll> pll;
+int n, m;
+const ll inf = 1e18L;
+int x, y; ll w;
 
-void dijkstra(int n, int m, int src, int dest){
-    const ll inf = 1e18L;
-    vector<vector<pll>> adj(n+1); // {w, to}
-    int x, y; ll w;
-    forn(i,m){
-        cin>>x>>y>>w;
-        adj[x].push_back({w,y}); adj[y].push_back({w,x});
-    }
-
-    vi par(n+1,-1);
+vl dijkstra(int src, int dest, vector<vector<pll>> &adj){
+    // vi par(n+1,-1);
     vl dist(n+1, inf);
     vb vis(n+1);
 
@@ -59,37 +54,39 @@ void dijkstra(int n, int m, int src, int dest){
             if(dist[node] + len < dist[to]){
                 dist[to] = dist[node] + len;
                 pq.push({dist[to], to});
-                par[to] = node;
+                // par[to] = node;
             }
         }
-
-        if(node==dest) break;
     }
 
-    if(!vis[dest]){
-        cout<<-1<<"\n"; return;
-    }
-
-    vi path;
-    int p = dest;
-    while(p!=-1){
-        path.push_back(p);
-        p = par[p];
-    }
-    reverse(all(path));
-    print(path);
+    return dist;
 }
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n, m;
     cin>>n>>m;
-    dijkstra(n,m,1,n);
+    vector<vector<pll>> adj(n+1), nadj(n+1); // {w, to}
+    forn(i,m){
+        cin>>x>>y>>w;
+        adj[x].push_back({w,y}); 
+        nadj[y].push_back({w,x});
+    }
+
+    vl d1 = dijkstra(1,n, adj);
+    vl d2 = dijkstra(n,1, nadj);
+    d1[0] = d2[0] = 0;
+    // print(d1,1);
+    // print(d2);
+
+    ll mn = inf;
+    fore(node,1,n+1){
+        for(auto ad: adj[node]){
+            auto [len,to] = ad;
+            min_self(mn, d1[node] + d2[to] + len/2);
+        }
+    }
+
+    cout<<mn<<"\n";
+
     return 0;
 }
-
-// https://codeforces.com/problemset/problem/20/C 
-// https://codeforces.com/problemset/problem/1076/D
-// https://cses.fi/problemset/task/1195/ (Flight Discounts)
-// https://cses.fi/problemset/task/1671 (Shortest Routes)
-// https://cses.fi/problemset/task/1196/ (Flight Routes)

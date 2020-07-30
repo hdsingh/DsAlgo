@@ -15,6 +15,7 @@ typedef vector<bool> vb;
 // Better methods
 // 1. DFS+Coloring + Cycle detection (CF 770C)
 // 2. Kahns Algo : BFS + Cycle Detection(LC 207)
+// https://cses.fi/problemset/task/1679/(Course Schedule)
 
 // Simple method
 int n; // number of vertices

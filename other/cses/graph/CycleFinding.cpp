@@ -27,69 +27,58 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-typedef pair<ll, ll> pll;
+const ll inf = 1e18L;
 
-void dijkstra(int n, int m, int src, int dest){
-    const ll inf = 1e18L;
-    vector<vector<pll>> adj(n+1); // {w, to}
-    int x, y; ll w;
-    forn(i,m){
-        cin>>x>>y>>w;
-        adj[x].push_back({w,y}); adj[y].push_back({w,x});
-    }
+struct Edge{
+    int a, b; ll w;
+};
 
-    vi par(n+1,-1);
+int n, m;
+vector<Edge> edges;
+
+void bellmanFord(int src){
     vl dist(n+1, inf);
-    vb vis(n+1);
-
-    priority_queue<pll, vector<pll>, greater<pll>> pq; // {w, to}
-    // int src  = 1;
-    dist[src] = 0;
-    pq.push({0, src});
-
-    while(!pq.empty()){
-        auto [d, node] = pq.top(); pq.pop();
-        vis[node] = 1;
-        if(d > dist[node]) continue;
-
-        for(auto ad: adj[node]){
-            auto [len, to] = ad;
-            if(vis[to]) continue;
-
-            if(dist[node] + len < dist[to]){
-                dist[to] = dist[node] + len;
-                pq.push({dist[to], to});
-                par[to] = node;
+    vi par(n+1,-1);
+    dist[1] = 0;
+    int x;
+    for(int times=0; times<n; ++times){
+        x = -1;
+        // bool any = false;
+        for(auto e: edges){
+            if(dist[e.a] + e.w < dist[e.b]){
+                dist[e.b] = max(-inf, dist[e.a] + e.w);
+                par[e.b] = e.a;
+                x = e.b;
+                // any = 1; 
             }
         }
 
-        if(node==dest) break;
+        // if(!any) break;
     }
 
-    if(!vis[dest]){
-        cout<<-1<<"\n"; return;
+    if(x==-1){
+        cout<<"NO\n";
+    }else{
+        cout<<"YES\n";
+        int y = x;
+        for(int i=0; i<n; ++i) y = par[y];
+        vi path;
+        for(int cur = y; ; cur = par[cur]){
+            path.pb(cur);
+            if(cur==y && sz(path)>1) break;
+        }
+        reverse(all(path));
+        print(path);
     }
-
-    vi path;
-    int p = dest;
-    while(p!=-1){
-        path.push_back(p);
-        p = par[p];
-    }
-    reverse(all(path));
-    print(path);
 }
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n, m;
     cin>>n>>m;
-    dijkstra(n,m,1,n);
+    forn(i,m){
+        Edge e; cin>>e.a>>e.b>>e.w;
+        edges.pb(e);
+    }
+    bellmanFord(1);
     return 0;
 }
-
-// https://codeforces.com/problemset/problem/20/C 
-// https://codeforces.com/problemset/problem/1076/D
-// https://cses.fi/problemset/task/1195/ (Flight Discounts)
-// https://cses.fi/problemset/task/1671 (Shortest Routes)
-// https://cses.fi/problemset/task/1196/ (Flight Routes)
