@@ -93,3 +93,4 @@ int main(){
 // https://cses.fi/problemset/task/1195/ (Flight Discounts)
 // https://cses.fi/problemset/task/1671 (Shortest Routes)
 // https://cses.fi/problemset/task/1196/ (Flight Routes)
+// https://cses.fi/problemset/task/1202 (Investigation) (Djkstra + DP)

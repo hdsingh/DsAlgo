@@ -17,7 +17,7 @@ const int mod = 1e9 + 7;
 template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
 template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
 template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
- 
+
 #define _deb(x) cout<<x;
 void _print() {cerr << "]\n";} template <typename T, typename... V>void _print(T t, V... v) {_deb(t); if (sizeof...(v)) cerr << ", "; _print(v...);}
 #define deb(x...) cerr << "[" << #x << "] = ["; _print(x)
@@ -26,58 +26,62 @@ template<class T, class U>void debp(const pair<T, U> &pr, bool end_line=1){cout<
 template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cout<<"Empty"<<endl; return;}if(!sep_line) cout<<"{ ";for(auto x: vp) debp(x,sep_line);if(!sep_line) cout<<"}\n";cout<<endl;}
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
- 
+
+struct Edge{
+    int a, b, w;
+    bool operator<(const Edge &oth){
+        return w<oth.w;
+    }
+};
+
 int n, m;
-const int nax = 1e5 + 10;
-vi ord, ans(nax), comp;
-vvi adj(nax), radj(nax);
-vb vis(nax);
-int cnt = 0;
- 
-void dfs(int node){
-    vis[node] = 1;
-    for(auto ad: adj[node])
-        if(!vis[ad])
-            dfs(ad);
-    ord.pb(node);
+
+const int nax = 1e5+10;
+vi par(nax);
+vector<Edge> edges;
+
+int find(int x){
+    if(par[x]==x) return x;
+    return par[x] = find(par[x]);
 }
- 
-void dfs2(int node){
-    vis[node] = 1;
-    ans[node] = cnt;
-    // comp.pb(node);
-    for(auto ad: radj[node])
-        if(!vis[ad])
-            dfs2(ad);
+
+bool unite(int x, int y){
+    x = find(x); 
+    y = find(y);
+    if(x==y) return 0;
+    par[y] = x;
+    return 1;
 }
- 
-void kosaraju(){
-    fore(i,1,n+1)
-        if(!vis[i])
-            dfs(i);
-    vis.assign(n+1,0);
-    reverse(all(ord));
- 
-    for(auto x: ord){
-        if(!vis[x]){
-            ++cnt;
-            // comp.clear();
-            dfs2(x);
-            // print(comp);
+
+void kruskal(){
+    sort(all(edges));
+    iota(all(par),0);
+
+    int connected = 1;
+    ll cost = 0;
+    for(auto edge: edges){
+        if(unite(edge.a, edge.b)){
+            cost+=edge.w;
+            ++connected;
         }
     }
+
+    if(connected!=n){
+        cout<<"IMPOSSIBLE\n";
+    }else{
+        cout<<cost<<"\n";
+    }
 }
- 
+
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
     cin>>n>>m;
+    edges.resize(m);
+    par.resize(n+1);
     forn(i,m){
-        int x, y; cin>>x>>y;
-        adj[x].pb(y);
-        radj[y].pb(x);
+        cin>>edges[i].a>>edges[i].b>>edges[i].w;
     }
-    kosaraju();
-    cout<<cnt<<"\n";
-    fore(i,1,n+1) cout<<ans[i]<<" ";
+    kruskal();
+
     return 0;
 }
