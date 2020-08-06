@@ -6,17 +6,12 @@ typedef vector<int> vi;
 struct node{
     int val;
     node(){};
+    node(int V): val(V){};
 };
 
 class SegmentTree {
     int n;
     vector<node> st;
-
-    node make_node(int val) {
-        node res;
-        res.val = val;
-        return res;
-    }
 public:
     SegmentTree(vector<int>& a) {
         n = a.size();
@@ -27,46 +22,44 @@ public:
         build(1,0,n-1,a);
     }
 
-    void merge(node &cur, node &l, node &r){
+    node merge(node &l, node &r){
+        node cur;
         cur.val = l.val + r.val;
+        return cur;
     }
 
     void build(int pos, int l, int r, vi &a){
         if(l==r){
-            st[pos] = make_node(a[l]);
+            st[pos] = node(a[l]);
             return;
         }
         int mid = (l+r)/2;
         build(2*pos,l,mid,a);
         build(2*pos+1,mid+1,r,a);
-        merge(st[pos] ,st[2*pos] , st[2*pos+1]);
+        st[pos] = merge(st[2*pos] , st[2*pos+1]);
     }
     
     
-    void update(int pos, int l, int r, int i, int val) {
-        if(l==r){
-            st[pos] = make_node(val);
+    void update(int pos, int sl, int sr, int i, int &val){
+        if(sl==sr){
+            st[pos] = val;
             return;
         }
-        int mid = (l+r)/2;
-        // if index is <=mid it lies in left part
+        int mid = (sl+sr)/2;
         if(i<=mid)
-            update(2*pos,l,mid,i,val);
+            update(2*pos,sl,mid,i,val);
         else 
-            update(2*pos+1,mid+1,r,i,val);
-
-        merge(st[pos], st[2*pos] , st[2*pos+1]);
+            update(2*pos+1,mid+1,sr,i,val);
+        st[pos] = merge(st[2*pos], st[2*pos+1]);
     }
-    
-    node query(int pos, int l, int r, int i, int j) {
-        if(i>r || l>j) return make_node(0);
-        if(i<=l && r<=j) return st[pos];
-        int mid = (l+r)/2;
-        node left = query(2*pos,l,mid,i,j);
-        node right = query(2*pos+1,mid+1,r,i,j);
-        node cur;
-        merge(cur, left, right);
-        return cur;
+
+    node query(int pos, int sl, int sr, int l, int r){
+        if(sr<l || r<sl) return node(0);
+        else if(l<=sl && sr<=r) return st[pos];
+        int mid = (sl+sr)/2;
+        node left = query(2*pos,sl,mid,l,r);
+        node right = query(2*pos+1, mid+1,sr, l,r);
+        return merge(left,right);
     }
 
     void update(int i, int val){
