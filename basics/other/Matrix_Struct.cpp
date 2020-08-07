@@ -51,7 +51,6 @@ matrix pow(matrix a, ll p){
 }
 
 
-// https://codeforces.com/problemset/problem/678/D
 int main(){
     ll a,b,n,x;
     while(cin>>a>>b>>n>>x){
@@ -65,3 +64,5 @@ int main(){
     return 0;
 }
 
+// https://codeforces.com/problemset/problem/678/D
+// https://codeforces.com/edu/course/2/lesson/4/4/practice/contest/274684/problem/B
