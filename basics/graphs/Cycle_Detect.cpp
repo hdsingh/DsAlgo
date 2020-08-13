@@ -49,11 +49,29 @@ bool dfs(int x){
     return false;
 }
 
+vb vis;
+
+// Undirectd Graph 
+bool dfs1(int x, int p){
+    vis[x] = 1;
+    par[x] = p;
+    for(auto ad: adj[x]){
+        if(vis[ad]==0){
+            if(dfs1(ad, x)) 
+                return true;
+        }else if(ad!=par[x]){
+            return true;
+        }
+    }
+    return false;
+}
+
+
 void find_cycle(){
     color.assign(n,0);
     par.assign(n,-1);
     cycle_start = -1;
-
+    // vis.assign(0); // undirected
     forn(v,n){
         if(color[v]==0 && dfs(v))
             break;
