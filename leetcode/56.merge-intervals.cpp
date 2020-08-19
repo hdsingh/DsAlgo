@@ -65,6 +65,28 @@ void quickSort(vvi &A, int left, int right){
 
 }
 
+class Solution {
+public:
+    vector<vector<int>> merge(vector<vector<int>>& as) {
+        vvi out;
+        sort(all(as));
+        for(auto a: as){
+            if(out.empty()){
+                out.push_back(a);
+                continue;
+            }
+            if(a[0]<=out.back()[1]){
+                vi bk = out.back(); out.pop_back();
+                bk[1] = max(bk[1], a[1]);
+                out.push_back(bk);
+            }else{
+                out.push_back(a);
+            }
+        }
+        return out;
+    }
+};
+
 // @lc code=start
 class Solution {
 public:

@@ -45,39 +45,32 @@ typedef std::vector<int> vi;
 typedef std::vector<vector<int>> vvi;
 
 // @lc code=start
-// Approach1: Find the left part, right part and intersection intervals
 class Solution {
 public:
-    vector<vector<int>> insert(vector<vector<int>>& ins, vector<int>& ni) {
-        int start = ni[0];
-        int end = ni[1];
-
-        int n = ins.size();
-        // pt = (a,b)
-        vvi left; // to include strictly less i.e  b<start
-        vvi right; // to include strictly greater i.e a>end;
-        // the remaining intervals will be merged
-
-        for(int i=0; i<n; i++){
-            int a = ins[i][0];
-            int b = ins[i][1];
-
-            if(b<start) left.push_back(ins[i]);
-            if(a>end) right.push_back(ins[i]);
+    vector<vector<int>> insert(vector<vector<int>>& ivals, vector<int>& nval) {
+        vvi out;
+        int n = ivals.size();
+        if(!n) return {nval};
+        int left = nval[0], right = nval[1];
+        
+        int i = 0;
+        while(i<n && ivals[i][1]<left){
+            out.push_back(ivals[i++]);
         }
 
-        if(left.size()+right.size() != ins.size()){
-            start = min(ins[left.size()][0], start);
-            end = max(ins[ins.size()-right.size()-1][1],end);
+        while(i<n && ivals[i][0]<=right){
+            left = min(left, ivals[i][0]);
+            right = max(right, ivals[i][1]);
+            ++i;
         }
-        vi middle = {start, end};
+        out.push_back({left, right});
 
-        left.push_back(middle);
-        left.insert(left.end(), right.begin(), right.end());
+        while(i<n) out.push_back(ivals[i++]);
 
-        return left;
+        return out;
     }
 };
+
 // @lc code=end
 int main(){
     Solution sol;
