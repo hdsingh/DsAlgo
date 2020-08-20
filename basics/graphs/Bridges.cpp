@@ -16,27 +16,46 @@ template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; re
 // Ref: https://www.youtube.com/watch?v=ECKTyseo2H8 + CpAlgo
 const int nax = 5;
 vvi adj(nax);
-vi in(nax), low(nax), vis(nax);
+vi tin(nax), low(nax), vis(nax);
 // low: lowest ancestor 's time that can be reached directly from this node
 int timer;
 
-void dfs(int x, int par){
+void dfs1(int x, int par){
     vis[x] = 1;
-    in[x] = low[x] = timer++;
+    tin[x] = low[x] = timer++;
 
     for(auto ad: adj[x]){
         if(ad==par) continue;
         if(vis[ad]){ // back edge, ad is ancestor of x
             // back edge can't be a bridge
-            low[x] = min(low[x], in[ad]);
+            low[x] = min(low[x], tin[ad]);
         }else{ // forward edge
-            dfs(ad, x); // go ahead and let ad discover its low time
-            if(low[ad]>low[x]) // is not connected to any ancestor
+            dfs1(ad, x); // go ahead and let ad discover its low time
+            if(low[ad]>tin[x]) // is not connected to any ancestor
                 cout<<x<<"->"<<ad<<" is a bridge \n";
-            
+
             low[x] = min(low[x], low[ad]);
             // If a child can reach the low ancestor, the par also can via child 
 
+        }
+    }
+}
+
+// concise
+void dfs(int node, int p){
+    tin[node] = low[node] = timer++;
+    vis[node] = 1;
+    for(auto ad: adj[node]){
+        if(ad==p) continue;
+        if(vis[ad]){ // back edge
+            low[node] = min(low[node], tin[ad]);
+        }else{
+            dfs(ad, node);
+            low[node] = min(low[node], low[ad]);
+
+            if(low[ad]>tin[node]){ // no back edge found
+                cout<<ad<<"->"<<node<<" is a bridge\n";
+            }
         }
     }
 }
@@ -51,7 +70,7 @@ int main(){
 
     dfs(1,-1);
 
-    print(in,1);
+    print(tin,1);
     print(low);
 
     return 0;
@@ -59,3 +78,4 @@ int main(){
 
 // Usage:
 // https://codeforces.com/problemset/problem/118/E
+// https://leetcode.com/problems/critical-connections-in-a-network/
