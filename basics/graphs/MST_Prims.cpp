@@ -26,15 +26,12 @@ template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout
 
 const int inf = 1e9;
 vector<vector<pii>> adj;
-vvi tree;
 
 void primMST(vi &dist, vi &par){
     int n = adj.size();
     dist.assign(n, inf);
-    tree.resize(n);
 
-    vb vis(n); 
-    vi par(n);
+    vb vis(n);
     par[0] = -1;
     dist[0] = 0;
 
@@ -43,25 +40,21 @@ void primMST(vi &dist, vi &par){
     q.insert({0,0});
 
     forn(i,n){
-        pii top = *q.begin();
-        q.erase(top);
-        int cur = top.second;
-        int wt = top.first;
-        int v = par[cur];
+        auto [d, node] = *q.begin();
+        q.erase(*q.begin());
+       
+        vis[node] = true;
 
-        vis[cur] = true;
+        for(auto adp: adj[node]){
+            auto [wt, ad] = adp;
 
-        for(auto ad: adj[cur]){
-            int to = ad.first;
-            int wt_to = ad.second;
+            if(vis[ad]) continue;
 
-            if(vis[to]) continue;
-
-            if(wt_to < dist[to]){
-                q.erase({dist[to], to});
-                dist[to] = wt_to;
-                q.insert({dist[to], to});
-                par[to] = cur;
+            if(wt < dist[ad]){
+                q.erase({dist[ad], ad});
+                dist[ad] = wt;
+                q.insert({dist[ad], ad});
+                par[ad] = node;
             }
         }
     }

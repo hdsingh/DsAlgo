@@ -1,12 +1,13 @@
 using namespace std;
 
-class DisjointSet{
+class DSU{
+public:
 	vector<int> par, ranks;
-public: 
-	void make_sets(int n){
-		par.clear(); par.resize(n);
-		ranks.clear(); ranks.resize(n);
-		// ranks.clear(); ranks.resize(n,1); // to merge by size
+
+	DSU(int n){
+		par.assign(n+1,0);
+		ranks.assign(n+1,0);
+		// ranks.assign(n+1,1); // to merge by size
 		iota(par.begin(),par.end(), 0); // make a node par of itself
 	}
 
@@ -36,3 +37,4 @@ public:
 };
 
 // https://codeforces.com/problemset/problem/1213/G
+// https://leetcode.com/problems/remove-max-number-of-edges-to-keep-graph-fully-traversable/
