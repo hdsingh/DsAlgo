@@ -27,72 +27,75 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-typedef pair<ll, ll> pll;
+const ll inf = 1e18;
+class Solution {
+public:
+    int maxProductPath(vector<vector<int>>& grid) {
+        int n = grid.size(), m = grid[0].size();
+        vvl neg(n, vl(m, inf)), pos(n, vl(m, -inf));
+        // min neg and max pos
+        min_self(neg[0][0], grid[0][0]);
+        max_self(pos[0][0], grid[0][0]);
+        for(int j=1; j<m; ++j){
+            min_self(neg[0][j], neg[0][j-1]*grid[0][j]);
+            min_self(neg[0][j], pos[0][j-1]*grid[0][j]);
+            max_self(pos[0][j], neg[0][j-1]*grid[0][j]);
+            max_self(pos[0][j], pos[0][j-1]*grid[0][j]);
+        }
 
-void dijkstra(int n, int m, int src, int dest){
-    const ll inf = 1e18L;
-    vector<vector<pll>> adj(n+1); // {w, to}
-    int x, y; ll w;
-    forn(i,m){
-        cin>>x>>y>>w;
-        adj[x].push_back({w,y}); adj[y].push_back({w,x});
-    }
+        for(int i=1; i<n; ++i){
+            min_self(neg[i][0], neg[i-1][0]*grid[i][0]);
+            min_self(neg[i][0], pos[i-1][0]*grid[i][0]);
+            max_self(pos[i][0], neg[i-1][0]*grid[i][0]);
+            max_self(pos[i][0], pos[i-1][0]*grid[i][0]);
+        }
 
-    vi par(n+1,-1);
-    vl dist(n+1, inf);
-    vb vis(n+1);
+        for(int i=1; i<n; ++i){
+            for(int j=1; j<m; ++j){
+                min_self(neg[i][j], neg[i-1][j]*grid[i][j]);
+                min_self(neg[i][j], neg[i][j-1]*grid[i][j]);
+                min_self(neg[i][j], pos[i-1][j]*grid[i][j]);
+                min_self(neg[i][j], pos[i][j-1]*grid[i][j]);
 
-    priority_queue<pll, vector<pll>, greater<pll>> pq; // {w, to}
-    // int src  = 1;
-    dist[src] = 0;
-    pq.push({0, src});
-
-    while(!pq.empty()){
-        auto [d, node] = pq.top(); pq.pop();
-        vis[node] = 1;
-        if(d > dist[node]) continue;
-
-        for(auto ad: adj[node]){
-            auto [len, to] = ad;
-            if(vis[to]) continue;
-
-            if(dist[node] + len < dist[to]){
-                dist[to] = dist[node] + len;
-                pq.push({dist[to], to});
-                par[to] = node;
+                max_self(pos[i][j], neg[i-1][j]*grid[i][j]);
+                max_self(pos[i][j], neg[i][j-1]*grid[i][j]);
+                max_self(pos[i][j], pos[i-1][j]*grid[i][j]);
+                max_self(pos[i][j], pos[i][j-1]*grid[i][j]);
             }
         }
 
-        if(node==dest) break;
+        // print_vv(grid);
+        // print_vv(pos);
+        // print_vv(neg);
+        if(pos[n-1][m-1]<0) return -1;
+        return pos[n-1][m-1]%mod;
     }
-
-    if(!vis[dest]){
-        cout<<-1<<"\n"; return;
-    }
-
-    vi path;
-    int p = dest;
-    while(p!=-1){
-        path.push_back(p);
-        p = par[p];
-    }
-    reverse(all(path));
-    print(path);
-}
+};
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n, m;
-    cin>>n>>m;
-    dijkstra(n,m,1,n);
+    Solution sol; vvi grid; int out;
+
+    grid = {{-1,-2,-3},
+        {-2,-3,-3},
+        {-3,-3,-2}};
+    out = sol.maxProductPath(grid); deb(out);
+
+    grid = {{1,-2,1},
+        {1,-2,1},
+        {3,-4,1}};
+    out = sol.maxProductPath(grid); deb(out);
+
+
+    grid = {{1, 3},
+        {0,-4}};
+    out = sol.maxProductPath(grid); deb(out);
+
+    grid = {{ 1, 4,4,0},
+        {-2, 0,0,1},
+        { 1,-1,1,1}};
+
+    out = sol.maxProductPath(grid); deb(out);
+
     return 0;
 }
-
-// https://codeforces.com/problemset/problem/20/C 
-// https://codeforces.com/problemset/problem/1076/D
-// https://cses.fi/problemset/task/1195/ (Flight Discounts)
-// https://cses.fi/problemset/task/1671 (Shortest Routes)
-// https://cses.fi/problemset/task/1196/ (Flight Routes)
-// https://cses.fi/problemset/task/1202 (Investigation) (Djkstra + DP)
-// https://codeforces.com/problemset/problem/449/B (Priority Based + Inqueue distance update) (implemented Sets + PQ both)
-// https://codeforces.com/problemset/problem/938/D (Multiple starting points)

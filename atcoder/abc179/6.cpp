@@ -17,7 +17,6 @@ const int mod = 1e9 + 7;
 template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
 template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
 template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
-template<class T, class U> inline void mul_self(T &x, U y) { x*=y; x%=mod; }
 
 #define _deb(x) cout<<x;
 void _print() {cerr << "]\n";} template <typename T, typename... V>void _print(T t, V... v) {_deb(t); if (sizeof...(v)) cerr << ", "; _print(v...);}
@@ -30,10 +29,12 @@ template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<en
 
 struct node{
     bool clazy = 0;
+    int lazy = 1e9;
+    int val = 0;
     // other parameters
     node(){};
     // node input definition
-    
+    node(int v):val(v){};
 };
 
 class SegmentTree{
@@ -49,13 +50,13 @@ public:
 
     node merge(node &l, node &r){
         node cur;
-        
+        cur.val = min(l.val, r.val);
         return cur;
     }
 
     void build(int pos, int l, int r){
         if(l==r){
-            st[pos]  = node(); // allocate specific values
+            st[pos]  = node(n); // allocate specific values
             return;
         }
         int mid = (l+r)/2;
@@ -70,7 +71,7 @@ public:
         else if(l<=sl && sr<=r){
             st[pos].clazy = 1;
             // handle
-
+            st[pos].lazy = val;
             propagate(pos, sl, sr);
             return;
         }
@@ -82,7 +83,7 @@ public:
 
     node query(int pos, int sl, int sr, int l, int r){
         propagate(pos, sl, sr);
-        if(r<sl || sr<l) return node();
+        if(r<sl || sr<l) return node(1e9);
         else if(l<=sl && sr<=r) return st[pos];
         int mid = (sl+sr)/2;
         node left = query(2*pos, sl, mid, l, r);
@@ -94,11 +95,13 @@ public:
         if(!st[pos].clazy) return;
         if(sl!=sr){
             // handle
-
+            min_self(st[2*pos].lazy, st[pos].lazy);
+            min_self(st[2*pos+1].lazy, st[pos].lazy);
             st[2*pos].clazy = st[2*pos+1].clazy = 1;
         }
         // handle
-
+        min_self(st[pos].val, st[pos].lazy);
+        st[pos].lazy = 1e9;
         st[pos].clazy = 0;
     }
 
@@ -107,30 +110,38 @@ public:
     }
 
     ll query(int l, int r){
-        // return query(1,0,n-1,l,r); // query.val
+        return query(1,0,n-1,l,r).val; // query.val
     }
-
 };
+
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n, m;
-    cin>>n>>m;
-    SegmentTree st(n);
-    while(m--){
-        int tp, l, r, v;
-        cin>>tp;
-        if(tp==1){
-            cin>>l>>r>>v;
-            st.update(l,r-1, v);
-        }else{
-            cin>>l>>r;
-            cout<<st.query(l,r-1)<<"\n";
+    ll n, q;
+    while(cin>>n>>q){
+        SegmentTree rows(n), cols(n);
+        ll tot = (n-2)*(n-2);
+        while(q--){
+            int tp, x; cin>>tp>>x;
+            // deb(tp,x);
+            if(tp==1){
+                // cols
+                ll mn = cols.query(x,x);
+                int cover_now = (mn-2);
+                // deb(mn, cover_now);
+                cols.update(x,x,2);
+                rows.update(2,min(n-1,mn),x);
+                tot-=cover_now;
+            }else{
+                ll mn = rows.query(x,x);
+                int cover_now = (mn-2);
+                // deb(mn, cover_now);
+                rows.update(x,x,2);
+                cols.update(2,min(n-1,mn),x);
+                tot-=cover_now;
+            }
         }
+        cout<<tot<<"\n";
     }
     return 0;
 }
-
-
-// https://codeforces.com/problemset/problem/914/D (Not lazy)
-// https://atcoder.jp/contests/abc179/tasks/abc179_f

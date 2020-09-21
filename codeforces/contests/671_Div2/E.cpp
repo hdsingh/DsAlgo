@@ -27,72 +27,72 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-typedef pair<ll, ll> pll;
-
-void dijkstra(int n, int m, int src, int dest){
-    const ll inf = 1e18L;
-    vector<vector<pll>> adj(n+1); // {w, to}
-    int x, y; ll w;
-    forn(i,m){
-        cin>>x>>y>>w;
-        adj[x].push_back({w,y}); adj[y].push_back({w,x});
-    }
-
-    vi par(n+1,-1);
-    vl dist(n+1, inf);
-    vb vis(n+1);
-
-    priority_queue<pll, vector<pll>, greater<pll>> pq; // {w, to}
-    // int src  = 1;
-    dist[src] = 0;
-    pq.push({0, src});
-
-    while(!pq.empty()){
-        auto [d, node] = pq.top(); pq.pop();
-        vis[node] = 1;
-        if(d > dist[node]) continue;
-
-        for(auto ad: adj[node]){
-            auto [len, to] = ad;
-            if(vis[to]) continue;
-
-            if(dist[node] + len < dist[to]){
-                dist[to] = dist[node] + len;
-                pq.push({dist[to], to});
-                par[to] = node;
+vi getPrimes(int n){
+    vi out;
+    for(int i=2; i*i<=n; ++i){
+        if(n%i==0){
+            while(n%i==0){
+                n/=i;
+                out.pb(i);
             }
         }
-
-        if(node==dest) break;
     }
+    if(n>1) out.pb(n);
+    return out;
+}
 
-    if(!vis[dest]){
-        cout<<-1<<"\n"; return;
+set<int> getDivs(int n){
+    set<int> out;
+    for(int i=2; i*i<=n; ++i){
+        if(n%i==0){
+            int i2 = n/i;
+            out.insert(i);
+            if(i!=i2)
+                out.insert(i2);
+        }
     }
-
-    vi path;
-    int p = dest;
-    while(p!=-1){
-        path.push_back(p);
-        p = par[p];
-    }
-    reverse(all(path));
-    print(path);
+    return out;
 }
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n, m;
-    cin>>n>>m;
-    dijkstra(n,m,1,n);
+    int T;
+    cin>>T;
+    while(T--){
+        int n; cin>>n;
+        vi primes = getPrimes(n);
+        set<int> divs = getDivs(n);
+        if(sz(primes)==2){
+            if(sz(divs)==2){
+                cout<<n<<" "<<primes[0]<<" "<<primes[1]<<" "<<"\n"<<"1\n";
+            }else{
+                cout<<n<<" "<<primes[0]<<"\n"<<"0\n";
+            }
+        }else{
+            auto pos = unique(all(primes)); 
+            primes.resize(distance(primes.begin(), pos));
+            // print(primes);
+            cout<<n<<" "<<primes[0]<<" ";
+            divs.erase(n); divs.erase(primes[0]);
+            fore(i,0,sz(primes)-1){
+                // nums  div by prev prime
+                divs.erase(primes[i+1]);
+                divs.erase(primes[i]*primes[i+1]);
+
+                for(auto it = divs.begin(); it!=divs.end(); ){
+                    if(*it%primes[i]==0){
+                        cout<<*it<<" ";
+                        it = divs.erase(it);
+                    }else it++;
+                }
+
+                cout<<primes[i]*primes[i+1]<<" ";
+                cout<<primes[i+1]<<" ";
+            }
+            for(auto it: divs) cout<<it<<" ";
+            cout<<"\n0\n";
+        }
+        
+    }
     return 0;
 }
-
-// https://codeforces.com/problemset/problem/20/C 
-// https://codeforces.com/problemset/problem/1076/D
-// https://cses.fi/problemset/task/1195/ (Flight Discounts)
-// https://cses.fi/problemset/task/1671 (Shortest Routes)
-// https://cses.fi/problemset/task/1196/ (Flight Routes)
-// https://cses.fi/problemset/task/1202 (Investigation) (Djkstra + DP)
-// https://codeforces.com/problemset/problem/449/B (Priority Based + Inqueue distance update) (implemented Sets + PQ both)
-// https://codeforces.com/problemset/problem/938/D (Multiple starting points)

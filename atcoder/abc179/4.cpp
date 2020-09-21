@@ -13,11 +13,10 @@ typedef vector<vector<ll>> vvl;
 typedef vector<string> vs;
 typedef vector<bool> vb;
 typedef pair<int, int> pii;
-const int mod = 1e9 + 7;
+const int mod = 998244353;
 template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
 template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
 template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
-template<class T, class U> inline void mul_self(T &x, U y) { x*=y; x%=mod; }
 
 #define _deb(x) cout<<x;
 void _print() {cerr << "]\n";} template <typename T, typename... V>void _print(T t, V... v) {_deb(t); if (sizeof...(v)) cerr << ", "; _print(v...);}
@@ -27,110 +26,98 @@ template<class T, class U>void debp(const pair<T, U> &pr, bool end_line=1){cout<
 template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cout<<"Empty"<<endl; return;}if(!sep_line) cout<<"{ ";for(auto x: vp) debp(x,sep_line);if(!sep_line) cout<<"}\n";cout<<endl;}
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
+#define x first
+#define y second
 
 struct node{
-    bool clazy = 0;
-    // other parameters
+    ll val = 0;
     node(){};
-    // node input definition
-    
+    node(ll V): val(V){};
 };
 
-class SegmentTree{
+class SegmentTree {
 public:
     int n;
     vector<node> st;
-
-    SegmentTree(int N){
-        n = N;
-        st.resize(4*n);
-        build(1,0,n-1); // pass a, if req
+    SegmentTree() {
+        n = 2e5+10;
+        int max_size = 4*n;
+        st.clear(); st.resize(max_size, node());
     }
 
     node merge(node &l, node &r){
         node cur;
-        
+        add_self(cur.val, l.val);
+        add_self(cur.val, r.val);
         return cur;
     }
 
-    void build(int pos, int l, int r){
-        if(l==r){
-            st[pos]  = node(); // allocate specific values
-            return;
-        }
-        int mid = (l+r)/2;
-        build(2*pos, l, mid);
-        build(2*pos+1, mid+1, r);
-        st[pos] = merge(st[2*pos], st[2*pos+1]);
-    }
-
-    void update(int pos, int sl, int sr, int l, int r, int val){
-        propagate(pos, sl, sr);
-        if(r<sl || sr<l) return;
-        else if(l<=sl && sr<=r){
-            st[pos].clazy = 1;
-            // handle
-
-            propagate(pos, sl, sr);
+    void update(int pos, int sl, int sr, int i, int &val){
+        if(sl==sr){
+            add_self(st[pos].val, val);
             return;
         }
         int mid = (sl+sr)/2;
-        update(2*pos, sl, mid, l, r, val);
-        update(2*pos+1, mid+1, sr, l, r, val);
+        if(i<=mid)
+            update(2*pos,sl,mid,i,val);
+        else 
+            update(2*pos+1,mid+1,sr,i,val);
         st[pos] = merge(st[2*pos], st[2*pos+1]);
     }
 
     node query(int pos, int sl, int sr, int l, int r){
-        propagate(pos, sl, sr);
-        if(r<sl || sr<l) return node();
+        if(sr<l || r<sl) return node(0);
         else if(l<=sl && sr<=r) return st[pos];
         int mid = (sl+sr)/2;
-        node left = query(2*pos, sl, mid, l, r);
-        node right = query(2*pos+1, mid+1, sr, l, r);
-        return merge(left, right);        
+        node left = query(2*pos,sl,mid,l,r);
+        node right = query(2*pos+1, mid+1,sr, l,r);
+        return merge(left,right);
     }
 
-    void propagate(int pos, int sl, int sr){
-        if(!st[pos].clazy) return;
-        if(sl!=sr){
-            // handle
-
-            st[2*pos].clazy = st[2*pos+1].clazy = 1;
-        }
-        // handle
-
-        st[pos].clazy = 0;
+    void update(int i, int val){
+        update(1,0,n-1,i,val);
     }
 
-    void update(int l, int r, int v){
-        update(1,0,n-1,l,r,v);
+    int query(int i,int j){
+        node q = query(1,0,n-1,i,j);
+        return q.val;
     }
-
-    ll query(int l, int r){
-        // return query(1,0,n-1,l,r); // query.val
-    }
-
 };
+
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n, m;
-    cin>>n>>m;
-    SegmentTree st(n);
-    while(m--){
-        int tp, l, r, v;
-        cin>>tp;
-        if(tp==1){
-            cin>>l>>r>>v;
-            st.update(l,r-1, v);
-        }else{
-            cin>>l>>r;
-            cout<<st.query(l,r-1)<<"\n";
+    int n, K;
+    while(cin>>n>>K){
+        vector<pii> segs(K);
+        forn(i,K) cin>>segs[i].x>>segs[i].y;
+        sort(all(segs));
+        vl dp(n+2);
+        dp[1] = 1;
+
+        auto sum = [&](int l, int r){
+            l = max(0,l); r = max(0,r);
+            ll out = 0;
+            for(int i=l; i<=r; ++i) 
+                add_self(out, dp[i]);
+            return out;
+        };
+
+        SegmentTree st;
+        st.update(1,1);
+
+        for(int i=2; i<=n; ++i){
+            for(auto &seg: segs){
+                int pl = max(0,i-seg.y);
+                int pr = max(0,i-seg.x);
+                
+                // add_self(dp[i], sum(pl, pr));
+                st.update(i, st.query(pl,pr));
+            }
         }
+
+        cout<<st.query(n,n)<<"\n";
+        // cout<<dp[n]<<"\n";
     }
     return 0;
 }
-
-
-// https://codeforces.com/problemset/problem/914/D (Not lazy)
-// https://atcoder.jp/contests/abc179/tasks/abc179_f

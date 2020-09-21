@@ -27,72 +27,27 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-typedef pair<ll, ll> pll;
-
-void dijkstra(int n, int m, int src, int dest){
-    const ll inf = 1e18L;
-    vector<vector<pll>> adj(n+1); // {w, to}
-    int x, y; ll w;
-    forn(i,m){
-        cin>>x>>y>>w;
-        adj[x].push_back({w,y}); adj[y].push_back({w,x});
-    }
-
-    vi par(n+1,-1);
-    vl dist(n+1, inf);
-    vb vis(n+1);
-
-    priority_queue<pll, vector<pll>, greater<pll>> pq; // {w, to}
-    // int src  = 1;
-    dist[src] = 0;
-    pq.push({0, src});
-
-    while(!pq.empty()){
-        auto [d, node] = pq.top(); pq.pop();
-        vis[node] = 1;
-        if(d > dist[node]) continue;
-
-        for(auto ad: adj[node]){
-            auto [len, to] = ad;
-            if(vis[to]) continue;
-
-            if(dist[node] + len < dist[to]){
-                dist[to] = dist[node] + len;
-                pq.push({dist[to], to});
-                par[to] = node;
-            }
-        }
-
-        if(node==dest) break;
-    }
-
-    if(!vis[dest]){
-        cout<<-1<<"\n"; return;
-    }
-
-    vi path;
-    int p = dest;
-    while(p!=-1){
-        path.push_back(p);
-        p = par[p];
-    }
-    reverse(all(path));
-    print(path);
-}
+const ll nax = 1e18L;
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n, m;
-    cin>>n>>m;
-    dijkstra(n,m,1,n);
+    vl dp;
+    ll i = 1;
+    while(1){
+        ll st = (1LL<<i) - 1;
+        if(st*(st+1)/2>nax) break;
+        dp.push_back(st*(st+1)/2);
+        ++i;
+    }
+    partial_sum(all(dp),dp.begin());
+    int T;
+    cin>>T;
+    while(T--){
+        ll n; cin>>n;
+        auto pos = upper_bound(all(dp),n);
+        int ans = distance(dp.begin(), pos);
+        cout<<ans<<"\n";
+    }
+
     return 0;
 }
-
-// https://codeforces.com/problemset/problem/20/C 
-// https://codeforces.com/problemset/problem/1076/D
-// https://cses.fi/problemset/task/1195/ (Flight Discounts)
-// https://cses.fi/problemset/task/1671 (Shortest Routes)
-// https://cses.fi/problemset/task/1196/ (Flight Routes)
-// https://cses.fi/problemset/task/1202 (Investigation) (Djkstra + DP)
-// https://codeforces.com/problemset/problem/449/B (Priority Based + Inqueue distance update) (implemented Sets + PQ both)
-// https://codeforces.com/problemset/problem/938/D (Multiple starting points)

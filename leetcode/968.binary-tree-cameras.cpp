@@ -26,73 +26,37 @@ template<class T, class U>void debp(const pair<T, U> &pr, bool end_line=1){cout<
 template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cout<<"Empty"<<endl; return;}if(!sep_line) cout<<"{ ";for(auto x: vp) debp(x,sep_line);if(!sep_line) cout<<"}\n";cout<<endl;}
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
+#include "Tree.h"
 
-typedef pair<ll, ll> pll;
-
-void dijkstra(int n, int m, int src, int dest){
-    const ll inf = 1e18L;
-    vector<vector<pll>> adj(n+1); // {w, to}
-    int x, y; ll w;
-    forn(i,m){
-        cin>>x>>y>>w;
-        adj[x].push_back({w,y}); adj[y].push_back({w,x});
+// min cams req, if the all the nodes below are covered and
+// 0 : No camera here and nor covered
+// 1 : No cam here but covered (alteast one child has cam)
+// 2 : cam here, ch could be in any state
+class Solution {
+public:
+    int minCameraCover(TreeNode* root) {
+        vi cur = dfs(root);
+        return min(cur[1], cur[2]);
     }
 
-    vi par(n+1,-1);
-    vl dist(n+1, inf);
-    vb vis(n+1);
+    vi dfs(TreeNode* root){
+        if(!root) return {0,0, 9999};
+        vi l = dfs(root->left), r = dfs(root->right);
 
-    priority_queue<pll, vector<pll>, greater<pll>> pq; // {w, to}
-    // int src  = 1;
-    dist[src] = 0;
-    pq.push({0, src});
+        vi cur(3);
+        // both covered
+        cur[0] = l[1] + r[1];
 
-    while(!pq.empty()){
-        auto [d, node] = pq.top(); pq.pop();
-        vis[node] = 1;
-        if(d > dist[node]) continue;
+        // left has cam + right can be cov or has cam, sim for right
+        cur[1] = min(l[2] + min(r[1], r[2]), r[2] + min(l[1], l[2]));
 
-        for(auto ad: adj[node]){
-            auto [len, to] = ad;
-            if(vis[to]) continue;
-
-            if(dist[node] + len < dist[to]){
-                dist[to] = dist[node] + len;
-                pq.push({dist[to], to});
-                par[to] = node;
-            }
-        }
-
-        if(node==dest) break;
+        // place cam here + any state below
+        cur[2] = 1 + min({l[0], l[1], l[2]}) + min({r[0], r[1], r[2]});
+        return cur;
     }
-
-    if(!vis[dest]){
-        cout<<-1<<"\n"; return;
-    }
-
-    vi path;
-    int p = dest;
-    while(p!=-1){
-        path.push_back(p);
-        p = par[p];
-    }
-    reverse(all(path));
-    print(path);
-}
+};
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n, m;
-    cin>>n>>m;
-    dijkstra(n,m,1,n);
     return 0;
 }
-
-// https://codeforces.com/problemset/problem/20/C 
-// https://codeforces.com/problemset/problem/1076/D
-// https://cses.fi/problemset/task/1195/ (Flight Discounts)
-// https://cses.fi/problemset/task/1671 (Shortest Routes)
-// https://cses.fi/problemset/task/1196/ (Flight Routes)
-// https://cses.fi/problemset/task/1202 (Investigation) (Djkstra + DP)
-// https://codeforces.com/problemset/problem/449/B (Priority Based + Inqueue distance update) (implemented Sets + PQ both)
-// https://codeforces.com/problemset/problem/938/D (Multiple starting points)

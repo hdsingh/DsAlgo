@@ -12,8 +12,8 @@ public:
 	}
 
 	bool union_sets(int a, int b){
-		a = find_set(a);
-		b = find_set(b);
+		a = find_par(a);
+		b = find_par(b);
 		if(a==b) return false; // already united, since having same par
 
 		if(ranks[a]<ranks[b])
@@ -30,11 +30,14 @@ public:
 		return true;
 	};
 
-	int find_set(int a){
+	int find_par(int a){
 		if(a==par[a]) return a;
-		return par[a] = find_set(par[a]);
+		return par[a] = find_par(par[a]);
 	}
 };
 
 // https://codeforces.com/problemset/problem/1213/G
 // https://leetcode.com/problems/remove-max-number-of-edges-to-keep-graph-fully-traversable/
+// https://codeforces.com/problemset/problem/766/D (Opposite)
+// https://codeforces.com/problemset/problem/1131/D (DSU + Topsort, unite nodes + Graph algo)
+// https://codeforces.com/problemset/problem/400/D  (DSU  + FloydWarshall)
