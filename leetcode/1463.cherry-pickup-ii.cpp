@@ -95,43 +95,41 @@ public:
 
 
 class Solution {
+    int dp[2][71][71];
+    // max sum that can be obtained if robs are in row r1,
+    // rob1 in col c1, rob2 in col c2
 public:
     int cherryPickup(vector<vector<int>>& grid) {
         int n = grid.size(), m = grid[0].size();
-        int dp[2][m][m];
         memset(dp, -1, sizeof(dp));
-        // gain in rth row, when rob 1 is in C1, and rob 2 is in C2
-
         dp[0][0][m-1] = grid[0][0] + grid[0][m-1];
-        
-        for(int r=0; r<n-1; ++r){
-            int now = (r&1); int nxt = !now;
-            memset(dp[nxt], -1, sizeof(dp[nxt]));
 
+        for(int row=0; row<n-1; ++row){
+            int cur = (row&1); int next = !cur;
+            memset(dp[next], -1, sizeof(dp[next]));
             for(int c1=0; c1<m; ++c1){
                 for(int c2=0; c2<m; ++c2){
-                    if(dp[now][c1][c2]==-1) continue;
+                    if(dp[cur][c1][c2]==-1) continue;
 
-                    for(int nc1=c1-1; nc1<=c1+1; ++nc1){
-                        for(int nc2=c2-1; nc2<=c2+1; ++nc2){
-                            if(nc1<0 || nc2<0 || nc1>=m || nc2>=m) continue;
-                            int val = grid[r+1][nc1];
-                            if(nc1!=nc2) val+=grid[r+1][nc2];
-                            max_self(dp[nxt][nc1][nc2], dp[now][c1][c2] + val);
+                    for(int nc1=max(0,c1-1); nc1<=min(m-1, c1+1); ++nc1){
+                        for(int nc2=max(0,c2-1); nc2<=min(m-1, c2+1); ++nc2){
+                            int val = grid[row+1][nc1];
+                            if(nc1!=nc2)
+                                val+=grid[row+1][nc2];
+                            max_self(dp[next][nc1][nc2], dp[cur][c1][c2] + val);
                         }
                     }
                 }
             }
         }
 
-        int now = (n-1)&1;
         int ans = 0;
-        forn(c1,m){
-            forn(c2,m){
-                max_self(ans,dp[now][c1][c2]);
-            }
-        }
-        return ans; 
+        int cur = (n-1)&1;
+        for(int c1=0; c1<m; ++c1)
+            for(int c2=0; c2<m; ++c2)
+                max_self(ans, dp[cur][c1][c2]);
+
+        return ans;
     }
 };
 

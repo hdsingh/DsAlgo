@@ -97,7 +97,7 @@ public:
     }
 };
 
-class Solution {
+class Solution1 {
 public:
     bool canPartitionKSubsets(vector<int>& a, int k) {
         int n = a.size();
@@ -137,6 +137,34 @@ public:
         }
         // if it is possible for last state (all 1s i.e all nums included)
         return possible[(1<<n) - 1]; 
+    }
+};
+
+
+class Solution {
+public:
+    bool canPartitionKSubsets(vector<int>& a, int k) {
+        int n = a.size();
+        sort(all(a));
+        int sum = accumulate(all(a),0);
+        int target = sum/k;
+        if((sum%k) || a.back()>target) return 0;
+
+        vector<int> dp(1<<n); // sum
+        for(int i=0; i<n; ++i)  
+            dp[1<<i] = a[i];
+        for(int mask=0; mask<(1<<n); ++mask){
+            if(!dp[mask]) continue;
+            for(int i=0; i<n; ++i){
+                if((mask>>i)&1) continue;
+                if((dp[mask]%target) + a[i]<=target){
+                    dp[mask|(1<<i)] = dp[mask] + a[i];
+                }else break;
+                // pruning since elements are sorted.
+            }
+        }
+
+        return dp[(1<<n)-1]==sum;
     }
 };
 // @lc code=end

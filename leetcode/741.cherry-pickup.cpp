@@ -31,32 +31,40 @@ const int nax = 50;
 const int inf = 1e4;
 
 // Move 2 person down
-class Solution0 {
+class Solution {
     int n;
-    int dp[nax][nax][nax];
+    int dp[100][50][50];
     vvi grid;
+    const int inf = 1e5;
 public:
-    int cherryPickup(vector<vector<int>>& G) {
-        memset(dp, -1, sizeof(dp));
-        grid = G;
+    int cherryPickup(vector<vector<int>>& grid) {
         n = grid.size();
-        return max(0, dfs(0,0,0));
+        this->grid = grid;
+        memset(dp,-1, sizeof(dp));
+        int ans = 0;
+        max_self(ans, dfs(0,0,0));
+        return ans;
     }
 
-    int dfs(int r1, int c1, int c2){
-        int r2 = r1 + c1 - c2;
-        if(r1>=n || r2>=n || c1>=n || c2>=n || grid[r1][c1]==-1 || grid[r2][c2]==-1) return -inf;
-        if(dp[r1][c1][c2]!=-1) return dp[r1][c1][c2];
-        if(r1==n-1 && c1==n-1) return grid[r1][c1];
+    int dfs(int steps, int x1, int x2){
+        if(steps>(2*n)-2) return 0;
+        int y1 = steps-x1, y2 = steps-x2;
+        if(x1>=n || y1>=n || x2>=n || y2>=n || grid[x1][y1]==-1 || grid[x2][y2]==-1) return -inf;
+        int &ans = dp[steps][x1][x2];
+        if(~ans) return ans;
+        ans = -inf;
 
-        int ans = dfs(r1, c1+1, c2); // L, D
-        max_self(ans, dfs(r1, c1+1, c2+1)); // L, L
-        max_self(ans, dfs(r1+1, c1, c2));   // D, D
-        max_self(ans, dfs(r1+1, c1, c2+1)); // D, L 
-        ans+=grid[r1][c1];
-        if(r1!=r2) ans+=grid[r2][c2];
+        max_self(ans, dfs(steps+1, x1,  x2));
+        max_self(ans, dfs(steps+1, x1,  x2+1));
+        max_self(ans, dfs(steps+1, x1+1,x2));
+        max_self(ans, dfs(steps+1, x1+1,x2+1));
 
-        return dp[r1][c1][c2] = ans;
+        ans+=grid[x1][y1];
+        if(x1!=x2 || y1!=y2){
+            ans+=grid[x2][y2];
+        }
+
+        return ans;
     }
 };
 

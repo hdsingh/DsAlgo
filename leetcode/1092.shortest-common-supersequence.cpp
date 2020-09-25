@@ -79,85 +79,45 @@ template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout
 // 2. Use it to find LCS
 // 3. use LCS to find superseq
 class Solution {
-    string a,b, lcs;
-    int n,m;
-    vvi dp;
 public:
     string shortestCommonSupersequence(string a, string b) {
-        this->a = a;
-        this->b = b;
-        n = a.size();
-        m = b.size();
-
-        dp.clear();
-        dp.resize(n+1, vi(m+1));
-        // common till a[:i] and b[:j]
-
-        construct_dp();
-        // print_vv(dp);
-        int ap(n), bp(m); // a pointer, b's pointer
-        build2(ap, bp);
-        reverse(all(lcs));
-
-        deb3(a,b,lcs); 
-        string res;
-        ap=0; bp=0;
-        for(auto c: lcs){
-            while(a[ap]!=c)
-                res+=a[ap++];
-            while(b[bp]!=c)
-                res+=b[bp++];
-            res+=c; 
-            ++ap, ++bp;
-        }
-        
-        return res + a.substr(ap) + b.substr(bp);     
-    }
-
-    void construct_dp(){
+        int n = sz(a), m = sz(b);
+        vvi dp(n+1, vi(m+1));
         for(int i=1; i<=n; ++i){
             for(int j=1; j<=m; ++j){
                 if(a[i-1]==b[j-1])
-                    dp[i][j] = dp[i-1][j-1] + 1;
+                    max_self(dp[i][j], dp[i-1][j-1] + 1);
                 else 
-                    dp[i][j] = max(dp[i-1][j], dp[i][j-1]);
+                    max_self(dp[i][j], max(dp[i-1][j], dp[i][j-1]));
             }
         }
-    }
-
-    // Recursive
-    void buildLcs(int ap, int bp){
-        if(!ap || !bp) return;
-
-        if(a[ap-1]==b[bp-1]){
-            lcs.push_back(a[ap-1]);
-            buildLcs(ap-1, bp-1);
-            return;
-        }
         
-        if(dp[ap-1][bp] > dp[ap][bp-1])
-            buildLcs(ap-1, bp);
-        else 
-            buildLcs(ap, bp-1);
-    }
-
-    void build2(int ap, int bp){
-        
+        string lcs;
+        int ap = n, bp = m; // a's pointer, b's pointer
         while(ap && bp){
             if(a[ap-1]==b[bp-1]){
                 lcs+=a[ap-1];
-                --ap,--bp;
-            }else{
-                if(dp[ap-1][bp]>dp[ap][bp-1]){
-                    --ap;
-                }else{
-                    --bp;
-                }
-            }
+                --ap, --bp;
+            }else if(dp[ap-1][bp]>dp[ap][bp-1]){
+                --ap;
+            }else --bp;
         }
-        return;
+        reverse(all(lcs));
+    
+        string res;
+        ap = 0, bp = 0;
+        for(auto x: lcs){
+            while(ap<n && a[ap]!=x) 
+                res+=a[ap++];
+            while(bp<m && b[bp]!=x)
+                res+=b[bp++];
+            res+=x; ++ap, ++bp;
+        }
+
+        return res + a.substr(ap) + b.substr(bp);
     }
 };
+
 // @lc code=end
 
 int main(){

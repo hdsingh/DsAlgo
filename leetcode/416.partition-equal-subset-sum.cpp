@@ -83,26 +83,24 @@ public:
 };
 
 
-class Solution1 {
+class Solution {
 public:
-    bool canPartition(vector<int>& nums) {
-        int sum = accumulate(all(nums),0);
-        int n = nums.size();
-        if(sum%2) return false;
+    bool canPartition(vector<int>& a) {
+        int sum = accumulate(all(a),0);
+        if(sum%2) return 0;
         sum/=2;
-        vb dp(sum+1);
+        vector<bool> dp(sum+1);
         dp[0] = 1;
-        
-        for(int i=1; i<=n; ++i){
-            for(int s=sum; s>=0; --s){
-                if(s-nums[i-1]>=0 && dp[s-nums[i-1]])
-                    dp[s] = true;
-            }
+        for(auto x: a){
+            for(int s=sum-x; s>=0; --s)
+                if(dp[s])
+                    dp[s+x] = 1;
+            if(dp[sum]) return 1;
         }
-        
         return dp[sum];
     }
 };
+
 
 // Better implementation using bits
 class Solution {
