@@ -77,12 +77,12 @@ template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout
 
 // keep most recently used in the beginning of double linked list
 // remove LRU from end
-class LRUCache {
+class LRUCache0 {
     int cap;
     unordered_map<int, list<pii>::iterator> m_map; // key, iterator
     list<pii> m_list;
 public:
-    LRUCache(int capacity) {
+    LRUCache0(int capacity) {
         cap = capacity;
     }
     
@@ -116,6 +116,47 @@ public:
     }
 };
 
+
+class LRUCache {
+    int cap;
+    list<pii> cache;
+    unordered_map<int,list<pii>::iterator> m;
+public:
+    LRUCache(int capacity) {
+        cap = capacity;
+    }
+
+    void update(int key, int val){
+        auto it = m[key];
+        cache.erase(it);
+        cache.push_front({key, val});
+        m[key] = cache.begin();        
+    }
+    
+    int get(int key) {
+        if(m.count(key)==0){
+            return -1;
+        }
+        int val = m[key]->second;
+        update(key,val); // with same val to bring it to front
+        return val;
+    }
+    
+    void put(int key, int val) {
+        if(m.count(key)){
+            update(key,val);
+            return;
+        }
+
+        if(m.size()==cap){
+            auto bk = cache.back().first;
+            cache.pop_back();
+            m.erase(bk);
+        }
+        cache.push_front({key, val});
+        m[key] = cache.begin();
+    }
+};
 /**
  * Your LRUCache object will be instantiated and called as such:
  * LRUCache* obj = new LRUCache(capacity);

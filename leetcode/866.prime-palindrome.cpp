@@ -1,0 +1,97 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define forn(i, n) for(int i = 0; i < int(n); i++)
+#define fore(i, l, r) for(int i = int(l); i < int(r); i++)
+#define pb push_back
+#define all(x) x.begin(), x.end()
+#define sz(a) int((a).size())
+typedef long long ll;
+typedef vector<int> vi;
+typedef vector<vector<int>> vvi;
+typedef vector<ll> vl;
+typedef vector<vector<ll>> vvl;
+typedef vector<string> vs;
+typedef vector<bool> vb;
+typedef pair<int, int> pii;
+const int mod = 1e9 + 7;
+template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
+template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
+template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
+
+#define _deb(x) cout<<x;
+void _print() {cerr << "]\n";} template <typename T, typename... V>void _print(T t, V... v) {_deb(t); if (sizeof...(v)) cerr << ", "; _print(v...);}
+#define deb(x...) cerr << "[" << #x << "] = ["; _print(x)
+template <class T, class U> void print_m(const map<T,U> &m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
+template<class T, class U>void debp(const pair<T, U> &pr, bool end_line=1){cout<<"{"<<pr.first<<" "<<pr.second<<"}"; cout<<(end_line ? "\n" : ", ");}
+template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cout<<"Empty"<<endl; return;}if(!sep_line) cout<<"{ ";for(auto x: vp) debp(x,sep_line);if(!sep_line) cout<<"}\n";cout<<endl;}
+template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
+template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
+
+class Solution {
+public:
+    int primePalindrome(int n) {
+        if(isPal(n) && isPrime(n)) return n;
+        while(true){
+            int next = find_next_pal(n);
+            if(isPrime(next)) return next;
+            n = next;
+        }
+        return -1;
+    }
+
+    bool isPal(int n){
+        int a = 0;
+        int temp = n;
+        while(temp){
+            int l =temp%10; temp/=10;
+            a  = a*10 + l;
+        }
+        return a==n;
+    }
+
+    int find_next_pal(int n){
+        int len = log10(n) + 1;
+        set<long long> ops;
+        ops.insert(powl(10,len+1)-1);
+        ops.insert(powl(10,len)+1);
+
+        string s = to_string(n);
+        for(int inc=0; inc<=1; ++inc){
+            string lt = s.substr(0,(len+1)/2);
+            int left = stoi(lt);
+            left+=inc;
+            lt = to_string(left);
+            string rt = lt; 
+            if(len&1) rt.pop_back();
+            reverse(all(rt));
+            lt+=rt;
+            ops.insert(stoi(lt));
+        }
+
+        int ans = INT_MAX;
+        for(auto op: ops){
+            if(op<=n) continue;
+            min_self(ans, op);
+        }        
+        assert(ans!=INT_MAX);
+        return ans;
+    }
+
+    bool isPrime(int n){
+        if(n==1) return 0;
+        for(int i=2; i*i<=n; ++i){
+            if(n%i==0) return 0;
+        }
+        return 1;
+    }
+};
+
+int main(){
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    Solution sol; int out;
+    vi as = {1,2,3,6,7,10,12,121,8,13,(int)1e8,9989900};
+    for(auto x: as){
+        out = sol.primePalindrome(x); deb(out);
+    }
+    return 0;
+}
