@@ -83,7 +83,7 @@ public:
     }
 };
 
-class Solution {
+class Solution2 {
     string s; set<string> dict;
     int n;
     map<int,set<string>> dp;
@@ -140,6 +140,71 @@ public:
                 }
             }
         }
+    }
+};
+
+class Solution {
+    int n, max_len;
+    vb dp, vis;
+    set<string> seen;
+    vector<vs> ans;
+    string s;
+public:
+    vector<string> wordBreak(string s, vector<string>& wordDict) {
+        this->s = s;
+        n = s.size();
+        seen.clear();
+        for(auto &word: wordDict){
+            seen.insert(word);
+            max_len = max(max_len, (int)word.size());
+        }
+        
+        if(!canForm()) return {};
+        
+        vis.assign(n+1,0);
+        ans.clear(); ans.resize(n+1);
+        return dfs(0);        
+    }
+    
+    vs dfs(int pos){
+        if(pos==n) return {};
+        else if(vis[pos]) return ans[pos];
+        vis[pos] = 1;
+
+        string sub;
+        for(int i=pos; i<n; ++i){
+            sub+=s[i];
+            if(seen.count(sub) && dp[i+1]){
+                dfs(i+1);
+                if(i+1==n){
+                    ans[pos].push_back(sub);
+                }else{
+                    for(auto &sen: ans[i+1]){
+                        string cur = sub + " " + sen;
+                        ans[pos].push_back(cur);
+                    }
+                }
+            }
+            if(sub.size()>=max_len) break;
+        }
+
+        return ans[pos];
+    }
+    
+    bool canForm(){
+        dp.assign(n+1,0);
+        dp[n] = 1;
+        for(int i=n; i>=0; --i){
+            string sub;
+            for(int j=i-1; j>=0; --j){
+                sub = s[j] + sub;
+                if(seen.count(sub))
+                    dp[j] = 1;
+                
+                if((int)sub.size()>=max_len) break;
+            }
+        }
+        return dp[0];
     }
 };
 

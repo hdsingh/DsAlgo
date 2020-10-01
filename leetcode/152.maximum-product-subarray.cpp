@@ -148,6 +148,45 @@ public:
     }
 };
 
+// By extending the prev pos and neg, and cutting off the link
+// by resettin them to 0 upon encountering 0.
+class Solution {
+public:
+    int maxProduct(vector<int>& nums) {
+        if(nums.size()==1) return nums[0];
+        int ans = 0, neg = 0, pos = 0;
+        
+        for(auto x: nums){
+            int nneg = 0, npos = 0;
+            if(x<0){
+                nneg = (pos ? pos*x : x);
+                npos = neg*x;
+            }else if(x>0){
+                npos = (pos ? pos*x : x);
+                nneg = neg*x;
+            }
+            pos = npos, neg = nneg;
+            ans = max({ans, pos, neg});
+        }
+        return ans;
+    }
+};
+
+class Solution {
+public:
+    int maxProduct(vector<int>& nums) {
+        int n = nums.size();
+        int ans = INT_MIN;
+        int l = 0, r = 0;
+        for(int i=0; i<n; ++i){
+            l = (l ? l : 1) * nums[i];
+            r = (r ? r : 1) * nums[n-1-i];
+            ans = max({ans, l, r});
+        }
+        return ans;
+    }
+};
+
 int main(){
     Solution sol;
     vi nums = {2,3,-2,4}; //6
