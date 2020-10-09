@@ -112,6 +112,33 @@ public:
         return l-1;
     }
 };
+
+class Solution {
+public:
+    int findBestValue(vector<int>& a, int X) {
+        int n = a.size();
+        int lt = 0, rt = *max_element(a.begin(),a.end())+1;
+
+        auto sum = [&](int val){
+            int tot = 0;
+            for(auto x: a)
+                tot+=min(x,val);
+            return tot;
+        };
+
+        while(1+lt<rt){
+            int mid = lt + (rt-lt)/2;
+            if(sum(mid)>=X)
+                rt = mid;
+            else 
+                lt = mid;
+        }
+    
+        if(abs(X-sum(rt-1))<=abs(X-sum(rt)))return rt-1;
+
+        return rt;
+    }
+};
 // @lc code=end
 
 int main(){

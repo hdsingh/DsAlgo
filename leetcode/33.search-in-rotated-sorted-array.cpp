@@ -115,91 +115,76 @@ public:
 //   1 2 3 4 5 6 7 8   and    10, 30, 3 , 4, 5, 8
 //   F F F F F F F F          T   T   F   F  F  F
 // else move left
-class Solution2 {
-public:
-    int search(vector<int>& a, int x) {
-        // print(a, 1);
-        int n = a.size();
-        if(!n) return -1;
-        int pv = 0; //pivot
-
-        int l(0), r(n-1), mid;
-        while(l<=r){
-            mid = l + (r-l)/2;
-            // deb3(l, r, mid);
-            if(a[mid]>a[n-1]){
-                pv = mid;
-                l = mid + 1;
-            }else 
-                r = mid - 1;
-            // deb(pv);
-        }
-        deb(pv);
-        deb(a[pv]);
-        
-        if(a[pv]==x) return pv;
-        // do serch on both sides of pv
-        l = 0; r = pv;
-        while(l<=r){
-            mid = l + (r-l)/2;
-            if(a[mid]==x)
-                return mid;
-            else if(a[mid]<x)
-                l = mid + 1;
-            else 
-                r = mid - 1;
-        }
-
-        l = pv + 1; r = n-1;
-        while(l<=r){
-            mid = l + (r-l)/2;
-            if(a[mid]==x)
-                return mid;
-            else if(a[mid]<x)
-                l = mid + 1;
-            else 
-                r = mid - 1;
-        }
-        return -1;
-    }
-};
-
-class Solution3 {
-public:
-    int search(vector<int>& a, int X) {
-        // find the beg((rot)ation point) by looking for first false
-        // check if the mid is less than back
-
-        int n = a.size();
-        int rot = 0, l = 0, r = n-1;
-        while(l<=r){
-            int mid = l + (r-l)/2;
-            if(a[mid]>a.back())
-                l = mid+1;
-            else 
-                rot = mid, r = mid-1;
-        }
-        // deb(rot);
-
-        // now search as if in normal array by normailising the idx wrt to mod
-        l = 0, r = n-1;
-        while(l<=r){
-            int mid = (l+r)/2;
-            // deb(mid);
-            int rmid = (mid+rot)%n;
-            if(a[rmid]==X) return rmid;
-            else if(a[rmid]<X)
-                l = mid + 1;
-            else 
-                r = mid - 1;
-        }
-
-        return -1;
-    }
-};
-
 
 class Solution {
+public:
+    int search(vector<int>& nums, int X) {
+        int n = nums.size();
+        // find the first ele <=end
+        int lt = -1, rt = n;
+        while(1+lt<rt){
+            int mid = lt + (rt-lt)/2;
+            if(nums[mid]<=nums[n-1]){
+                rt = mid;
+            }else
+                lt = mid;
+        }
+        
+        int rot = rt;
+        lt = 0, rt = n-1;
+        while(lt<=rt){
+            int mid = (lt+rt)/2;
+            int rmid = (mid+rot)%n;
+            if(nums[rmid]==X) 
+                return rmid;
+            else if(nums[rmid]<X){
+                lt = mid+1;
+            }else{
+                rt = mid-1;
+            }
+        }
+
+        return -1;
+    }
+};
+
+class Solution0 {
+public:
+    int search(vector<int>& nums, int X) {
+        int n = nums.size();
+        // find the first ele <end
+        int lt = -1, rt = n;
+        while(1+lt<rt){
+            int mid = lt + (rt-lt)/2;
+            if(nums[mid]<=nums[n-1]){
+                rt = mid;
+            }else
+                lt = mid;
+        }
+        deb(rt);
+        int idx = find(0,rt-1,X, nums);
+        if(idx!=-1) return idx;
+        return find(rt,n-1, X, nums);
+    }
+    
+    int find(int lt, int rt, int X, vector<int> &nums){
+        if(lt>rt) return -1;
+        while(lt<=rt){
+            int mid = lt + (rt-lt)/2;
+            if(nums[mid]==X) 
+                return mid;
+            else if(nums[mid]<X){
+                lt = mid+1;
+            }else
+                rt = mid-1;
+        }
+        
+        return -1;
+    }
+};
+
+
+class Solution2 {
 public:
     int search(vector<int>& a, int X) {
         int n = a.size();

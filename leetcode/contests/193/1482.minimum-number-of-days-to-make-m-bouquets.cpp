@@ -28,43 +28,38 @@ template <typename T>void print(const T &v, bool show_index = false){int w = 2;i
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
 class Solution {
-    vi a;
-    int m,k,n;
 public:
-    int minDays(vector<int>& bloomDay, int M, int K) {
-        a = bloomDay; m = M, k=K;
-        n = a.size();
-
-        int l = -1, r = 1e9+10, ans = -1;
-        while(1+l<r){
-            int mid = l + (r-l)/2;
-            if(can(mid))
-                r = mid, ans = r;
-            else 
-                l = mid;
-        }
-
-        return ans;        
-
-    }
-
-    bool can(int mid){
-        int grps = 0;
-        int i = 0;
-        while(i<n){
-            int pi = i;
-            int j = i;
-            while(j-i+1<=k && j<n && a[j]<=mid){
-                ++j;
+    int minDays(vector<int>& a, int m, int k) {
+        int n = a.size();
+        if(n<m*k) return -1;
+        int lt = *min_element(a.begin(), a.end()) - 1,
+            rt = *max_element(a.begin(), a.end()) + 1;
+        
+        auto can = [&](int D){
+            int bouqs = 0;
+            int curadj = 0;
+            for(auto day: a){
+                if(day<=D) curadj++;
+                else curadj = 0;
+                
+                if(curadj==k){
+                    ++bouqs;
+                    curadj = 0;
+                }
             }
-            if(j-i==k){
-                ++grps;
-            }
-            i = j;
-            if(i==pi) ++i;
+            
+            return bouqs>=m;     
+        };
+        
+        while(1+lt<rt){
+            int mid = lt + (rt-lt)/2;
+            if(can(mid)){
+                rt = mid;
+            }else
+                lt = mid;
         }
-
-        return grps>=m;
+        
+        return rt;
     }
 };
 

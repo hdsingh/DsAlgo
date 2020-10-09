@@ -88,7 +88,7 @@ int binarySearch3(vector<int>& nums, int target){
     if (nums.size() == 0)
         return -1;
 
-    int left = 0, right = nums.size() - 1;
+    int left = 0, right = nums.size();
     while (left + 1 < right){
         // Prevent (left + right) overflow
         int mid = left + (right - left) / 2;

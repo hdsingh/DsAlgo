@@ -82,7 +82,7 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 #include "Tree.h"
 
-class Solution {
+class Solution0 {
 public:
     TreeNode* deleteNode(TreeNode* root, int key) {
         if(!root) return root;
@@ -111,6 +111,29 @@ public:
                 root->val = scr->val;
                 root->right = deleteNode(root->right, root->val);
             }
+        }
+        return root;
+    }
+};
+
+class Solution {
+public:
+    TreeNode* deleteNode(TreeNode* root, int key) {
+        if(!root) return root;
+        if(key<root->val){
+            root->left = deleteNode(root->left, key);
+        }else if(key>root->val){
+            root->right = deleteNode(root->right, key);
+        }else{
+            if(!root->left) return root->right;
+            else if(!root->right) return root->left;
+            
+            TreeNode* scr = root->right;
+            while(scr->left)
+                scr = scr->left;
+            
+            scr->left = root->left;
+            return root->right;            
         }
         return root;
     }

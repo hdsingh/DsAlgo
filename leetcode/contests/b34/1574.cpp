@@ -27,7 +27,7 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-class Solution {
+class Solution0 {
     int n;
     vi a;
     vi left, right;
@@ -72,6 +72,50 @@ public:
         return 0;
     }
 };
+
+class Solution {
+public:
+    int findLengthOfShortestSubarray(vector<int>& arr) {
+        int n = arr.size();
+        vector<int> left(n), right(n);
+        left[0] = 1;
+        for(int i=1; i<n; ++i)
+            left[i] = (left[i-1] && arr[i-1]<=arr[i]);
+        
+        right[n-1] = 1;
+        for(int i=n-2; i>=0; --i){
+            right[i] = (right[i+1] && arr[i]<=arr[i+1]);
+        }
+        
+        auto can = [&](int len){
+            if(!len) return bool(left.back());
+            if(len==n) return true;
+
+            for(int st=0; st+len<=n; ++st){
+                int ed = st+len-1;
+                int val_lt = (st-1>=0 ? arr[st-1] : INT_MIN);
+                int val_rt = (ed+1<n ? arr[ed+1] : INT_MAX);
+                bool lt_inc = (st-1>=0 ? left[st-1] : 1);
+                bool rt_inc = (ed+1<n ? right[ed+1] : 1);
+                if(val_lt<=val_rt && lt_inc && rt_inc) 
+                    return true;
+            }
+            return false;
+        };
+        
+        int lt = -1, rt = n+1;
+        while(1+lt<rt){
+            int mid = lt + (rt-lt)/2;
+            if(can(mid)){
+                rt = mid;
+            }else
+                lt = mid;
+        }
+        
+        return rt;
+    }
+};
+
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);

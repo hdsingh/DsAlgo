@@ -41,15 +41,16 @@
  * __builtin_popcount in c++ or in any other language.
  * 
  */
+#include "bits/stdc++.h"
+using namespace std;
+
 class Solution {
 public:
     vector<int> countBits(int num) {
-        vector<int> out;
-        for(int i=0; i<=num; i++){
-            out.push_back(__builtin_popcount(i));
+        vector<int> out(num+1);
+        for(int i=1; i<=num; ++i){
+            out[i] = out[i>>1] + (i&1);
         }
         return out;
     }
 };
-
-

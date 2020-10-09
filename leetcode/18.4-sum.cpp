@@ -63,6 +63,58 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
+// K-sum;
+class Solution {
+    int n;
+    vector<vector<int>> out;
+    vector<int> cur;
+public:
+    vector<vector<int>> fourSum(vector<int>& nums, int X) {
+        sort(nums.begin(), nums.end());
+        
+        n = nums.size();
+        int k = 4;
+        dfs(0, k, X, nums);
+        return out;
+    }
+    
+    void dfs(int st, int k, int X, vector<int> &nums){
+        if(k<=1 || st+k>n) return;
+        if(k==2){
+            twoSum(st,X, nums);
+            return;
+        }
+        
+        for(int i=st; i<n; ++i){
+            if(i-1>=st && nums[i-1]==nums[i]) continue;
+            cur.push_back(nums[i]);
+            dfs(i+1, k-1, X - nums[i], nums);
+            cur.pop_back();
+        }
+    }
+    
+    void twoSum(int st, int X, vector<int> &nums){
+        int lt = st, rt = n-1;
+        while(lt<rt){
+            int sum = nums[lt] + nums[rt];
+            if(sum<X) ++lt;
+            else if(sum>X) --rt;
+            else{
+                out.push_back(cur);
+                out.back().push_back(nums[lt]); 
+                out.back().push_back(nums[rt]);
+                
+                while(1+lt<=st && nums[lt]==nums[lt+1]) ++lt;
+                while(rt-1>=lt && nums[rt-1]==nums[rt]) --rt;
+                
+                ++lt, --rt;
+            }
+        }
+    }
+    
+};
+
+
 // i and j will vary, for each i,j form ab = arr[i]  + arr[j]
 // so now will find answer for ab, c,d reducing it to 3Sum
 class Solution {

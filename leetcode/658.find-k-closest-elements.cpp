@@ -123,6 +123,39 @@ public:
     }
 };
 
+
+class Solution0 {
+public:
+    vector<int> findClosestElements(vector<int>& arr, int k, int X) {
+        int n = arr.size();
+        int lt = -1, rt = n;
+        while(1+lt<rt){
+            int mid = lt + (rt-lt)/2;
+            if(arr[mid]<=X)
+                lt = mid;
+            else
+                rt = mid;
+        }
+        if(lt==-1) lt = 0;
+        
+        int idx = lt;
+        if(idx+1<n && arr[idx+1]-X<X-arr[idx]) ++idx;
+        lt = idx-1, rt = idx+1;
+        
+        for(int i=0; i<k-1; ++i){
+            if( (lt>=0 && X-arr[lt]<=arr[rt]-X) || (rt>=n)){
+                 --lt;
+            }else ++rt;
+        }
+        
+        vector<int> out;
+        for(int i=lt+1; i<=rt-1; ++i){
+            out.push_back(arr[i]);
+        }
+        
+        return out;        
+    }
+};
 // @lc code=end
 int main(){
     Solution sol;

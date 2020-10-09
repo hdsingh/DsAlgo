@@ -110,6 +110,37 @@ public:
         return dp[0][1];
     }
 };
+
+class Solution {
+    int n;
+    vector<int> a;
+    vector<vector<int>> dp;
+public:
+    int stoneGameII(vector<int>& piles) {
+        a = piles;
+        n = a.size();
+        for(int i=n-2; i>=0; --i)
+            a[i]+=a[i+1];
+        
+        dp.assign(n+1, vector<int>(n+1,-1));
+        return dfs(0,1);
+    }
+
+    int dfs(int pos, int M){
+        if(pos>=n) return 0;
+        if(2*M>=n-pos){
+            return a[pos];
+        }
+        int &ans = dp[pos][M];
+        if(~ans) return ans;
+        ans = 0;
+        for(int x=1; x<=2*M; ++x){
+            ans = max(ans, a[pos] - dfs(pos+x, max(x, M)));
+        }
+    
+        return ans;
+    }
+};
 // @lc code=end
 
 int main(){
