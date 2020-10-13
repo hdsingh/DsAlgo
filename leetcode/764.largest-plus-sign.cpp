@@ -209,6 +209,88 @@ public:
     }
 };
 
+class Solution {
+public:
+    int orderOfLargestPlusSign(int n, vector<vector<int>>& mines) {
+        vvi grid(n, vi(n,1));
+        for(auto mine: mines)
+            grid[mine[0]][mine[1]] = 0;
+
+        vvi dp(n, vi(n, n));
+        
+        for(int i=0; i<n; ++i){
+            int l = dp[i][0] = grid[i][0];
+            for(int j=1; j<n; ++j){
+                min_self(dp[i][j], l = (grid[i][j] ? l + 1 : 0));
+            }
+            
+            int r = dp[i][n-1] = grid[i][n-1];
+            for(int j=n-2; j>=0; --j)
+                min_self(dp[i][j], r = (grid[i][j] ? r + 1 : 0));
+        }
+        
+        for(int j=0; j<n; ++j){
+            int u = dp[0][j] = grid[0][j];
+            for(int i=1; i<n; ++i)
+                min_self(dp[i][j], u = (grid[i][j] ? u + 1 : 0));
+    
+            int d = dp[n-1][j] = grid[n-1][j];        
+            for(int i=n-2; i>=0; --i)
+                min_self(dp[i][j], d = (grid[i][j] ? d + 1 : 0));
+        }
+        // cout<<grid<<dp;
+
+        int ans = 0;
+        for(int i=0; i<n; ++i){
+            for(int j=0; j<n; ++j){
+                ans = max(ans, dp[i][j]);
+            }
+        }
+        return ans;        
+    }
+};
+
+class Solution0 {
+public:
+    int orderOfLargestPlusSign(int n, vector<vector<int>>& mines) {
+        vvi grid(n, vi(n,1));
+        for(auto mine: mines)
+            grid[mine[0]][mine[1]] = 0;
+        // cout<<grid;
+        
+        vvi left(grid), right(grid), up(grid), down(grid);
+        
+        for(int i=0; i<n; ++i){
+            for(int j=1; j<n; ++j)
+                if(left[i][j])
+                    left[i][j]+=left[i][j-1];
+            
+            for(int j=n-2; j>=0; --j)
+                if(right[i][j])
+                    right[i][j]+=right[i][j+1];
+        }
+        
+        for(int j=0; j<n; ++j){
+            for(int i=1; i<n; ++i)
+                if(up[i][j])
+                    up[i][j]+=up[i-1][j];
+            
+            for(int i=n-2; i>=0; --i)
+                if(down[i][j])
+                    down[i][j]+=down[i+1][j];
+        }
+        
+        int ans = 0;
+        for(int i=0; i<n; ++i){
+            for(int j=0; j<n; ++j){
+                int cur = min({left[i][j], right[i][j], up[i][j], down[i][j]});
+                ans = max(ans, cur);
+            }
+        }
+        return ans;        
+    }
+};
+
 // @lc code=end
 
 

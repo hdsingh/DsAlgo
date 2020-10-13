@@ -79,7 +79,7 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
-class Solution {
+class Solution0 {
     vi mem;
 public:
     bool canIWin(int m, int t) {
@@ -110,6 +110,35 @@ public:
 
         mem[k] = -1;
         return false;
+    }
+};
+
+class Solution {
+    int mx, req;
+    vector<int> dp;
+public:
+    bool canIWin(int M, int T) {
+        req = T, mx = M;
+        if(mx*(mx+1)<T) return false;
+        if(mx>=T) return true;
+        
+        dp.assign(1<<mx, -1);
+        
+        return dfs(0,0);
+    }
+
+    // can I win
+    bool dfs(int mask, int cur){
+        if(cur>=req) return 0; // opp has already won
+        int &ans = dp[mask];
+        if(~ans) return ans;
+        ans = 0;
+        for(int i=0; i<mx; ++i){
+            if(!((mask>>i)&1) && !dfs(mask|(1<<i), cur+i+1) ){
+                return ans = 1;
+            }
+        }
+        return ans;
     }
 };
 // @lc code=end

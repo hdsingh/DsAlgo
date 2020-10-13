@@ -79,6 +79,36 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
+// S1 + S2 = sum
+// S1 - S2 = dif
+// 2*S1 = sum - dif
+// dif = sum - 2*S1
+// since we want min dif, we need to maximize s1 < S/2
+// dif = 0, sum/2 = s1
+// Hence converted to target sum.
+class Solution {
+public:
+    int lastStoneWeightII(vector<int>& a) {
+        int n = a.size();
+        int sum = accumulate(a.begin(), a.end(), 0);
+        int S = sum/2;
+        vector<bool> can(S+1);
+        can[0] = 1;
+        
+        for(auto num: a){
+            for(int s=S-num; s>=0; --s){
+                if(can[s])
+                    can[s+num] = 1;
+            }
+        }
+        
+        for(int s=S; s>=0; --s){
+            if(can[s])
+                return sum - 2*s; 
+        }
+        return -1;
+    }
+};
 // Place - or + in front of each stone and add to the previous set of possible sums
 class Solution1 {
 public:
@@ -108,7 +138,7 @@ public:
     }   
 };
 
-class Solution {
+class Solution2 {
 public:
     int lastStoneWeightII(vector<int>& a) {
         int n = a.size();

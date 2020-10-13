@@ -75,12 +75,25 @@
 #include "extra.h"
 using namespace std;
 typedef ListNode node;
-    //     d         
-    // |_______|         f  
-    // x   x   x    x  x 
-    //         x    c    x
-    //            x   x 
-    //       c-f
+
+//     d         
+// |_______|         f  
+// x   x   x    x  x 
+//         x    c    x
+//            x   x 
+//       c-f
+
+// Distance cov by slow = d + f
+// Distace by F = d + f + m.C
+// F = 2*S
+// d + f + m.C = 2(d + f);
+// m.C = d + f
+// m.C - f = d;
+// C - f + (m-1)C = d
+// hence C - f + some complete rotations = d
+// O(N + K)
+
+
 // fast and slow meet at pt f
 // 2k - k = c
 // also 2k - k = d + f;

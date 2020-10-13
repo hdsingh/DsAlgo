@@ -92,29 +92,46 @@ template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout
 
 class Solution {
 public:
-    bool PredictTheWinner(vector<int>& a) {
-        int n = a.size();
-        if(n%2==0) return true;
-
-        vvi dp(n, vi(n));
-        // // max score that could be gained from i to j
+    bool PredictTheWinner(vector<int>& nums) {
+        int n = nums.size();
+        int sum = accumulate(nums.begin(), nums.end(),0);
+        vvi dp(n+1, vi(n+1));
+        // how much more I have than other.
         
-        for(int i=n-1; i>=0; i--){
-            dp[i][i] = a[i];
-            for(int j=i+1; j<n; j++){
-                int x = (i+1<n && j-1>=0 ? dp[i+1][j-1] : 0);
-                int y = (i+2<n ? dp[i+2][j] : 0);
-                int z = (j-2>=0 ? dp[i][j-2] : 0);
-                dp[i][j] = max(a[i] + min(y, x),
-                               a[j] + min(z, x) ); 
+        for(int l=n-1; l>=0; --l){
+            dp[l][l] = nums[l];
+            for(int r=l+1; r<n; ++r){
+                dp[l][r] = max(nums[l] - dp[l+1][r], nums[r] - dp[l][r-1]);
             }
         }
-
-        // print_vv(dp);
-        return 2*dp[0][n-1] >= accumulate(all(a),0);
+        
+        return dp[0][n-1]>=0;
     }
 };
 
+class Solution0 {
+public:
+    bool PredictTheWinner(vector<int>& nums) {
+        int n = nums.size();
+        int sum = accumulate(nums.begin(), nums.end(),0);
+        vvi dp(n+1, vi(n+1));
+
+        for(int l=n-1; l>=0; --l){
+            dp[l][l] = nums[l];
+            for(int r=l+1; r<n; ++r){
+                // l, (l+1), r
+                int op1 = nums[l] + min(dp[l+2][r], dp[l+1][r-1]);
+                
+                // r, l, r-1
+                int op2 = nums[r] + min(dp[l+1][r-1], (r-2>=0 ? dp[l][r-2] : 0));
+                
+                dp[l][r] = max(op1, op2);
+            }
+        }
+
+        return dp[0][n-1]>=(sum+1)/2;
+    }
+};
 // @lc code=end
 
 

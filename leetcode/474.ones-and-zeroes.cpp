@@ -84,6 +84,34 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
+class Solution {
+    void max_self(int &a, int b){
+        if(a<b) a = b;
+    }
+public:
+    int findMaxForm(vector<string>& strs, int t0, int t1) {
+        vvi dp(t0+1, vi(t1+1));
+        // count of strs
+        int ans = 0;
+        
+        for(auto &str: strs){
+            int r0 = 0, r1 = 0; // req 0 and 1
+            for(auto x: str)
+                if(x=='1') r1++;
+                else r0++;
+            
+            for(int c0=t0-r0; c0>=0; --c0){
+                for(int c1=t1-r1; c1>=0; --c1){
+                    max_self(dp[c0+r0][c1+r1], dp[c0][c1] + 1);
+                    max_self(ans, dp[c0+r0][c1+r1]);
+                }
+            }
+        }
+        
+        return ans;
+    }
+};
+
 class Solution1 {
 public:
     int findMaxForm(vector<string>& strs, int Z, int O) {

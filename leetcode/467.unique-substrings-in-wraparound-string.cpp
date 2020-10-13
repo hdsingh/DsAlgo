@@ -108,6 +108,39 @@ public:
 };
 // @lc code=end
 
+// starting from any char, a string with len l will be unique 
+// for unique len. hence we only need to know the max_len of 
+// a valid string starting from a char
+// example z, za, zab, zabc
+///        1   2  3     4
+// the len 4 covers all other prpev smaller strings.
+class Solution {
+    void max_self(int &a, int b){
+        if(b>a) a = b;
+    }
+public:
+    int findSubstringInWraproundString(string p) {
+        int n = p.size();
+        vector<int> len_ahead(26);
+        
+        for(int i=0; i<n; ++i){
+            int j = i;
+            while(j+1<n && (p[j+1]-p[j]==1 || (p[j+1]=='a' && p[j]=='z') ) )
+                  ++j;
+            
+            for(int k=i; k<=j; ++k){
+                max_self(len_ahead[p[k]-'a'], j-k+1);
+            }  
+            i = j;
+        }
+        
+        int ans = 0;
+        for(int i=0; i<26; ++i)
+            ans+=len_ahead[i];
+        return ans;
+    }
+};
+
 int main(){
     Solution sol; int out;  vs ss;
     ss = {

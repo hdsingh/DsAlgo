@@ -50,7 +50,7 @@ typedef std::vector<vector<int>> vvi;
 // S ->R
 // R->R, B, S
 // Based on State space possibilities analysis
-class Solution {
+class Solution0 {
 public:
     int maxProfit(vector<int>& prices) {
         int n = prices.size();
@@ -69,6 +69,23 @@ public:
 
         return max(hold[n-1], sell[n-1]);
 
+    }
+};
+
+const int inf = 1e9;
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int n = prices.size();
+        vector<int> buy(n+1, -inf), sell(n+1);
+    
+        for(int i=1; i<=n; ++i){
+            int p = prices[i-1];
+            buy[i] = max((i-2>=0 ? sell[i-2] : 0) - p, buy[i-1]);
+            sell[i] = max(buy[i-1] + p, sell[i-1]);
+        }
+
+        return sell[n];
     }
 };
 // @lc code=end

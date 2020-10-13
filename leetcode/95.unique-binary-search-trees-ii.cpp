@@ -63,69 +63,51 @@ typedef vector<string> vs;
 template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<v.size(); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(w)<<*i<<" ";cout<<endl;}
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 #include "Tree.h"
-
 class Solution {
-    // int nmax = 9;
-    bool calculated = false;
-    vector<vector<TreeNode*>> trees;
+    vector<vector<TreeNode*>> dp;
 public:
     vector<TreeNode*> generateTrees(int n) {
         if(!n) return {};
-        if(!calculated)
-            precalc(9);
-        return trees[n];
-    }
-
-    void precalc(int nmax){
-        // int nmax = 9;
-        trees.resize(nmax+1);
-        trees[0] = {NULL};
-        trees[1] = {new TreeNode(1)};
+        dp.resize(n+1);
+        dp[0] = {NULL};
+        dp[1] = {new TreeNode(1)};
         
-        for(int i=2; i<=nmax; ++i){
-            for(int centre = 1; centre<=i; ++centre){
-                int left = centre - 1;
-                int right = i-centre;
-                for(auto l: trees[left]){
-                    for(auto r: increment_vals(trees[right], centre)){
-                        // deb(centre);
-                        TreeNode* root = new TreeNode(centre);
-                        root->left = l;
-                        root->right = r;
-                        trees[i].push_back(root);
+        for(int i=2; i<=n; ++i){
+            for(int center = 1; center<=i; ++center){
+                int left = center-1;
+                int right = i - center;
+                for(auto lnode: dp[left]){
+                    for(auto rnode: clone_and_inc(dp[right], center)){
+                        TreeNode* root = new TreeNode(center);
+                        root->left = lnode;
+                        root->right = rnode;
+                        dp[i].push_back(root);
                     }
                 }
             }
         }
-        calculated = true;
+        
+        return dp[n];
     }
-
-    vector<TreeNode*> increment_vals(vector<TreeNode*> &_roots, int val){
-        vector<TreeNode*> roots;
-        for(auto root: _roots){
-            TreeNode* cloned = clone(root);
-            dfs(cloned, val);
-            roots.push_back(cloned);
+    
+    vector<TreeNode*> clone_and_inc(vector<TreeNode*> nodes, int val){
+        vector<TreeNode*> out;
+        for(auto node: nodes){
+            TreeNode* cloned = clone(node, val);
+            out.push_back(cloned);            
         }
-        return roots;
+        return out;
+    }
+    
+    TreeNode* clone(TreeNode* root, int val){
+        if(!root) return NULL;
+        TreeNode* newNode = new TreeNode(root->val + val);
+        newNode->left = clone(root->left, val);
+        newNode->right = clone(root->right, val);
+        return newNode;
     }
 
-    void dfs(TreeNode* &root, const int &val){
-        if(!root) return;
-        root->val+=val;
-        dfs(root->left, val);
-        dfs(root->right, val);
-    }
-
-    TreeNode* clone(TreeNode * root){
-        if(!root) return root;
-        TreeNode *newRoot = new TreeNode(root->val);
-        newRoot->left = clone(root->left);
-        newRoot->right = clone(root->right);
-        return newRoot;
-    }
 };
-// @lc code=end
 
 int main(){
     Solution sol;

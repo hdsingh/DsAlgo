@@ -127,23 +127,39 @@ public:
 // Imp obs: values are increasing, so vector can be used
 // 1. Use vector instead of set, 
 // 2. Use a single vector
+
+// a
+// b a|b
+// c b|c a|b|c
+// d c|d b|c|d a|b|c|d
+// e d|e c|d|e b|c|d|e a|b|c|d|e
+
+// these values are always increasing. 
+// So we will push a val in ans if it is not eq to prev and at max we can have 30 vals in each step, since there are just 30 bits.
+    
 class Solution {
 public:
-    int subarrayBitwiseORs(vector<int>& A) {
-        int n = A.size();
-        vector<int> save;
-        for(int i=0, st=0, ed=0; i<n; st = ed, ed = save.size(), ++i){
-            save.pb(A[i]);
-            for(int j=st; j<ed; ++j){
-                int val = A[i]|save[j];
-                if(val!=save.back()) save.pb(val);
-                print(save);
+    int subarrayBitwiseORs(vector<int>& a) {
+        int n = a.size();
+        vector<int> ans;
+
+        int left = 0, right = 0;
+        for(int i=0; i<n; ++i){
+            right = ans.size();
+            ans.push_back(a[i]);
+            
+            for(int j=left; j<right; ++j){
+                int val = ans[j]|a[i];
+                if(val!=ans.back())
+                    ans.push_back(val);
             }
+            left = right;
         }
-        // print(save);
-        return unordered_set<int>(save.begin(), save.end()).size();
+        return unordered_set<int>(ans.begin(), ans.end()).size();
     }
+    
 };
+
 // @lc code=end
 
 int main(){

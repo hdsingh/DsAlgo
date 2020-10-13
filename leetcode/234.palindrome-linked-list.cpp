@@ -50,6 +50,52 @@ typedef vector<int> vi;
 typedef vector<vector<int>> vvi;
 #include "LinkedList.h"
 
+
+// 1
+// 1 2 -> 1 
+// 1 2 1 ->2
+// 1 2 3 4 ->2
+// 1 2 3 
+class Solution {
+public:
+    bool isPalindrome(ListNode* head) {
+        if(!head || !head->next) return true;
+        ListNode* mid = find_mid(head);
+        ListNode* end = reverse(mid->next);
+        
+        while(end){
+            if(end->val != head->val)
+                return false;
+            end = end->next;
+            head = head->next;
+        }
+        
+        return true;
+    }
+    
+    ListNode* find_mid(ListNode* head){
+        ListNode *slow(head), *fast(head);
+        while(fast->next && fast->next->next){
+            fast = fast->next->next;
+            slow = slow->next;
+        }
+        return slow;
+    }
+    
+    ListNode* reverse(ListNode* head){
+        ListNode *cur(head), *prev(NULL), *nextNode;
+        
+        while(cur){
+            nextNode = cur->next;
+            cur->next = prev;
+            prev = cur;
+            cur = nextNode;
+        }
+        
+        return prev;
+    }
+};
+
 class Solution {
 public:
     bool isPalindrome(ListNode* head) {

@@ -105,6 +105,31 @@ public:
 };
 // @lc code=end
 
+class Solution {
+public:
+    double largestSumOfAverages(vector<int>& A, int K) {
+        int n = A.size();
+        vector<vector<double>> dp(n+1, vector<double>(K+1));
+        double sum = 0;
+        for(int i=1; i<=n; ++i){
+            sum+=A[i-1]; 
+            dp[i][1] = sum/i;
+        }
+
+        for(int i=1; i<=n; ++i){
+            double sum = 0;
+            for(int j=i; j<=n; ++j){
+                sum+=A[j-1];
+                for(int k=2; k<=K; ++k){
+                    max_self(dp[j][k], dp[i-1][k-1] + sum/(j-i+1));
+                }
+            }
+        }
+
+        return dp[n][K];
+    }
+};
+
 
 int main(){
     Solution sol;
