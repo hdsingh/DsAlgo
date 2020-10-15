@@ -68,7 +68,52 @@ typedef vector<int> vi;
 template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<v.size(); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(w)<<*i<<" ";cout<<endl;}
 #include "Tree.h"
 
+// Morris Inorder
 class Solution {
+public:
+    int sumRootToLeaf(TreeNode* root) {
+        int sum = 0, cursum = 0;
+        TreeNode* cur = root;
+        
+        while(cur){
+            if(!cur->left){
+                cursum =  (cursum<<1) + cur->val;
+                if(!cur->right)
+                    sum+=cursum;
+                
+                cur = cur->right;
+            }else{
+                auto pred = cur->left;
+                int steps = 1;
+                while(pred->right && pred->right !=cur){
+                    pred = pred->right; ++steps;
+                }
+                
+                if(!pred->right){
+                    // make link
+                    cursum =  (cursum<<1) + cur->val;
+                    
+                    pred->right = cur;
+                    cur = cur->left;
+                }else{
+                    // break link
+                    if(!pred->left)
+                        sum+=cursum;
+                    
+                    for(int i=0; i<steps; ++i)
+                        cursum>>=1;
+                    
+                    pred->right = NULL;
+                    cur = cur->right;
+                }
+            }
+        }
+        
+        return sum;
+    }
+};
+
+class Solution0 {
     int sum;
 public:
     int sumRootToLeaf(TreeNode* root) {

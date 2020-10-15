@@ -66,39 +66,59 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 #include "Tree.h"
 
-class Solution0 {
-    int preIndex=0, postIndex = 0;
-public:
-    TreeNode* constructFromPrePost(vector<int>& pre, vector<int>& post) {
-        TreeNode* root = new TreeNode(pre[preIndex++]);
-        // deb3(root->val, preIndex, postIndex);
-        if(root->val != post[postIndex])
-            root->left = constructFromPrePost(pre,post);
-        if(root->val != post[postIndex])
-            root->right = constructFromPrePost(pre,post);
-        postIndex++;
-        return root;
-    }
-};
-
 // Observation based
 // Ref: https://leetcode.com/problems/construct-binary-tree-from-preorder-and-postorder-traversal/discuss/161268/C%2B%2BJavaPython-One-Pass-Real-O(N)
 class Solution {
 public:
     TreeNode* constructFromPrePost(vector<int>& pre, vector<int>& post) {
-        vector<TreeNode*> s;
-        s.push_back(new TreeNode(pre[0]));
-        for(int i=1, j=0; i<(int)pre.size(); ++i){
-            TreeNode* node = new TreeNode(pre[i]);
-            while(s.back()->val == post[j])
-                s.pop_back(), ++j;
-            if(s.back()->left)
-                s.back()->right = node;
+        int n = pre.size();
+        if(!n) return NULL;
+        stack<TreeNode*> stk;
+        TreeNode* root = new TreeNode(pre[0]);
+        stk.push(root);
+        
+        for(int i=1, j=0; i<n; ++i){
+            TreeNode* cur = new TreeNode(pre[i]);
+            while(stk.top()->val==post[j]){
+                stk.pop(); ++j;
+            }
+            if(!stk.top()->left)
+                stk.top()->left = cur;
             else 
-                s.back()->left = node;
-            s.push_back(node);
+                stk.top()->right = cur;
+            
+            stk.push(cur);
         }
-        return s[0];
+        
+        return root;
+    }
+};
+
+// pre: [root,[..left...][..right..]]
+// post: [[..left..],[..right..], root]
+class Solution0 {
+    map<int,int> loc;
+public:
+    TreeNode* constructFromPrePost(vector<int>& pre, vector<int>& post) {
+        int n = pre.size();
+        for(int i=0; i<n; ++i){
+            loc[post[i]] = i;
+        }
+        return dfs(0,n-1,0,n-1, pre, post);
+    }
+    
+    TreeNode* dfs(int pre_st, int pre_end, int post_st, int post_end, vector<int> &pre, vector<int> &post){
+        if(pre_st>pre_end || post_st>post_end) return NULL;
+        TreeNode* cur = new TreeNode(pre[pre_st]);
+        if(pre_st==pre_end) return cur;
+        
+        int idx = loc[pre[pre_st+1]];
+        
+        int len = idx-post_st + 1;
+        cur->left = dfs(pre_st+1, pre_st + 1 + len-1, post_st, idx, pre, post);
+        cur->right = dfs(pre_st+len+1, pre_end, idx+1, post_end-1, pre, post);
+        
+        return cur;
     }
 };
 

@@ -129,6 +129,35 @@ public:
     }
 };
 
+
+class Solution {
+public:
+    TreeNode* constructMaximumBinaryTree(vector<int>& nums) {
+        TreeNode* root = new TreeNode(1e9);
+        stack<TreeNode*> stk;
+        stk.push(root);
+        
+        for(auto num: nums){
+            TreeNode* now = new TreeNode(num);
+            if(num>stk.top()->val){
+                TreeNode* prev = NULL;
+                while(num>=stk.top()->val){ 
+                    prev = stk.top();
+                    stk.pop();
+                }
+                stk.top()->right = now;
+                now->left = prev;
+            }else{
+                stk.top()->right = now;
+            }
+            stk.push(now);
+        }
+        
+        return root->right;
+        
+    }
+};
+
 // @lc code=end
 
 int main(){
