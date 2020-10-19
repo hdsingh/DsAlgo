@@ -88,6 +88,32 @@ public:
 
     }
 };
+
+class Solution {
+    vector<int> cur;
+    vector<vector<int>> ans;
+public:
+    vector<vector<int>> combinationSum(vector<int>& nums, int X) {
+        sort(nums.begin(), nums.end());
+        ans.clear();
+        dfs(0,X, nums);
+        return ans;
+    }
+    
+    void dfs(int pos, int X, vector<int> &nums){
+        if(X==0){
+            ans.push_back(cur);
+            return;
+        }
+        if(pos>=nums.size() || X<0) return;
+        
+        for(int i=pos; i<nums.size() && nums[i]<=X; ++i){
+            cur.push_back(nums[i]);
+            dfs(i,X-nums[i], nums);
+            cur.pop_back();
+        }
+    }
+};
 // @lc code=end
 
 int main(){

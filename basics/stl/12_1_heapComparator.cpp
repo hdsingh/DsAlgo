@@ -102,3 +102,25 @@ int main(){
     }
     return 0;
 }
+
+// Summary:
+
+// struct cmp1{
+//     bool operator()(int a, int b) const{
+//         return a<b;
+//     };
+// };
+
+// int main(){
+//     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+//     set<int, cmp1> s1;
+//     priority_queue<int, vi, cmp1> pq1;
+// 
+//     auto cmp2 = [&](const int &x, const int &y){
+//         return x<y;
+//     };
+//     set<int, decltype(cmp2)> s2(cmp2);
+//     priority_queue<int, vi, decltype(cmp2)> pq2(cmp2);
+// 
+//     return 0;
+// }

@@ -38,7 +38,25 @@
 using namespace std;
 
 // @lc code=start
+
 class Solution {
+public:
+    int majorityElement(vector<int>& nums) {
+        int cnt = 0, maj = -1;
+        for(auto num: nums){
+            if(cnt==0)
+                maj = num;
+            
+            if(maj==num)
+                ++cnt;
+            else
+                --cnt;
+        }
+        return maj;
+    }
+};
+
+class Solution1 {
 public:
     int majorityElement(vector<int>& nums) {
         int n = nums.size();

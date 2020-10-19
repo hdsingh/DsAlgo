@@ -62,6 +62,34 @@ public:
         }
     }
 };
+
+class Solution {
+    int n, K;
+    vector<int> cur;
+    vector<vector<int>> ans;
+public:
+    vector<vector<int>> combine(int _n, int _K) {
+        n = _n; K = _K;
+        cur.clear(); ans.clear();
+        
+        dfs(1);
+        return ans;
+    }
+    
+    void dfs(int pos){
+        if(cur.size()==K){
+            ans.push_back(cur);
+            return;
+        }
+        if(pos>n) return;
+        
+        for(int i=pos; i<=n; ++i){
+            cur.push_back(i);
+            dfs(i+1);
+            cur.pop_back();
+        }
+    }
+};
 // @lc code=end
 
 int main(){

@@ -141,6 +141,21 @@ public:
         return out;
     }
 };
+
+class Solution {
+public:
+    vector<vector<int>> subsets(vector<int>& nums) {
+        vector<vector<int>> ans = {{}};
+        for(int num: nums){
+            int prev_len = ans.size();
+            for(int i=0; i<prev_len; ++i){
+                ans.push_back(ans[i]);
+                ans.back().push_back(num);
+            }
+        }
+        return ans;
+    }
+};
 // @lc code=end
 
 int main(){

@@ -34,6 +34,27 @@ bool next_permutation1(string &a){
     return true;
 }
 
+
+void prev_perm(vi &a){
+    int n = a.size();
+    if(n==0) return;
+    int pos = n-1;
+    while(pos-1>=0 && a[pos-1]<=a[pos])
+        --pos;
+    if(pos==0){
+        reverse(a.begin(), a.end());
+        return;
+    }
+    --pos; // first point where seq is not inc.
+    int next_smaller = n-1;
+    while(pos<next_smaller && a[next_smaller]>=a[pos])
+        --next_smaller;
+    assert(a[next_smaller]<a[pos]);
+    swap(a[pos], a[next_smaller]);
+    reverse(a.begin()+pos+1, a.end());
+}
+
+
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
     string s = "aabac";

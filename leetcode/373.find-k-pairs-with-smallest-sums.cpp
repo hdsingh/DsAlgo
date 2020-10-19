@@ -74,37 +74,33 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
-// Since elements here are already  sorted in ascending order, 
-// so it will be time saving to create a min heap, since the greater 
-// elemnt will just be placed in the end and less swaps with parent will be there
+
+// Imagine the num1 and num2 forming a 2d matrix
+typedef tuple<int,int,int> tii;
 class Solution {
 public:
-    vector<vector<int>> kSmallestPairs(vector<int>& a, vector<int>& b, int k) {
-        vvi out;
-        if(a.empty() || b.empty()) return out;
-
-        // Min heap
-        auto compare = [](const pii &p1, const pii &p2){
-            return p1.first + p1.second > p2.first + p2.second;
-        };
-
-        priority_queue<pii, vector<pii>, decltype(compare)> pq(compare);
-
-        for(auto &n: a)
-            for(auto &m : b){
-                pq.emplace(n,m);
-                if(pq.size()>k) pq.pop();
-            }
+    vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k){
+        int n = nums1.size(), m = nums2.size();
+        if(!n || !m) return {};
+        priority_queue<tii, vector<tii>, greater<tii>> pq;
+        // {sum, i, j}
+        pq.push({nums1[0]+nums2[0], 0, 0});
         
-        while(pq.size() && k--){
-            out.push_back({pq.top().first, pq.top().second});
-            pq.pop();
+        vector<vector<int>> ans;
+        while(!pq.empty() && ans.size()<k){
+            auto [sum, x, y] = pq.top(); pq.pop();
+            ans.push_back({nums1[x], nums2[y]});
+            if(y+1<m){
+                pq.push({nums1[x] + nums2[y+1], x, y+1});
+            }
+            if(y==0 && x+1<n){
+                pq.push({nums1[x+1] + nums2[y], x+1, y});
+            }
         }
-        return out;
-    }
+        
+        return ans;
+    }   
 };
-
-// @lc code=end
 
 int main(){
     Solution sol; vi nums1,nums2; int k; vvi out;

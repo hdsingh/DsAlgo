@@ -82,38 +82,39 @@ template <typename T>void print_vv(T v){int w = 3;cout<<setw(w)<<" ";for(int j=0
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
 class RandomizedSet {
-    vi arr;
-    unordered_map<int,int> m; // val, loc in arr
+    vector<int> arr;
+    unordered_map<int,int> loc;
 public:
     /** Initialize your data structure here. */
     RandomizedSet() {
-        
+        arr.clear();
+        srand(time(NULL));
     }
     
     /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
     bool insert(int val) {
-        if(m.find(val)!=m.end()) return false;
+        if(loc.count(val)) 
+            return false;
         arr.push_back(val);
-        m[val] = arr.size() - 1;
+        loc[val] = arr.size()-1;
         return true;
     }
     
     /** Removes a value from the set. Returns true if the set contained the specified element. */
     bool remove(int val) {
-        if(m.find(val)==m.end()) return false;
-        // Since it is difficult to remove element from middle of array,
-        // remove the swap val, with last and remove last
+        if(!loc.count(val))
+            return false;
         int last = arr.back();
-        m[last] = m[val]; // assign pos of val to last
-        arr[m[val]] = last; // change val to last in arr
+        arr[loc[val]] = last;
+        loc[last] = loc[val];
         arr.pop_back();
-        m.erase(val);
+        loc.erase(val);
         return true;
     }
     
     /** Get a random element from the set. */
     int getRandom() {
-        return arr[rand()%arr.size()];
+        return arr[rand()%arr.size()];        
     }
 };
 

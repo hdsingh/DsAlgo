@@ -98,6 +98,43 @@ public:
         return true;
     }
 };
+
+class Solution {
+    int n;
+    vector<vector<string>> ans;
+    vector<string> board;
+    vector<bool> used_col, used_dia1, used_dia2;
+public:
+    vector<vector<string>> solveNQueens(int _n) {
+        n = _n;
+        board.assign(n,string(n,'.'));
+        used_col.assign(n,false); 
+        used_dia1.assign(2*n-1,false);
+        used_dia2.assign(2*n-1,false);
+        
+        solve(0);
+        return ans;
+    }
+    
+    void solve(int row){
+        if(row==n){
+            ans.push_back(board);
+            return;
+        }
+        for(int col=0; col<n; ++col){
+            int d1 = row + col, d2 = row + (n-1-col);
+            if(!used_col[col] && !used_dia1[d1] && !used_dia2[d2]){
+                used_col[col] = used_dia1[d1] = used_dia2[d2] = 1;
+                board[row][col] = 'Q';
+                
+                solve(row+1);
+                
+                board[row][col] = '.';
+                used_col[col] = used_dia1[d1] = used_dia2[d2] = 0;
+            }
+        }
+    }
+};
 // @lc code=end
 
 int main(){

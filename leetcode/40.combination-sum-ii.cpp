@@ -87,6 +87,42 @@ public:
 };
 // @lc code=end
 
+class Solution {
+    vector<int> cur;
+    vector<vector<int>> ans;
+public:
+    vector<vector<int>> combinationSum2(vector<int>& nums, int X) {
+        cur.clear(); ans.clear();
+        sort(nums.begin(), nums.end());
+        dfs(0,X,nums);
+        return ans;
+    }
+    
+    void dfs(int pos, int X, vector<int> &nums){
+        if(X==0){
+            ans.push_back(cur);
+            return;
+        }
+        if(pos>=nums.size() || X<0) return;
+        
+        int j = pos;
+        while(j+1<nums.size() && nums[j+1]==nums[pos]) ++j;
+        int times = j-pos+1;
+        
+        for(int c=1; c<=times && c*nums[pos]<=X; ++c){
+            cur.push_back(nums[pos]);
+            dfs(j+1,X-c*nums[pos], nums);
+        }
+        
+        while(cur.size() && cur.back()==nums[pos])
+            cur.pop_back();
+       
+        
+        dfs(j+1,X,nums);        
+        
+    }
+};
+
 int main(){
     Solution s;
     vi candidates;

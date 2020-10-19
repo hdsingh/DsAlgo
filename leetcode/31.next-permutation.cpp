@@ -67,6 +67,30 @@ public:
     }
 };
 
+class Solution {
+public:
+    void nextPermutation(vector<int>& nums) {
+        int n = nums.size();
+        if(!n) return;
+        int pos = n-1;
+        while(pos-1>=0 && nums[pos-1]>=nums[pos])
+            --pos;
+        if(pos==0){
+            reverse(nums.begin(), nums.end());
+            return;
+        }
+        --pos;
+        int next_gr = n-1;
+        while(next_gr>pos && nums[next_gr]<=nums[pos])
+            --next_gr;
+        
+        // assert(nums[pos]<nums[next_gr]);
+        swap(nums[pos], nums[next_gr]);
+        
+        reverse(nums.begin()+pos+1, nums.end());
+    }
+};
+
 bool next_permutation1(vi &a){
     int n = a.size();
     if(n==1) return false;

@@ -39,37 +39,35 @@ using namespace std;
 class Solution {
 public:
     vector<int> majorityElement(vector<int>& nums) {
-        int n = nums.size();
-        unordered_map<int, int> count;
-        vector<int> out;
-
-        for(int num: nums){
-            if (++count[num] > n/3){
-                out.push_back(num);
-                count[num] = INT_MIN;
-            }            
+        int maj1 = INT_MAX, maj2 = INT_MAX, cnt1 = 0, cnt2 = 0;
+        for(auto num: nums){
+            if(num==maj1) ++cnt1;
+            else if(num==maj2) ++cnt2;
+            else if(cnt1==0){
+                maj1 = num;
+                cnt1 = 1;
+            }else if(cnt2==0){
+                maj2 = num;
+                cnt2 = 1;
+            }else{
+                --cnt1;
+                --cnt2;
+            }
         }
-
-        return out;
-    }
-    
-    vector<int> majorityElement1(vector<int>& nums) {
-        int n = nums.size();
-        unordered_map<int, int> count;
-        vector<int> out;
-
-        for(int num: nums){
-            count[num]++;
-        }
-
-        for(auto e: count)
-            if(e.second > n/3)
-                out.push_back(e.first);
         
+        vector<int> out;
+        for(auto op: {maj1, maj2}){
+            int cnt = 0;
+            for(auto num: nums)
+                if(num==op)
+                    ++cnt;
+            if(cnt>nums.size()/3)
+                out.push_back(op);
+        }
         return out;
     }
 };
-// @lc code=end
+
 int main(){
     Solution s;
     vvi tests = {{3,2,3}, {1,1,1,3,3,2,2,2}};

@@ -64,6 +64,34 @@ public:
 // next element is same as prev, but in case we are begining this check 
 // would not be performed.
 
+
+class Solution {
+public:
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        int n = nums.size();
+        sort(nums.begin(), nums.end());
+        vector<vector<int>> ans = {{}};
+        
+        for(int i=0; i<n; ++i){
+            int prev_len = ans.size();
+            int j = i;
+            while(j+1<n && nums[j+1]==nums[i]) ++j;
+            
+            for(int pos=0; pos<prev_len; ++pos){
+                vector<int> cur = ans[pos];
+                for(int times=1; times<=j-i+1; ++times){
+                    cur.push_back(nums[i]);
+                    ans.push_back(cur);
+                }   
+            }
+            
+            i = j;
+        }
+        
+        return ans;
+    }
+};
+
 // @lc code=end
 int main(){
     Solution s;

@@ -113,6 +113,62 @@ public:
         return true;
     }
 };
+
+class Solution {
+    bool done;
+    vector<vector<int>> used_rows, used_cols, used_box;
+public:
+    void solveSudoku(vector<vector<char>>& board) {
+        done = false;
+        used_rows.assign(9,vector<int>(10));
+        used_cols.assign(9,vector<int>(10));
+        used_box.assign(9,vector<int>(10));
+    
+        for(int i=0; i<9; ++i){
+            for(int j=0; j<9; ++j){
+                if(board[i][j]=='.') continue;
+                int val = board[i][j] - '0';
+                int box = 3*(i/3) + j/3;
+                if(used_rows[i][val] || used_cols[j][val] || used_box[box][val]) 
+                    return;
+                used_rows[i][val] = used_cols[j][val] = used_box[box][val] = 1;
+            }
+        }
+        
+        solve(0,0,board);
+    }
+    
+    void solve(int x, int y, vector<vector<char>> &board){
+        if(done) return;
+        if(y==9){
+            if(x==8){
+                done = true;
+            }else{
+                solve(x+1,0,board);
+            }
+            return;
+        }
+        
+        if(board[x][y]=='.'){
+            for(int val=1; val<=9; ++val){
+                int box = 3*(x/3) + y/3;
+                if(used_rows[x][val] || used_cols[y][val] || used_box[box][val]) 
+                    continue;
+
+                used_rows[x][val] = used_cols[y][val] = used_box[box][val] = 1;
+                
+                board[x][y] = '0' + val;
+                solve(x,y+1,board);
+                if(done) return;
+                board[x][y] = '.';
+                
+                used_rows[x][val] = used_cols[y][val] = used_box[box][val] = 0;
+            }
+        }else{
+            solve(x,y+1, board);
+        }
+    }
+};
 // @lc code=end
 
 

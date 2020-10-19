@@ -107,6 +107,115 @@ public:
     }
 };
 
+class MinHeap{
+	vector<int> harr;
+  
+  int left(int val){
+  	return 2*val + 1;
+  }
+  
+  int right(int val){
+  	return 2*val+2;
+  }
+  
+  int par(int val){
+  	return (val-1)/2;
+  }
+public:
+	MinHeap(){
+  	harr.clear();
+  }
+  
+  void push(int val){
+  	int pos = harr.size();
+    harr.push_back(val);
+    // bubble up
+    
+    while(pos!=0 && harr[pos]<harr[par(pos)]){
+    	swap(harr[par(pos)],harr[pos]);
+      pos = par(pos);
+    }
+  }
+  
+  	void pop(){
+        if(harr.size()==1){
+        	harr.pop_back();
+          return;
+        }
+        harr[0] = harr.back();
+        harr.pop_back();
+        
+        // bubble down
+        minheapify(0);
+    }
+    
+  	void minheapify(int pos){
+    		int lt = left(pos), rt = right(pos), smallest = pos;
+        
+        if(lt<harr.size() && harr[lt]<harr[smallest]) smallest = lt;
+        if(rt<harr.size() && harr[rt]<harr[smallest]) smallest = rt;
+        
+        if(smallest!=pos){
+        	swap(harr[pos], harr[smallest]);
+          minheapify(smallest);
+        }
+    }
+    
+    int top(){
+    		if(harr.empty()) return INT_MAX;
+      	return harr[0];
+    }
+    
+    int size(){
+    	return harr.size();
+    }
+};	
+
+class Solution1 {
+public:
+		int findKthLargest(vector<int> &nums, int K){
+    		int n = nums.size();
+        MinHeap pq;
+        for(auto num: nums){
+        		pq.push(num);
+            if(pq.size()>K)
+            		pq.pop();
+        }
+        
+        return pq.top();
+    }
+};
+
+class Solution2 {
+public:
+	int findKthLargest(vector<int> &nums, int K){
+    	int n = nums.size();
+        
+        for(int i=(n-1)/2; i>=0; --i){
+        	heapify(nums, i, n);
+        }
+        
+        for(int i=n-1; i>=0 && K>1; --i){
+        	swap(nums[0], nums[i]);
+            heapify(nums,0,i);
+            --K;
+        }
+        
+        return nums[0];
+    }
+    
+    void heapify(vector<int> &nums, int st, int end){
+    	int lt = 2*st+1, rt = 2*st+2, largest = st;
+        
+        if(lt<end && nums[lt]>nums[largest]) largest = lt;
+        if(rt<end && nums[rt]>nums[largest]) largest = rt;
+        
+        if(largest!=st){
+        		swap(nums[largest], nums[st]);
+            heapify(nums, largest, end);
+        }
+    }
+};
 
 int main() {
     string line;
