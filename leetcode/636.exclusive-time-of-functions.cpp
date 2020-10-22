@@ -26,94 +26,79 @@ template<class T, class U>void debp(const pair<T, U> &pr, bool end_line=1){cout<
 template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cout<<"Empty"<<endl; return;}if(!sep_line) cout<<"{ ";for(auto x: vp) debp(x,sep_line);if(!sep_line) cout<<"}\n";cout<<endl;}
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
-
-// Refer: https://leetcode.com/problems/minimum-insertions-to-balance-a-parentheses-string/discuss/779928/Simple-O(n)-stack-solution-with-detailed-explanation
+template <typename T> ostream& operator<<(ostream &os, const vector<T> &v){print(v); return os;};
+template <typename T> ostream& operator<<(ostream &os, const vector<vector<T>> &vv){print_vv(vv); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m){print_m(m); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
 class Solution {
+    vector<int> last, out;
 public:
-    int minInsertions(string s) {
-        int n = sz(s);
-        stack<int> stk; // represents ')' needed
-        int ans = 0;
-        for(auto x: s){
-            if(x=='('){
-                if(sz(stk)==0 || stk.top()==2)
-                    stk.push(2);
-                else{
-                    stk.pop(); // prev seen () 
-                    ++ans;
-                    stk.push(2);
-                }
+    vector<int> exclusiveTime(int n, vector<string>& logs) {
+        last.assign(logs.size(),0);
+        out.assign(n,0);
+        stack<int> stk;
+        for(int i=0; i<logs.size(); ++i){
+            if(is_start(logs[i])){
+                stk.push(i);
             }else{
-                if(sz(stk) && stk.top()==2){
-                    stk.pop(); stk.push(1);
-                }else if(stk.empty()){
-                    stk.push(1); ++ans;
-                }else if(sz(stk) && stk.top()==1){
-                    stk.pop();
-                }
+                last[stk.top()] = i;
+                stk.pop();
             }
         }
-        while(sz(stk)){
-            ans+=stk.top(); stk.pop();
-        }
-        return ans;
+        
+        dfs(0,logs.size()-1, logs);
+        return out;
     }
-};
-
-// upon encountering '(' push it in stack (l++);
-// upon ')' 
-// 1. next char = ')'
-//  have some l, 
-//           :pop it , add 0
-//       else 
-//           add +1 to ans to add a new '('
-//     move to i+2
-//  else 
-//     have some l,
-//         use it, add 1 for ')' at next pos
-//     else 
-//         add +2 for '(' at prev and ')' at next. 
-class Solution {
-public:
-    int minInsertions(string s) {
-        int ans = 0, l = 0, n = s.size();
-        for(int i=0; i<n; ++i){
-            if(s[i]=='(') ++l;
-            else{
-                if(i+1<n && s[i+1]==')'){
-                    if(l==0){
-                        ans+=1;
-                    }else --l;
-                    i+=1;
-                }else{
-                    if(l==0){
-                        ans+=2;
-                    }else 
-                        ans+=1, --l;
-                }
-            }
+    
+    int dfs(int st, int ed, vector<string> &logs){
+        if(st>ed) return 0;
+        int st_time = find_time(logs[st]);
+        int ed_time = find_time(logs[ed]);
+        int id = find_id(logs[st]);
+        
+        if(last[st]==ed){
+            assert(find_id(logs[ed])==id);
+            int inside = dfs(st+1, ed-1, logs);
+            out[id]+= ed_time - st_time + 1 - inside;
+            return ed_time - st_time + 1;
         }
-        return ans + 2*l;
+        
+        return dfs(st, last[st], logs) + dfs(last[st]+1, ed, logs);
+    }
+    
+    bool is_start(string &s){
+        for(int i=0; i<s.size(); ++i){
+            if(i+1<s.size() && s[i]==':' && s[i+1]=='s')
+                return true;
+        }
+        return false;
+    }
+    
+    int find_id(string &s){
+        string out;
+        for(int i=0; i<s.size(); ++i){
+            if(s[i]!=':')
+                out+=s[i];
+            else break;
+        }
+        return stoi(out);
+    }
+    
+    int find_time(string &s){
+        string out;
+        for(int i=s.size()-1; i>=0; --i){
+            if(s[i]!=':')
+                out = s[i] + out;
+            else break;
+        }
+        return stoi(out);
     }
 };
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    Solution sol;
-    vs ss = {
-        "(()))",
-        "())",
-        "))())(", 
-        "((((((", 
-        ")))))))",
-        "()()()()()(",
-        "(()))(()))()())))",
-        "(()((()((",
-        } ;
-    for(auto s: ss){
-        int out = sol.minInsertions(s);
-        deb(out); 
-    }
+    
     return 0;
 }

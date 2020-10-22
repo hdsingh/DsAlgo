@@ -58,6 +58,35 @@ typedef vector<int> vi;
 template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<v.size(); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto i= v.begin(); i!=v.end(); i++)cout<<setw(w)<<*i<<" ";cout<<endl;}
 #include "Tree.h"
 
+
+class Solution {
+public:
+    TreeNode* sortedArrayToBST(vector<int>& nums) {
+        int n = nums.size();
+        if(!n) return NULL;
+        TreeNode* head = new TreeNode(INT_MIN);
+        stack<tuple<TreeNode*, int, int, bool>> stk; // {par, lt, rt, is_left}
+        stk.push({head, 0, n-1, true});
+        
+        while(!stk.empty()){
+            auto [par, lt, rt, is_left] = stk.top(); 
+            stk.pop();
+            
+            int mid = (lt+rt)/2;
+            TreeNode* cur = new TreeNode(nums[mid]);
+            if(is_left)
+                par->left = cur;
+            else 
+                par->right = cur;
+            
+            if(mid+1<=rt) stk.push({cur, mid+1, rt, false});
+            if(lt<=mid-1) stk.push({cur, lt, mid-1, true});
+        }
+        
+        return head->left;
+    }
+};
+
 class Solution {
 public:
     TreeNode* sortedArrayToBST(vector<int>& nums) {

@@ -66,6 +66,23 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
+class Solution {
+public:
+    int findMin(vector<int>& nums) {
+        int n = nums.size();
+        // find first element <=a[n-1];
+        int lt = -1, rt = n;
+        while(1+lt<rt){
+            int mid = lt + (rt-lt)/2;
+            if(nums[mid]<=nums[n-1])
+                rt = mid;
+            else 
+                lt = mid;
+        }
+        return nums[rt];        
+    }
+};
+
 // Is the mid element greater than a[last];
 // here we are looking for first false;
 // ex:  4 5 6 7 1 2 3 

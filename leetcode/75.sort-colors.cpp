@@ -50,19 +50,18 @@ typedef std::vector<vector<int>> vvi;
 class Solution {
 public:
     void sortColors(vector<int>& nums) {
-        int n = nums.size();
-        int ones_beg = 0;
-        int counter = 0;
-        int twos_beg = n-1;
-
-        while(counter<=twos_beg){
-            if(nums[counter]==0)
-                swap(nums[counter++], nums[ones_beg++]);
-            else if(nums[counter]==1)
-                counter++;
-            else// nums[counter]==2
-                swap(nums[counter], nums[twos_beg--]);
-        }     
+        int low = 0, mid = 0, high = nums.size()-1;
+        
+        while(mid<=high){
+            if(nums[mid]==0){
+                swap(nums[low++], nums[mid++]);
+            }else if(nums[mid]==1){
+                mid++;
+            }else{
+                swap(nums[mid], nums[high--]);
+            }
+        }
+        
     }
 };
 // @lc code=end

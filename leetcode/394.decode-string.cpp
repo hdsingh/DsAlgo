@@ -97,6 +97,49 @@ public:
         return decodeString(s,i);
     }
 };
+
+class Solution {
+    int n;
+    vector<int> last;
+    int cnt = 0;
+public:
+    string decodeString(string s) {
+        n = s.size();
+        last.assign(n,n+1);
+        stack<int> stk;
+        for(int i=0; i<n; ++i){
+            if(isdigit(s[i])){
+                int j = i;
+                while(j+1<n && isdigit(s[j+1])) ++j;
+                stk.push(j+1);
+                i = j+1;
+            }else if(s[i]==']'){
+                last[stk.top()] = i;
+                stk.pop();
+            }
+        }
+        return dfs(0,n-1,s);
+    }
+    
+    string dfs(int lt, int rt, string &s){
+        string out;
+        while(lt<=rt && isalpha(s[lt])) 
+            out+=s[lt++];
+        string times;
+        while(lt<=rt && isdigit(s[lt]))
+            times+=s[lt++];
+        if(lt>rt) return out;
+
+        string inside = dfs(lt+1,last[lt]-1, s);
+        if(times.size()){
+            for(int i=0; i<stoi(times)-1; ++i)
+                out+=inside;
+        }
+        
+        out  = out + inside + dfs(last[lt]+1,rt,s);
+        return out;
+    }
+};
 // @lc code=end
 
 int main(){

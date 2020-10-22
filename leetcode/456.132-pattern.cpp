@@ -117,33 +117,32 @@ public:
 };
 // @lc code=end
 
-// Ref: https://leetcode.com/problems/132-pattern/solution/
-// Since upcoming mins will be even lesser or equal,
-// if a[k] does not satisfy this min, it will not satisfy(min[j]<a[k] or a[k]>min[j])
-// hence it (a[k]<=mins[j]) should be popped.
 class Solution {
 public:
-    bool find132pattern(vector<int>& a) {
-        int n = a.size();
-        if(n<3) return false;
+    bool find132pattern(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> mins(n);
+        mins[0] = nums[0];
+        for(int i=1; i<n; ++i)
+            mins[i] = min(mins[i-1], nums[i]);
         stack<int> stk;
-        vi mins(n); mins[0] = a[0];
-        fore(i,1,n)
-            mins[i] = min(mins[i-1],a[i]);
-
-        for(int j=n-1; j>=0; j--){
-            if(a[j]>mins[j]){
-                while(stk.size() && a[stk.top()] <= mins[j])
-                    stk.pop();
-                if(stk.size() && a[stk.top()]<a[j])
-                    return true;
-                stk.push(j);
+        for(int i=0; i<n; ++i){
+            while(stk.size() && nums[stk.top()]<=nums[i])
+                stk.pop();
+            
+            int prev_gr = stk.size() ? stk.top() : -1;
+            
+            if(prev_gr>0 && mins[prev_gr-1]<nums[i]){
+                return true;
             }
+            
+            stk.push(i);
         }
         
         return false;
     }
 };
+
 int main(){
     Solution0 sol0;
     Solution sol; 

@@ -82,31 +82,58 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
-// cmin: is the min number of ')' we are waiting for, cmax
-// In case of '(' our wait inc by 1
-// In case of ')' our wait dec by 1
-// In case of '*' :
-// If it was a '(' cmin dec by 1
-// However if it was a ')' max inc by 1
-// If our cmax <0 at any pt, it is not valid
-// in the end min wait must be 0
 class Solution {
 public:
     bool checkValidString(string s) {
-        int cmin = 0, cmax = 0;
+        int minBal = 0, maxBal = 0;
+        
         for(auto x: s){
-            if(x=='(')
-                ++cmin, ++cmax;
-            else if(x==')')
-                --cmax, cmin = max(0, cmin-1);
-            else 
-                ++cmax, cmin = max(0, cmin-1);
-
-            if(cmax<0) return false;
+            if(x=='(') ++minBal, ++maxBal;
+            else if(x==')') --minBal, --maxBal;
+            else{
+                --minBal;
+                ++maxBal;
+            }
+            
+            if(minBal<0) minBal = 0;
+            if(maxBal<0) return false;
+            
         }
-        return cmin==0;
+        
+        return minBal==0;
     }
 };
+
+class Solution1 {
+public:
+    bool checkValidString(string s) {
+        int bal = 0, ex = 0;
+        for(int i=0; i<s.size(); ++i){
+            if(s[i]=='(') ++bal;
+            else if(s[i]==')') --bal;
+            else ++ex;
+            
+            if(bal<0){
+                if(ex>0) ++bal, --ex;
+                else return false;
+            }
+        }
+        
+        bal = 0, ex = 0;
+        for(int i=s.size()-1; i>=0; --i){
+            if(s[i]==')') ++bal;
+            else if(s[i]=='(') --bal;
+            else ++ex;
+            
+            if(bal<0){
+                if(ex>0) --ex, ++bal;
+                else return false;
+            }
+        }
+        return true;
+    }
+};
+
 // @lc code=end
 
 int main(){

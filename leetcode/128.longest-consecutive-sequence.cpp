@@ -56,9 +56,54 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
+// only count from heads 
+// ex for 1 2 3 4, if a number has prev element skip it.
+class Solution {
+public:
+    int longestConsecutive(vector<int>& nums) {
+        unordered_set<int> seen;
+        for(auto num: nums){
+            seen.insert(num);
+        }
+        int ans = 0;
+        for(auto num: nums){
+            if(seen.count(num-1)) continue;
+            int curlen = 1;
+            int curnum = num+1;
+            while(seen.count(curnum)){
+                ++curlen;
+                ++curnum;
+            }
+            ans = max(ans, curlen);
+        }
+        return ans;
+    }
+};
+
+class Solution0 {
+public:
+    int longestConsecutive(vector<int>& nums) {
+        int n = nums.size();
+        sort(nums.begin(), nums.end());
+        int ans = 0;
+        for(int i=0; i<n; ++i){
+            int len = 1;
+            int j = i;
+            while(j+1<n && (nums[j+1]==nums[j] || nums[j+1]==nums[j]+1)){
+                if(nums[j+1]==nums[j]+1)
+                    ++len;
+                ++j;
+            }
+            ans = max(ans, len);
+            i = j;                        
+        }
+        return ans;
+    }
+};
+
 
 // size based DSU
-class Solution {
+class Solution1 {
     int max_size;
     map<int,int> par, size;
 public:
@@ -100,6 +145,7 @@ public:
         return par[x] = find_par(par[x]);
     }
 };
+
 
 
 // @lc code=end

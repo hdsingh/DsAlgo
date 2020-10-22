@@ -71,6 +71,60 @@ public:
     }
 };
 
+
+// prev > 2*cur
+// [l.. mid][mid+1..rt]
+
+class Solution {
+	int ans = 0;
+public:
+    int reversePairs(vector<int>& nums) {
+        int n = nums.size();	
+		ans = 0;
+		mergeSort(0,n-1,nums);
+		return ans;
+    }
+	
+	void mergeSort(int lt, int rt, vector<int> &nums){
+		if(lt<rt){
+			int mid = (lt+rt)/2;
+			mergeSort(lt, mid, nums);
+			mergeSort(mid+1,rt, nums);
+			
+			merge(lt, rt, nums);
+		}
+	}
+	
+	void merge(int lt, int rt, vector<int> &nums){
+		int mid = (lt+rt)/2;
+		int n1 = mid-lt+1;
+		int n2 = rt-mid;
+		
+		vector<int> L(n1), R(n2);
+		for(int i=0; i<n1; ++i)
+			L[i] = nums[lt+i];
+		for(int i=0; i<n2; ++i)
+			R[i] = nums[mid+1+i];
+
+		int ptr = 0;
+		for(int i=0; i<n2; ++i){
+			while(ptr<n1 && L[ptr]<=2LL*R[i])
+				++ptr;
+			ans+=(n1-ptr);
+		}
+		
+		int i = 0, j = 0, k = lt;
+		while(i<n1 && j<n2){
+			if(L[i]<=R[j])
+				nums[k++] = L[i++];
+			else 
+				nums[k++] = R[j++];
+		}
+		while(i<n1) nums[k++] = L[i++];
+		while(j<n2) nums[k++] = R[j++];
+	}
+};
+
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
     Solution sol; vi a; int out;

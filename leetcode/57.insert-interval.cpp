@@ -48,6 +48,30 @@ typedef std::vector<vector<int>> vvi;
 class Solution {
 public:
     vector<vector<int>> insert(vector<vector<int>>& ivals, vector<int>& nval) {
+        vector<vector<int>> out;
+        int i = 0, n = ivals.size();
+        while(i<n && ivals[i][1]<nval[0])
+            out.push_back(ivals[i++]);
+        
+        out.push_back(nval);
+        
+        while(i<n){
+            int cur_size = out.size();
+            if(ivals[i][0]<=out[cur_size-1][1]){
+                out[cur_size-1][0] = min(out[cur_size-1][0], ivals[i][0]);
+                out[cur_size-1][1] = max(out[cur_size-1][1], ivals[i][1]);
+            }else{
+                out.push_back(ivals[i]);
+            }
+            ++i;
+        }
+        return out;
+    }
+};
+
+class Solution {
+public:
+    vector<vector<int>> insert(vector<vector<int>>& ivals, vector<int>& nval) {
         vvi out;
         int n = ivals.size();
         if(!n) return {nval};

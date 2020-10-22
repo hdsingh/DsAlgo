@@ -56,6 +56,7 @@ void mergeSort(vi &arr, int l, int r){
 
 int main(){
     vi arr = {12, 11, 13, 5, 6, 7};
+    arr =  {8,2,1,4,5,69,20,2,1,};
     int n = arr.size(); 
     mergeSort(arr,0, n-1);
     print(arr);

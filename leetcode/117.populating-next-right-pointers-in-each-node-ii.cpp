@@ -68,53 +68,65 @@ public:
     Node* right;
     Node* next;
 
-    Node() {}
+    Node() : val(0), left(NULL), right(NULL), next(NULL) {}
 
-    Node(int _val, Node* _left, Node* _right, Node* _next) {
-        val = _val;
-        left = _left;
-        right = _right;
-        next = _next;
-    }
+    Node(int _val) : val(_val), left(NULL), right(NULL), next(NULL) {}
+
+    Node(int _val, Node* _left, Node* _right, Node* _next)
+        : val(_val), left(_left), right(_right), next(_next) {}
 };
-
-typedef Node node;
 
 class Solution {
 public:
     Node* connect(Node* root) {
-        queue<node*> q;
-        q.push(root);
-        node* cur;
-
-        while(q.size()>0){
-            cur = q.front(); q.pop();
-            if(cur){
-                if(cur->left){
-                    cur->left->next = cur->right? cur->right : find_next(cur->next);
-                    q.push(cur->left);
-                }
-                if(cur->right){
-                    cur->right->next = find_next(cur->next);
-                    q.push(cur->right);
-                }
-            }
-        }
-
-        return root;
+        if(!root) return root;
+        Node* node = root;
         
-    }
-
-    node* find_next(node* cur){
-        while(cur){
-            if(cur->left || cur->right){
-                if(cur->left) return cur->left;
-                else if(cur->right) return cur->right;
-            }else{
-                cur = cur->next;
+        while(node){ // iterate on levels
+            Node* childhead = new Node(-1), *needle = childhead;
+            
+            while(node){
+                if(node->left){
+                    needle->next = node->left;
+                    needle = needle->next;
+                }
+                
+                if(node->right){
+                    needle->next = node->right;
+                    needle = needle->next;
+                }
+                
+                node = node->next;
             }
+            
+            node = childhead->next;
         }
-        return cur;
+        
+        return root;
     }
 };
 
+class Solution0 {
+public:
+    Node* connect(Node* root) {
+        if(!root) return NULL;
+        auto nx = root->next;
+        while(nx && (!nx->left && !nx->right))
+            nx = nx->next;
+        
+        if(nx){
+            if(root->right)
+                root->right->next = nx->left ? nx->left : nx->right;
+            else if(root->left)
+                root->left->next = nx->left ? nx->left : nx->right;
+        }
+        
+        if(root->left && root->right)
+            root->left->next = root->right;  
+        
+        connect(root->right);
+        connect(root->left);
+        
+        return root;
+    }
+};

@@ -58,6 +58,26 @@ typedef std::vector<vector<int>> vvi;
 
 // @lc code=start
 
+// Try to find the piviot pt, 
+// in case a[mid]==a[n-1], decrease n.
+class Solution {
+public:
+    int findMin(vector<int>& nums) {
+        int n = nums.size();
+        int lt = -1, rt = n;
+        while(1+lt<rt && n>0){
+            int mid = lt + (rt-lt)/2;
+            if(nums[mid]==nums[n-1])
+                --n, rt = min(rt,n);
+            else if(nums[mid]<=nums[n-1])
+                rt = mid;
+            else 
+                lt = mid;
+        }
+    
+        return nums[rt];
+    }
+};
 class Solution {
 public:
     int findMin(vector<int>& a) {

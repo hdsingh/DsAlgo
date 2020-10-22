@@ -5,6 +5,7 @@ using namespace std;
 
 // Since bst inorder acts as a sorted array
 // hence find two incorrect locs;
+// find first and lasst incorrect val
 class Solution {
     TreeNode *prev, *first, *second;
 public:

@@ -63,10 +63,42 @@ public:
     }
 };
 
+class Solution {
+public:
+    string entityParser(string text) {
+        vector<pair<string, char>> entities = {
+            {"&gt;",'>'}, {"&lt;",'<'}, 
+            {"&amp;",'&'},
+            {"&quot;",'\"'}, 
+            {"&apos;", '\'' }, 
+            {"&frasl;", '/'}
+        };
+        
+        string ans;
+        string out;
+        for(auto x: text){
+            out+=x;
+            if(x!=';') continue;
+            for(auto &entity: entities){
+                int siz = entity.first.size();
+                if(out.size()<siz) break;
+                if(out.substr(out.size()-siz)==entity.first){
+                    for(int i=0; i<siz; ++i) 
+                        out.pop_back();
+                    out+=entity.second;
+                    ans+=out;
+                    out.clear();
+                }
+            }
+        }
+        return ans + out;
+    }
+};
+
 int main(){
     string text; Solution  sol; string out;
     text = "and I quote: &quot;...&quot;";
-    // text = "&quot;&quot;";
+    // text = "&quot&quot;";
     out = sol.entityParser(text); deb(out);
     return 0;
 }

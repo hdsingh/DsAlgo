@@ -1,56 +1,3 @@
-/*
- * @lc app=leetcode id=60 lang=cpp
- *
- * [60] Permutation Sequence
- *
- * https://leetcode.com/problems/permutation-sequence/description/
- *
- * algorithms
- * Medium (34.07%)
- * Likes:    1009
- * Dislikes: 267
- * Total Accepted:    152.9K
- * Total Submissions: 445.6K
- * Testcase Example:  '3\n3'
- *
- * The set [1,2,3,...,n] contains a total of n! unique permutations.
- * 
- * By listing and labeling all of the permutations in order, we get the
- * following sequence for n = 3:
- * 
- * 
- * "123"
- * "132"
- * "213"
- * "231"
- * "312"
- * "321"
- * 
- * 
- * Given n and k, return the k^th permutation sequence.
- * 
- * Note:
- * 
- * 
- * Given n will be between 1 and 9 inclusive.
- * Given k will be between 1 and n! inclusive.
- * 
- * 
- * Example 1:
- * 
- * 
- * Input: n = 3, k = 3
- * Output: "213"
- * 
- * 
- * Example 2:
- * 
- * 
- * Input: n = 4, k = 9
- * Output: "2314"
- * 
- * 
- */
 #include <bits/stdc++.h>
 using namespace std;
 #define forn(i, n) for(int i = 0; i < int(n); i++)
@@ -79,37 +26,78 @@ template<class T, class U>void debp(const pair<T, U> &pr, bool end_line=1){cout<
 template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cout<<"Empty"<<endl; return;}if(!sep_line) cout<<"{ ";for(auto x: vp) debp(x,sep_line);if(!sep_line) cout<<"}\n";cout<<endl;}
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
+template <typename T> ostream& operator<<(ostream &os, const vector<T> &v){print(v); return os;};
+template <typename T> ostream& operator<<(ostream &os, const vector<vector<T>> &vv){print_vv(vv); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m){print_m(m); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
-
-// if n = 4, k = 11.
-// dividing by k by 3! gives the loc of digit.
-class Solution {
+class Solution{
+    int ans;
 public:
-    string getPermutation(int n, int k) {
-        string simple;
-        vector<int> fact(n+1);
-        fact[0] = 1;
-        for(int i=1; i<=n; ++i){
-            simple+=('0'+i);
-            fact[i] = fact[i-1]*i;
-        }
-
-        --k;
-        string ans;
-        for(int i=1; i<=n; ++i){
-            int idx = k/fact[n-i];
-            k-=idx*fact[n-i];
-            ans+=simple[idx];
-            simple.erase(simple.begin()+idx);
-        }
+    int countInv(vi &a){
+        int n = a.size();
+        ans = 0;
+        mergeSort(0,n-1,a);
         return ans;
     }
+
+    void mergeSort(int lt, int rt, vi &a){
+        if(lt<rt){
+            int mid = lt + (rt-lt)/2;
+            
+            mergeSort(lt,mid,a);
+            mergeSort(mid+1,rt,a);
+
+            merge(lt,rt,a);
+        }
+    }
+
+    void merge(int lt, int rt, vi &a){
+        int mid = (lt+rt)/2;
+        int n1 = mid - lt + 1;
+        int n2 = rt - mid;
+
+        vi larr(n1), rarr(n2);
+        for(int i=0; i<n1; ++i)
+            larr[i] = a[lt+i];
+        for(int j=0; j<n2; ++j)
+            rarr[j] = a[mid+1+j];
+
+        int i = 0, j = 0, k = lt;
+        while(i<n1 && j<n2){
+            if(larr[i]<=rarr[j]){
+                a[k++] = larr[i++];
+            }else{
+                ans+=(n1-i);
+                a[k++] = rarr[j++];
+            }
+        }
+
+        while(i<n1) a[k++] = larr[i++];
+        while(j<n2) a[k++] =  rarr[j++];
+    }
+
 };
 
+void getinv(vi a){
+    int n = a.size();
+    int ans = 0;
+    for(int i=0; i<n; ++i){
+        for(int j=i+1; j<n; ++j){
+            if(a[i]>a[j])
+                ++ans;
+        }
+    }
+    deb("inv:", ans);
+}
 
 int main(){
-    
-    Solution sol; 
-    string s = sol.getPermutation(6,720); deb(s);
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    vi a = {8,2,1,4,5,69,20,2,1,};
+    getinv(a);
+    Solution sol; int out = sol.countInv(a);
+    deb(out);
+    cout<<a;
     return 0;
 }
