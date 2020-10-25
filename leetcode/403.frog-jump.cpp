@@ -88,6 +88,82 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
+
+class Solution {
+    int n, last_pos;
+    unordered_set<int> stones;
+    map<int,map<int,bool>> dp;
+public:
+    bool canCross(vector<int>& S) {
+        n = S.size();
+        last_pos = S.back();
+        
+        for(auto s: S){
+            stones.insert(s);
+        }
+        return can(S[0]+1, 1);
+    }
+    
+    bool can(int pos, int jump){
+        if(!stones.count(pos)) 
+            return false;
+
+        if(pos>=last_pos)
+            return pos==last_pos;
+        
+        if(dp.count(pos) && dp[pos].count(jump)){
+            return dp[pos][jump];
+        }
+        
+        for(auto j: {jump-1, jump, jump+1}){
+            if(j<=0) continue;
+            if(can(pos+j, j))
+                return dp[pos][jump] = true;
+        }
+        
+        return dp[pos][jump] = false;
+    }
+};
+
+// by combining pos and jump into a key
+class Solution {
+    int n, last_pos;
+    unordered_set<int> stones;
+    unordered_map<long long, bool> dp;
+public:
+    bool canCross(vector<int>& S) {
+        n = S.size();
+        last_pos = S.back();
+        
+        for(auto s: S){
+            stones.insert(s);
+        }
+        return can(S[0]+1, 1);
+    }
+    
+    bool can(int pos, int jump){
+        long long key = (1LL*(pos))<<32 | jump;
+        
+        if(!stones.count(pos)) 
+            return false;
+
+        if(pos>=last_pos)
+            return pos==last_pos;
+        
+        if(dp.count(key)){
+            return dp[key];
+        }
+        
+        for(auto j: {jump-1, jump, jump+1}){
+            if(j<=0) continue;
+            if(can(pos+j, j))
+                return dp[key] = true;
+        }
+        
+        return dp[key] = false;
+    }
+};
+
 class Solution0 {
 public:
     bool canCross(vector<int>& a) {

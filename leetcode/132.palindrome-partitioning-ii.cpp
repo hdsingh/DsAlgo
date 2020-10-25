@@ -131,42 +131,54 @@ public:
     }    
 };
 
-// Better implementation
-// first create is_pal table
-// cuts till pos r will depend on
-//  x..y..z..a[ccddcc]
-// min of cut till pos j + 1, if j+1 to r is pal, for all js
 class Solution {
+    int n;
+    vector<vector<bool>> isPal;
+    vector<int> dp;
 public:
     int minCut(string s) {
-        int n = s.size();
-		vector<vector<bool>> is_pal(n+1, vector<bool>(n+1));
-
-		for(int l=n-1; l>=0; --l){
-			for(int r=l; r<n; ++r){
-				if(s[l]==s[r])
-					is_pal[l][r] = l+1<r-1 ? is_pal[l+1][r-1] : true;
-				else 
-					is_pal[l][r] = false;
-			}
-		}
-
-		vi cuts(n,INT_MAX);
-		for(int r=0; r<n; r++){
-			if(is_pal[0][r])
-				cuts[r] = 0;
-			else{
-				int cur_cuts = INT_MAX;
-				for(int j=0; j<r; ++j){
-					if(is_pal[j+1][r] && cuts[j]+1<cur_cuts)
-						cur_cuts = cuts[j]+1;
-				}
-				cuts[r] = cur_cuts;
-			}
-		}
-		return cuts[n-1];
+        n = s.size();
+        isPal.assign(n, vector<bool>(n, true));
+        dp.assign(n+1,n+1);
+        
+        for(int l=n-1; l>=0; --l){
+            for(int r=l+1; r<n; ++r){
+                isPal[l][r] = false;
+                if(s[l]==s[r] && isPal[l+1][r-1])
+                    isPal[l][r] = true;
+            }
+        }
+        
+        dp[n] = 0;
+        for(int l=n-1; l>=0; --l){
+            for(int r=l; r<n; ++r){
+                if(isPal[l][r])
+                    dp[l] = min(dp[l], 1 + dp[r+1]);
+            }
+        }
+        
+        return dp[0] - 1;
+        // return parts(0,s)-1;
+        
+    }
+    
+    int parts(int l,string &s){
+        if(l>=n) return 0;
+        if(isPal[l][n-1]) return 1;
+        int &ans = dp[l];
+        if(~ans) return ans;
+        ans = n-l;
+        
+        for(int pos=l; pos<n; ++pos){
+            if(isPal[l][pos]){
+                ans = min(ans, 1 + parts(pos+1, s));
+            }
+        }
+        
+        return ans;
     }
 };
+
 // @lc code=end
 int main(){
 	Solution sol; string s; int out;

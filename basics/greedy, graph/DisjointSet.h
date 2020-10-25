@@ -41,3 +41,4 @@ public:
 // https://codeforces.com/problemset/problem/766/D (Opposite)
 // https://codeforces.com/problemset/problem/1131/D (DSU + Topsort, unite nodes + Graph algo)
 // https://codeforces.com/problemset/problem/400/D  (DSU  + FloydWarshall)
+// https://leetcode.com/problems/rank-transform-of-a-matrix/
