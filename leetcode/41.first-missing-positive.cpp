@@ -103,6 +103,67 @@ public:
         return i+1; // due to 0 based
     }
 };
+
+class Solution {
+public:
+    int firstMissingPositive(vector<int>& a) {
+        int n = a.size();
+        for(int i=0; i<n; ++i){
+            while(a[i]>0 && a[i]<=n && a[a[i]-1]!=a[i]){
+                swap(a[i], a[a[i]-1]);
+            }
+        }
+        
+        for(int i=0; i<n; ++i){
+            if(a[i]!=i+1)
+                return i+1;
+        }
+        
+        return n+1;
+    }
+};
+
+class Solution1 {
+public:
+    int firstMissingPositive(vector<int>& nums) {
+        int n = nums.size();
+        for(int i=0; i<n; ++i){
+            if(nums[i]<=0 || n<nums[i]){
+                nums[i] = n+10;
+            }
+        }
+        
+        for(int i=0; i<n; ++i){
+            int pos = abs(nums[i])-1;
+            if(pos>=n) continue;
+            nums[pos] = -abs(nums[pos]);
+        }
+        
+        for(int i=0; i<n; ++i){
+            if(nums[i]>0) 
+                return i+1;
+        }
+        return n+1;
+    }
+};
+
+class Solution0 {
+public:
+    int firstMissingPositive(vector<int>& nums) {
+        int n = nums.size();
+        vector<bool> present(n+1);
+        for(int i=0; i<n; ++i){
+            if(0<nums[i] && nums[i]<=n){
+                present[nums[i]] = 1;
+            }
+        }
+        
+        for(int i=1; i<=n; ++i)
+            if(!present[i])
+                return i;
+        return n+1;
+    }
+};
 // @lc code=end
 
 int main(){

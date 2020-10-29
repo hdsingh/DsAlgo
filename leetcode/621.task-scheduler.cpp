@@ -84,24 +84,72 @@ template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout
 // if more than 1 elements have same max freq, they will be placed in the end along with A
 //  A . .  A . .   A . .   AB
 // |____| |_____| |_____|  
+
+
+// count the max freq and # of chars with max freq
+// these form a grp.
+// Count of all other chars is less than it so
+// others can be placed in bw, or lets say before
+// beginning of each grp 
+// Example: K=4
+// AB__AB__AB__
+// here AB has max freq, any other char can be place before AB,
 class Solution {
 public:
-    int leastInterval(vector<char>& tasks, int skip) {
-        int n = tasks.size();
-        map<char, int> cnt;
-        int mxfreq = 0;
+    int leastInterval(vector<char>& tasks, int K) {
+        vector<int> cnt(26);
+        for(auto t: tasks)
+            cnt[t-'A']++;
+        
+        int mx = 0, cnt_mx = 0;
+        for(int i=0; i<26; ++i){
+            if(cnt[i]>mx){
+                mx = cnt[i];
+                cnt_mx = 1;
+            }else if(cnt[i]==mx){
+                cnt_mx++;
+            }
+        }
+        int ans = (K+1)*(mx-1) + (cnt_mx);
+        return max(ans, (int)tasks.size());
+    }
+};
 
+class Solution0 {
+public:
+    int leastInterval(vector<char>& tasks, int K) {
+        if(!K) return tasks.size();
+        map<char,int> cnt;
         for(auto t: tasks){
             cnt[t]++;
-            mxfreq = max(mxfreq, cnt[t]);
+        } 
+
+        priority_queue<pair<int, char>> pq; // count, char
+        queue<pair<int,char>> q; // available at time, char
+
+        for(auto &t: cnt){
+            pq.push({t.second, t.first});
         }
 
-        int intervals = (mxfreq-1)*(skip+1);
-        for(auto p: cnt){
-            if(p.second==mxfreq) ++intervals;
+        int time = 0;
+        while(pq.size() || q.size()){
+            if(q.size() && q.front().first<=time){
+                char now = q.front().second; 
+                q.pop();
+                pq.push({cnt[now], now});
+            }
+            
+            if(pq.size()){
+                auto [c, now] = pq.top(); pq.pop();
+                if(--cnt[now]>0){
+                    q.push({time+1+K, now});
+                }
+            }
+            
+            ++time;
         }
-
-        return max(intervals, n);
+        
+        return time;
     }
 };
 // @lc code=end
