@@ -32,68 +32,48 @@ template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m)
 template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
 template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
-const int inf = 1e6;
-int n;
-vi a;
-vvi dp;
+class Solution {
+    int N;
+    vector<vector<long long>> C;
+public:
+    string kthSmallestPath(vector<int> a, int K) {
+        int r = a[0], c = a[1];
+        int remDown = r;
+        int n = r+c+1;
+        C.assign(n, vector<long long>(n));
+        C[0][0] = 1;
+        for(int i=1; i<n; ++i){
+            C[i][0] = C[i][i] = 1;
+            for(int j=1; j<i; ++j)
+                C[i][j] = C[i-1][j-1]  + C[i-1][j];
+        }
 
-int dfs(int pos, int now){
-    if(pos>=n) return 0;
-    int &ans = dp[pos][now];
-    if(~ans) return ans;
-    ans = inf;
-    int st = pos, ed = n/2 + 1 + pos;
-    if(now<st || now>ed) return ans;
-    st = max(st, now);
+        string out;
+        for(int i=1; i<=r+c; ++i){
+            int remsteps = (r+c)-i;
+            long long ways = C[remsteps][remDown];
+            // ways in which 'H' can be placed here
 
-    for(int i=st; i<=ed; ++i){
-        ans = min(ans, abs(i-a[pos]) + dfs(pos+1,i+1));
-    }
-    return ans;
-}
-
-void solve(){
-    int st = 1, ed = n/2 + 1;
-    dp.assign(n+1, vi(2*n,-1));
-    int ans = dfs(0,1);
-    cout<<ans<<"\n";
-}
-
-int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int T;
-    cin>>T;
-    while(T--){
-        cin>>n;
-        a.resize(n);
-        forn(i,n) cin>>a[i];
-        sort(all(a));
-        solve();        
-    }
-    return 0;
-}
-
-int main1(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int T;
-    cin>>T;
-    while(T--){
-        int n; cin>>n;
-        vi a(n); forn(i,n) cin>>a[i];
-        sort(all(a));
-
-        vvi dp(n+1,vi(2*n+1,inf));
-        dp[0][0] = 0;
-
-        forn(i,n+1){
-            forn(j,2*n){
-                if(dp[i][j]>=inf) continue;
-                if(i+1<=n) min_self(dp[i+1][j+1], dp[i][j] + abs(j+1-a[i]));
-                min_self(dp[i][j+1], dp[i][j]);
+            if(ways>=K){
+                out+="H";   
+            }else{
+                remDown--;
+                out+="V";
+                K-=ways;
             }
         }
 
-        cout<<dp[n][2*n-1]<<"\n";
+        return out;
+    }    
+};
+
+int main(){
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    Solution sol; vvi dests; string out;
+    dests = {{2,3,2}};
+    for(auto dest: dests){
+        out = sol.kthSmallestPath({dest[0], dest[1]}, dest[2]);
+        deb(out);
     }
     return 0;
 }

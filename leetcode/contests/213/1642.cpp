@@ -32,68 +32,43 @@ template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m)
 template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
 template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
-const int inf = 1e6;
-int n;
-vi a;
-vvi dp;
+class Solution {
+public:
+    int furthestBuilding(vector<int>& hts, int B, int L) {
+        int n = hts.size(); 
+        if(n<=1) return 0;
+        
+        vector<int> a(n);
+        for(int i=1; i<n; ++i){
+            a[i] = max(0,hts[i]-hts[i-1]);
+        }
 
-int dfs(int pos, int now){
-    if(pos>=n) return 0;
-    int &ans = dp[pos][now];
-    if(~ans) return ans;
-    ans = inf;
-    int st = pos, ed = n/2 + 1 + pos;
-    if(now<st || now>ed) return ans;
-    st = max(st, now);
-
-    for(int i=st; i<=ed; ++i){
-        ans = min(ans, abs(i-a[pos]) + dfs(pos+1,i+1));
+        priority_queue<int, vector<int>, greater<int>> pq;
+        long tot = 0, maxL = 0;
+        int ans = 0;
+        for(int i=0; i<n; ++i){
+            tot+=a[i];
+            maxL+=a[i];
+            pq.push(a[i]);
+            if((int)pq.size()>L){
+                maxL-=pq.top(); pq.pop();
+            }
+            if(tot-maxL<=B){
+                ans = i;
+            }else break;
+        }
+        return ans;
     }
-    return ans;
-}
-
-void solve(){
-    int st = 1, ed = n/2 + 1;
-    dp.assign(n+1, vi(2*n,-1));
-    int ans = dfs(0,1);
-    cout<<ans<<"\n";
-}
+};
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int T;
-    cin>>T;
-    while(T--){
-        cin>>n;
-        a.resize(n);
-        forn(i,n) cin>>a[i];
-        sort(all(a));
-        solve();        
-    }
-    return 0;
-}
-
-int main1(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int T;
-    cin>>T;
-    while(T--){
-        int n; cin>>n;
-        vi a(n); forn(i,n) cin>>a[i];
-        sort(all(a));
-
-        vvi dp(n+1,vi(2*n+1,inf));
-        dp[0][0] = 0;
-
-        forn(i,n+1){
-            forn(j,2*n){
-                if(dp[i][j]>=inf) continue;
-                if(i+1<=n) min_self(dp[i+1][j+1], dp[i][j] + abs(j+1-a[i]));
-                min_self(dp[i][j+1], dp[i][j]);
-            }
-        }
-
-        cout<<dp[n][2*n-1]<<"\n";
-    }
+    Solution sol; vi heights; int bricks, ladders, out;
+    heights = {4,1,}, bricks = 5, ladders = 1;
+    out = sol.furthestBuilding(heights, bricks, ladders); deb(out);
+    heights = {4,12,2,7,3,18,20,3,19}, bricks = 10, ladders = 2;
+    out = sol.furthestBuilding(heights, bricks, ladders); deb(out);
+    heights = {14,3,19,3}, bricks = 17, ladders = 0;
+    out = sol.furthestBuilding(heights, bricks, ladders); deb(out);
     return 0;
 }

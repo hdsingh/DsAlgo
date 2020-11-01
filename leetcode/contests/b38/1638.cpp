@@ -32,68 +32,37 @@ template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m)
 template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
 template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
-const int inf = 1e6;
-int n;
-vi a;
-vvi dp;
-
-int dfs(int pos, int now){
-    if(pos>=n) return 0;
-    int &ans = dp[pos][now];
-    if(~ans) return ans;
-    ans = inf;
-    int st = pos, ed = n/2 + 1 + pos;
-    if(now<st || now>ed) return ans;
-    st = max(st, now);
-
-    for(int i=st; i<=ed; ++i){
-        ans = min(ans, abs(i-a[pos]) + dfs(pos+1,i+1));
+class Solution {
+public:
+    int countSubstrings(string s, string t) {
+        int n = s.size(), m = t.size();
+        int ans = 0;
+        for(int i=0; i<n; ++i){
+            for(int j=0; j<m; ++j){
+                if(s[i]==t[j]) continue;
+                int l = 1, r = 1;
+                while(i-l>=0 && j-l>=0 && s[i-l]==t[j-l]) ++l;
+                while(i+r<n && j+r<m && s[i+r]==t[j+r]) ++r;
+                ans+=l*r;
+            }
+        }
+        
+        return ans;
     }
-    return ans;
-}
+};
 
-void solve(){
-    int st = 1, ed = n/2 + 1;
-    dp.assign(n+1, vi(2*n,-1));
-    int ans = dfs(0,1);
-    cout<<ans<<"\n";
-}
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int T;
-    cin>>T;
-    while(T--){
-        cin>>n;
-        a.resize(n);
-        forn(i,n) cin>>a[i];
-        sort(all(a));
-        solve();        
-    }
-    return 0;
-}
-
-int main1(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int T;
-    cin>>T;
-    while(T--){
-        int n; cin>>n;
-        vi a(n); forn(i,n) cin>>a[i];
-        sort(all(a));
-
-        vvi dp(n+1,vi(2*n+1,inf));
-        dp[0][0] = 0;
-
-        forn(i,n+1){
-            forn(j,2*n){
-                if(dp[i][j]>=inf) continue;
-                if(i+1<=n) min_self(dp[i+1][j+1], dp[i][j] + abs(j+1-a[i]));
-                min_self(dp[i][j+1], dp[i][j]);
-            }
-        }
-
-        cout<<dp[n][2*n-1]<<"\n";
+    Solution sol; vector<vs> ss;
+    ss = {
+        {"abbab","bbbbb"},
+        {"aba", "baba"},
+        {"abe","bbc"},
+        {"a","a"},{"ab","bb"},
+    };
+    for(auto s: ss){
+        int out = sol.countSubstrings(s[0], s[1]); deb(out);
     }
     return 0;
 }

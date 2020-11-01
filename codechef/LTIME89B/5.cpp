@@ -32,68 +32,71 @@ template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m)
 template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
 template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
-const int inf = 1e6;
-int n;
-vi a;
-vvi dp;
+const int N = 1e5+10;
+vl lp(N+1);
 
-int dfs(int pos, int now){
-    if(pos>=n) return 0;
-    int &ans = dp[pos][now];
-    if(~ans) return ans;
-    ans = inf;
-    int st = pos, ed = n/2 + 1 + pos;
-    if(now<st || now>ed) return ans;
-    st = max(st, now);
-
-    for(int i=st; i<=ed; ++i){
-        ans = min(ans, abs(i-a[pos]) + dfs(pos+1,i+1));
+void calcLp(){ //lowest prime
+    for(int i=2; i<=N; i++){
+        if(!lp[i]){
+            for(int j=i; j<=N; j+=i)
+                if(!lp[j]) // comment this line to find Largest Prime factor
+                    lp[j] = i;
+        }
     }
-    return ans;
 }
 
-void solve(){
-    int st = 1, ed = n/2 + 1;
-    dp.assign(n+1, vi(2*n,-1));
-    int ans = dfs(0,1);
-    cout<<ans<<"\n";
+vi primeFacts(int n){
+    vi out;
+    while(n>1){
+        int p = lp[n];
+        while(n%p==0){
+            n/=p;
+            // out.pb(p); // to get proper prime factorisation
+        }
+        out.pb(p); // to get only single facts
+    }
+    return out;
 }
+
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    calcLp();
     int T;
     cin>>T;
     while(T--){
-        cin>>n;
-        a.resize(n);
-        forn(i,n) cin>>a[i];
-        sort(all(a));
-        solve();        
-    }
-    return 0;
-}
-
-int main1(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int T;
-    cin>>T;
-    while(T--){
-        int n; cin>>n;
+        int n; cin>>n; 
         vi a(n); forn(i,n) cin>>a[i];
-        sort(all(a));
 
-        vvi dp(n+1,vi(2*n+1,inf));
-        dp[0][0] = 0;
-
-        forn(i,n+1){
-            forn(j,2*n){
-                if(dp[i][j]>=inf) continue;
-                if(i+1<=n) min_self(dp[i+1][j+1], dp[i][j] + abs(j+1-a[i]));
-                min_self(dp[i][j+1], dp[i][j]);
-            }
+        map<int,int> lt, rt;
+        for(auto x: a){
+            for(auto p: primeFacts(x))
+                rt[p]++;
         }
 
-        cout<<dp[n][2*n-1]<<"\n";
-    }
+        int ans = -1;
+        for(int i=0; i<n; ++i){
+            int x = a[i];
+            for(auto p: primeFacts(x)){
+                lt[p]++;
+                if(--rt[p]==0) 
+                    rt.erase(p);
+            }
+            bool ok = true;
+            for(auto &p: lt){
+                if(rt.count(p.first)){
+                    ok = false;
+                    break;
+                }
+            }
+            if(ok){
+                ans = i+1;
+                break;
+            }
+        }
+        assert(~ans);
+        cout<<ans<<"\n";
+
+    } 
     return 0;
 }

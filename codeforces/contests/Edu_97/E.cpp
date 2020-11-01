@@ -32,68 +32,41 @@ template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m)
 template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
 template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
-const int inf = 1e6;
-int n;
-vi a;
-vvi dp;
-
-int dfs(int pos, int now){
-    if(pos>=n) return 0;
-    int &ans = dp[pos][now];
-    if(~ans) return ans;
-    ans = inf;
-    int st = pos, ed = n/2 + 1 + pos;
-    if(now<st || now>ed) return ans;
-    st = max(st, now);
-
-    for(int i=st; i<=ed; ++i){
-        ans = min(ans, abs(i-a[pos]) + dfs(pos+1,i+1));
-    }
-    return ans;
-}
-
-void solve(){
-    int st = 1, ed = n/2 + 1;
-    dp.assign(n+1, vi(2*n,-1));
-    int ans = dfs(0,1);
-    cout<<ans<<"\n";
-}
-
+const int inf = 1e9 + 10;
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int T;
-    cin>>T;
-    while(T--){
-        cin>>n;
-        a.resize(n);
-        forn(i,n) cin>>a[i];
-        sort(all(a));
-        solve();        
-    }
-    return 0;
-}
+    int n, K;
+    while(cin>>n>>K){
+        vi a(n+2); fore(i,1,n+1) cin>>a[i];
+        a[0] = -inf, a[n+1] = 2*inf;
+        forn(i,n+2) a[i]-=i;
+        vi b(K+2); fore(i,1,K+1) cin>>b[i];
+        b[K+1] = n+1;
 
-int main1(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int T;
-    cin>>T;
-    while(T--){
-        int n; cin>>n;
-        vi a(n); forn(i,n) cin>>a[i];
-        sort(all(a));
-
-        vvi dp(n+1,vi(2*n+1,inf));
-        dp[0][0] = 0;
-
-        forn(i,n+1){
-            forn(j,2*n){
-                if(dp[i][j]>=inf) continue;
-                if(i+1<=n) min_self(dp[i+1][j+1], dp[i][j] + abs(j+1-a[i]));
-                min_self(dp[i][j+1], dp[i][j]);
+        bool ok = 1;
+        int ans = 0;
+        forn(i,K+1){
+            int st = b[i], ed = b[i+1];
+            if(a[st]>a[ed]){
+                ok = 0; break;
             }
-        }
 
-        cout<<dp[n][2*n-1]<<"\n";
+            vi lis;
+            for(int j=st+1; j<ed; ++j){
+                if(a[st]<=a[j] && a[j]<=a[ed]){
+                    auto pos = upper_bound(all(lis),a[j]);
+                    if(pos==lis.end()) lis.pb(a[j]);
+                    else *pos = a[j];
+                }
+            }
+
+            ans+=(ed-st-1) - (int)lis.size();
+        }       
+
+        if(!ok){
+            cout<<"-1\n";
+        }else
+            cout<<ans<<"\n";
     }
     return 0;
 }

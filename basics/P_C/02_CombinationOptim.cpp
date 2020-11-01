@@ -27,7 +27,6 @@ inline int mult(int a, int b, int p = mod) {return (ll) a * b % p;}
 
 
 const int MAXN = 20;
-// const int mod = 1e9+7;w
 vl fact(MAXN), inv(MAXN), finv(MAXN);
 
 void precalc(){

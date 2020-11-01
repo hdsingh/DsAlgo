@@ -32,68 +32,54 @@ template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m)
 template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
 template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
-const int inf = 1e6;
-int n;
-vi a;
-vvi dp;
+class Solution {
+    const int alp = 26;
+public:
+    int numWays(vector<string>& words, string target) {
+        int n  = words.size(), m = target.size(), len = words[0].size();
+        vector<vector<int>> has(len,vector<int>(alp)); // ith idx has a char available
+        for(int i=0; i<len; ++i){
+            for(int j=0; j<words.size(); ++j){
+                has[i][words[j][i]-'a']++;
+            }
+        }
+        // cout<<has;
+        vector<vector<int>> locs(alp);
+        for(int i=m-1; i>=0; --i)
+            locs[target[i]-'a'].push_back(i);
+        
+        vector<int> dp(m);
+        for(int i=0; i<len; ++i){
+            vector<int> ndp = dp;
+            for(int j=0; j<alp; ++j){
+                if(!has[i][j]) continue;
+                for(auto idx: locs[j]){
+                    if(!idx){
+                        add_self(ndp[idx], has[i][j]);
+                    }else{
+                        add_self(ndp[idx], dp[idx-1]*has[i][j]%mod);
+                    }
+                }
+            }
+            dp = ndp;
+            // cout<<dp;
+        }
 
-int dfs(int pos, int now){
-    if(pos>=n) return 0;
-    int &ans = dp[pos][now];
-    if(~ans) return ans;
-    ans = inf;
-    int st = pos, ed = n/2 + 1 + pos;
-    if(now<st || now>ed) return ans;
-    st = max(st, now);
-
-    for(int i=st; i<=ed; ++i){
-        ans = min(ans, abs(i-a[pos]) + dfs(pos+1,i+1));
+        return dp[m-1];
     }
-    return ans;
-}
-
-void solve(){
-    int st = 1, ed = n/2 + 1;
-    dp.assign(n+1, vi(2*n,-1));
-    int ans = dfs(0,1);
-    cout<<ans<<"\n";
-}
+};
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int T;
-    cin>>T;
-    while(T--){
-        cin>>n;
-        a.resize(n);
-        forn(i,n) cin>>a[i];
-        sort(all(a));
-        solve();        
-    }
-    return 0;
-}
-
-int main1(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int T;
-    cin>>T;
-    while(T--){
-        int n; cin>>n;
-        vi a(n); forn(i,n) cin>>a[i];
-        sort(all(a));
-
-        vvi dp(n+1,vi(2*n+1,inf));
-        dp[0][0] = 0;
-
-        forn(i,n+1){
-            forn(j,2*n){
-                if(dp[i][j]>=inf) continue;
-                if(i+1<=n) min_self(dp[i+1][j+1], dp[i][j] + abs(j+1-a[i]));
-                min_self(dp[i][j+1], dp[i][j]);
-            }
-        }
-
-        cout<<dp[n][2*n-1]<<"\n";
-    }
+    Solution sol;;
+    vector<string> words; string target; int out;
+    words = { "acca","bbbb","caca" }, target = "aba";
+    out = sol.numWays(words,target); deb(out);
+    words = { "abba","baab" }, target = "bab";
+    out = sol.numWays(words,target); deb(out);
+    words = { "abcd" }, target = "abcd";
+    out = sol.numWays(words,target); deb(out);
+    words = { "abab","baba","abba","baab" }, target = "abba";
+    out = sol.numWays(words,target); deb(out);
     return 0;
 }

@@ -13,7 +13,7 @@ typedef vector<vector<ll>> vvl;
 typedef vector<string> vs;
 typedef vector<bool> vb;
 typedef pair<int, int> pii;
-const int mod = 1e9 + 7;
+const int mod = 998244353;
 template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
 template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
 template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
@@ -32,68 +32,42 @@ template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m)
 template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
 template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
-const int inf = 1e6;
-int n;
-vi a;
-vvi dp;
+// https://www.youtube.com/watch?v=_Wv_qw3nQnI&ab_channel=Numberphile
+const int MAXN = 3e5+10;
+vl fact(MAXN), inv(MAXN), finv(MAXN);
 
-int dfs(int pos, int now){
-    if(pos>=n) return 0;
-    int &ans = dp[pos][now];
-    if(~ans) return ans;
-    ans = inf;
-    int st = pos, ed = n/2 + 1 + pos;
-    if(now<st || now>ed) return ans;
-    st = max(st, now);
+void precalc(){
+    int n = MAXN;
+    
+    fact[0] = finv[0] = inv[1] = 1;
 
-    for(int i=st; i<=ed; ++i){
-        ans = min(ans, abs(i-a[pos]) + dfs(pos+1,i+1));
+    fore(i, 2, n)
+        inv[i] = (mod - (mod/i) * inv[mod%i] % mod) % mod;
+
+    fore(i, 1, n){
+        fact[i] = fact[i-1] * i % mod;
+        finv[i] = finv[i-1] * inv[i] % mod;
     }
-    return ans;
 }
 
-void solve(){
-    int st = 1, ed = n/2 + 1;
-    dp.assign(n+1, vi(2*n,-1));
-    int ans = dfs(0,1);
-    cout<<ans<<"\n";
+ll C(int n, int r){
+    if(n<r || r<0) return 0;
+    return fact[n] * finv[r]%mod * finv[n-r]%mod;
 }
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int T;
-    cin>>T;
-    while(T--){
-        cin>>n;
-        a.resize(n);
-        forn(i,n) cin>>a[i];
+    precalc();
+    ll n;
+    while(cin>>n){
+        vl a(2*n); forn(i,2*n) cin>>a[i];
         sort(all(a));
-        solve();        
-    }
-    return 0;
-}
-
-int main1(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int T;
-    cin>>T;
-    while(T--){
-        int n; cin>>n;
-        vi a(n); forn(i,n) cin>>a[i];
-        sort(all(a));
-
-        vvi dp(n+1,vi(2*n+1,inf));
-        dp[0][0] = 0;
-
-        forn(i,n+1){
-            forn(j,2*n){
-                if(dp[i][j]>=inf) continue;
-                if(i+1<=n) min_self(dp[i+1][j+1], dp[i][j] + abs(j+1-a[i]));
-                min_self(dp[i][j+1], dp[i][j]);
-            }
-        }
-
-        cout<<dp[n][2*n-1]<<"\n";
+        ll s1 = 0, s2 = 0;
+        forn(i,n) s1+=a[i];
+        fore(i,n,2*n) s2+=a[i];
+        ll sum = (s2-s1)%mod;
+        ll ans =  sum*C(2*n,n)%mod;
+        cout<<ans<<"\n";
     }
     return 0;
 }
