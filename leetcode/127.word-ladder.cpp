@@ -147,6 +147,55 @@ public:
     }
 };
 
+class Solution {
+public:
+    int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
+        wordList.push_back(beginWord);
+        unordered_map<string, vector<string>> genericToWord;
+        bool found = false;
+        for(auto &word: wordList){
+            if(!found && word==endWord) found = true;
+            string origWord = word;
+            for(int i=0; i<word.size(); ++i){
+                char here = word[i];
+                word[i] = '*';
+                genericToWord[word].push_back(origWord);
+                word[i] = here;
+            }
+        }
+        
+        if(!found) return 0;
+        unordered_set<string> visited;
+        queue<string> q;
+        q.push(beginWord);
+        visited.insert(beginWord);
+        
+        int level = 1;
+        while(q.size()){
+            queue<string> nq;
+            while(q.size()){
+                auto top = q.front(); q.pop();
+                for(int i=0; i<top.size(); ++i){
+                    char here = top[i];
+                    top[i] = '*';
+                    for(auto nextWord: genericToWord[top]){
+                        if(nextWord==endWord) return level+1;
+                        if(!visited.count(nextWord)){
+                            nq.push(nextWord);
+                            visited.insert(nextWord);
+                        }
+                    }
+                    top[i] = here;
+                }
+            }
+            q = nq;
+            ++level;
+        }
+        
+        return 0;
+    }
+};
+
 // Bidirectional BFS : 24 ms
 // Ref: https://leetcode.com/problems/word-ladder/discuss/40708/Share-my-two-end-BFS-in-C++-80ms./38545
 class Solution {
