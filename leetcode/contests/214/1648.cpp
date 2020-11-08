@@ -32,50 +32,69 @@ template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m)
 template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
 template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
+typedef long long ll;
+
+// Find the point ans, after that pick 1 from each pile
+// till we are able to complete order.
 class Solution {
+    const int mod = 1e9+7;
 public:
-    int superEggDrop(int K, int N) {
-		vector<vector<int>> dp(K+1, vector<int>(N+1,-1));
-        return find_moves(K, N, dp);
-    }
-	
-	int find_moves(int K, int n, vector<vector<int>> &dp){
-		if(n==0 || n==1) return n;
-		if(K==1) return n;
-		if(!K) return 1e6;
+    int maxProfit(vector<int>& a, int order) {
+        sort(a.begin(), a.end(), greater<int>());
 
-		int &ans = dp[K][n];	
-		if(~ans) return ans;
-		ans = 1e6;
-
-        // DP
-		// for(int i=1; i<=n; ++i){
-		// 	int breaks = find_moves(K-1,i-1, dp);
-		// 	int not_breaks = find_moves(K,n-i, dp);
-		// 	ans = min(ans, 1 + max(breaks, not_breaks));
-		// }
-
-        int lt = 1, rt = n;
-        while(lt<=rt){
-            int mid = (lt+rt)/2;
-            int breaks = find_moves(K-1,mid-1, dp);
-            int not_breaks = find_moves(K,n-mid,dp);
-            // I want to go on the side where I can get max ans, for worst case
-            if(breaks>not_breaks){
-                rt = mid - 1;
-            }else{
-                lt = mid + 1;
+        auto can = [&](ll mid, bool ok){
+            ll sum = 0;
+            for(auto x: a){
+                if(x<=mid) break;
+                ll dif = x-mid;
+                sum+=dif;
             }
-			ans = min(ans, 1 + max(breaks, not_breaks));
+            
+            return (sum<=order);
+        };
+
+        ll lt = -1, rt = a.front()+1, ans = a.front();
+
+        // N N N Y Y Y
+        while(1+lt<rt){
+            ll mid = lt + (rt-lt)/2;
+            if(can(mid,0)){
+                ans = mid;
+                rt = mid;
+            }else{
+                lt = mid;
+            }
         }
 
-		return ans;
-	}
-};
+        ll tot = 0, used = 0;
+        for(auto &x: a){
+            if(x<=ans) break;
+            tot+=find_sum(ans, x);
+            used+=(x-ans);
+            x = ans;
+        }
+        assert(used<=order);
 
+        for(auto x: a){
+            if(used>=order) break;
+            tot+=x; ++used;
+        }
+        assert(used==order);
+        return tot%mod;
+    }
+
+    ll find_sum(ll lt, ll rt){
+        return rt*(rt+1)/2 - lt*(lt+1)/2;
+    }
+};
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    
+    Solution sol; vi a; int X, out; 
+    a = {2,8,4,10,6}, X = 20;  
+    a = { 497978859,167261111,483575207,591815159},
+    X = 836556809;
+    a = {5,5,5},X = 4;
+    out = sol.maxProfit(a, X); deb(out);
     return 0;
 }

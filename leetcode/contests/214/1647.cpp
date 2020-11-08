@@ -34,45 +34,32 @@ template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T
 
 class Solution {
 public:
-    int superEggDrop(int K, int N) {
-		vector<vector<int>> dp(K+1, vector<int>(N+1,-1));
-        return find_moves(K, N, dp);
-    }
-	
-	int find_moves(int K, int n, vector<vector<int>> &dp){
-		if(n==0 || n==1) return n;
-		if(K==1) return n;
-		if(!K) return 1e6;
-
-		int &ans = dp[K][n];	
-		if(~ans) return ans;
-		ans = 1e6;
-
-        // DP
-		// for(int i=1; i<=n; ++i){
-		// 	int breaks = find_moves(K-1,i-1, dp);
-		// 	int not_breaks = find_moves(K,n-i, dp);
-		// 	ans = min(ans, 1 + max(breaks, not_breaks));
-		// }
-
-        int lt = 1, rt = n;
-        while(lt<=rt){
-            int mid = (lt+rt)/2;
-            int breaks = find_moves(K-1,mid-1, dp);
-            int not_breaks = find_moves(K,n-mid,dp);
-            // I want to go on the side where I can get max ans, for worst case
-            if(breaks>not_breaks){
-                rt = mid - 1;
-            }else{
-                lt = mid + 1;
-            }
-			ans = min(ans, 1 + max(breaks, not_breaks));
+    int minDeletions(string s) {
+        vector<int> cnt(26);
+        for(auto x: s){
+            cnt[x-'a']++;
         }
-
-		return ans;
-	}
+        vector<int> out;
+        for(int i=0; i<26; ++i){
+            if(cnt[i])
+                out.push_back(cnt[i]);
+        }
+        sort(out.begin(), out.end(), greater<int>());
+        int prev = s.size()+10;
+        int ans = 0;
+        
+        for(auto x: out){
+            if(x>=prev){
+                int now = max(0,prev-1);
+                int dif = x-now;
+                x-=dif;
+                ans+=dif;
+            }
+            prev = x;
+        }
+        return ans;
+    }
 };
-
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);

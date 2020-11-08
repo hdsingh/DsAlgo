@@ -32,50 +32,9 @@ template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m)
 template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
 template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
-class Solution {
-public:
-    int superEggDrop(int K, int N) {
-		vector<vector<int>> dp(K+1, vector<int>(N+1,-1));
-        return find_moves(K, N, dp);
-    }
-	
-	int find_moves(int K, int n, vector<vector<int>> &dp){
-		if(n==0 || n==1) return n;
-		if(K==1) return n;
-		if(!K) return 1e6;
-
-		int &ans = dp[K][n];	
-		if(~ans) return ans;
-		ans = 1e6;
-
-        // DP
-		// for(int i=1; i<=n; ++i){
-		// 	int breaks = find_moves(K-1,i-1, dp);
-		// 	int not_breaks = find_moves(K,n-i, dp);
-		// 	ans = min(ans, 1 + max(breaks, not_breaks));
-		// }
-
-        int lt = 1, rt = n;
-        while(lt<=rt){
-            int mid = (lt+rt)/2;
-            int breaks = find_moves(K-1,mid-1, dp);
-            int not_breaks = find_moves(K,n-mid,dp);
-            // I want to go on the side where I can get max ans, for worst case
-            if(breaks>not_breaks){
-                rt = mid - 1;
-            }else{
-                lt = mid + 1;
-            }
-			ans = min(ans, 1 + max(breaks, not_breaks));
-        }
-
-		return ans;
-	}
-};
-
-
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    
+    int a, b; cin>>a>>b;
+    cout<<(2*a + 100 - b)<<"\n";
     return 0;
 }

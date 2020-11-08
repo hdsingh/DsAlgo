@@ -33,6 +33,34 @@
 #include "extra.h"
 using namespace std;
 
+// Yet to understand
+class Solution {
+public:
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        vector<vector<int>> out;
+        permute(0, nums, out);
+        return out;
+    }
+
+    void permute(int pos, vector<int> &nums, vvi &out){
+        if(pos==nums.size()-1){
+            out.push_back(nums);
+            return;
+        }
+
+        for(int i=pos; i<nums.size(); ++i){
+            // since swaping a num with itself will not create a new perm
+            if(pos!=i && nums[pos]==nums[i]) continue;
+            swap(nums[pos], nums[i]);
+            permute(pos+1, nums, out);
+        }
+
+        for(int i=nums.size()-1; i>pos; --i)
+            swap(nums[i], nums[pos]);
+
+    }
+};
 // @lc code=start
 class Solution {
 public:

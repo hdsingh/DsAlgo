@@ -11,37 +11,59 @@ void print(T v){
     cout<<endl; 
 }
 
-// starting from left side, if we find any num less then piviot,
-// then swap it and bring it on right side of i, so that in resulting seq
-// the nums less than piviot are on left of i
-int partition(vi &A, int l, int r){
-    int piviot = A[r]; // to place the piviot at its correct pos
-    int i = l - 1;
+int partition(int l, int r, vi &a){
+    int pivot = a[r];
+    int i = l-1;
 
-    for(int j = l; j<r; j++){
-        if(A[j]<piviot){
-            i++;
-            swap(A[i], A[j]);
+    for(int j=l; j<r; ++j){
+        if(a[j]<pivot){
+            ++i;
+            swap(a[i], a[j]);
         }
     }
 
-    swap(A[i+1], A[r]);
+    swap(a[i+1], a[r]);
     return i+1;
 }
 
-void quickSort(vi &A, int left, int right){
-    if(left<right){
-        int partition_pt = partition(A, left, right);
-        quickSort(A, left, partition_pt-1);
-        quickSort(A, partition_pt+1, right);
-    }    
-
+void quick(int l, int r, vi &a){
+    if(l<r){
+        int pt = partition(l,r,a);
+        quick(l,pt-1,a);
+        quick(pt+1,r,a);
+    }
 }
 
+int selectRec(int l, int r, int K, vi &a){
+    if(l==r) return a[l];
+    int pt = partition(l,r,a);
+
+    if(pt==K)
+        return a[K];
+    else if(K<pt)
+        return selectRec(l,pt-1,K,a);
+    return selectRec(pt+1,r,K,a);
+}
+
+// https://en.wikipedia.org/wiki/Quickselect
+// To select the Kth element 
+// Best: O(n), Average : O(n), worst: O(n*n);
+int select(int l, int r, int K, vi &a){
+    while(l<=r){
+        if(l==r) return a[l];
+        int pt = partition(l,r,a);
+        if(K==pt) return a[K];
+        if(K<pt)
+            r = pt - 1;
+        else
+            l = pt + 1;
+    }
+    return -1;
+}
 
 int main(){
     vi arr = {2,5,2,7,4,7,4,9,6,3};
-    quickSort(arr, 0, arr.size());
+    quick(0, arr.size()-1, arr);
     print(arr);
     
     return 0;

@@ -3,6 +3,43 @@ using namespace std;
 
 
 class Solution {
+public:
+    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        int n = nums1.size(),  m = nums2.size();
+        // I want n<m
+        if(n>m){
+            return findMedianSortedArrays(nums2, nums1);
+        }
+        
+        int lt = 0, rt = n;
+        while(lt<=rt){
+            int partX = (lt + rt)/2; // elements in 1st half of X
+            int partY = (n + m + 1)/2 - partX;
+            
+            int maxLeftX = (partX!=0) ? nums1[partX-1] : INT_MIN;
+            int minRightX = (partX!=n) ? nums1[partX] : INT_MAX;
+            
+            int maxLeftY = (partY!=0) ? nums2[partY-1] : INT_MIN;
+            int minRightY = (partY!=m) ? nums2[partY]  :INT_MAX;
+            
+            if(maxLeftX<=minRightY && maxLeftY<=minRightX){
+                if((n+m)%2){
+                    return max(maxLeftX, maxLeftY);
+                }else{
+                    return (max(maxLeftX, maxLeftY) + min(minRightX, minRightY))/2.0;
+                }
+            }else if(maxLeftX>minRightY){
+                rt = partX-1;
+            }else{
+                lt = partX+1;
+            }
+        }
+        
+        return -1;
+    }
+};
+
+class Solution {
     vector<int> nums1, nums2;
 public:
     double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {

@@ -32,47 +32,67 @@ template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m)
 template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
 template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
-class Solution {
+class SegmentTree {
+    int n;
+    vector<int> st;
 public:
-    int superEggDrop(int K, int N) {
-		vector<vector<int>> dp(K+1, vector<int>(N+1,-1));
-        return find_moves(K, N, dp);
+    SegmentTree(int _N) {
+        n = _N;
+        if(!n) return;
+
+        int max_size = 4*n;
+        st.clear(); st.resize(max_size, 0);
     }
-	
-	int find_moves(int K, int n, vector<vector<int>> &dp){
-		if(n==0 || n==1) return n;
-		if(K==1) return n;
-		if(!K) return 1e6;
 
-		int &ans = dp[K][n];	
-		if(~ans) return ans;
-		ans = 1e6;
-
-        // DP
-		// for(int i=1; i<=n; ++i){
-		// 	int breaks = find_moves(K-1,i-1, dp);
-		// 	int not_breaks = find_moves(K,n-i, dp);
-		// 	ans = min(ans, 1 + max(breaks, not_breaks));
-		// }
-
-        int lt = 1, rt = n;
-        while(lt<=rt){
-            int mid = (lt+rt)/2;
-            int breaks = find_moves(K-1,mid-1, dp);
-            int not_breaks = find_moves(K,n-mid,dp);
-            // I want to go on the side where I can get max ans, for worst case
-            if(breaks>not_breaks){
-                rt = mid - 1;
-            }else{
-                lt = mid + 1;
-            }
-			ans = min(ans, 1 + max(breaks, not_breaks));
+    void update(int pos, int sl, int sr, int i){
+        if(sl==sr){
+            st[pos]++;
+            return;
         }
+        int mid = (sl+sr)/2;
+        if(i<=mid)
+            update(2*pos,sl,mid,i);
+        else 
+            update(2*pos+1,mid+1,sr,i);
+        st[pos] = st[2*pos] +  st[2*pos+1];
+    }
 
-		return ans;
-	}
+    int query(int pos, int sl, int sr, int l, int r){
+        if(sr<l || r<sl) return 0;
+        else if(l<=sl && sr<=r) return st[pos];
+        int mid = (sl+sr)/2;
+        int left = query(2*pos,sl,mid,l,r);
+        int right = query(2*pos+1, mid+1,sr, l,r);
+        return left+right;
+    }
+
+    void update(int i){
+        update(1,0,n-1,i);
+    }
+
+    int query(int i,int j){
+        if(i>j) return 0;
+        return  query(1,0,n-1,i,j);
+    }
 };
 
+class Solution {
+    const int mod = 1e9+7;
+public:
+    int createSortedArray(vector<int>& a) {
+        int n = a.size();
+        SegmentTree st(1e5+10);
+        long long ans = 0;
+        for(auto x: a){
+            int low = st.query(1,x-1);
+            int high = st.query(x+1,1e5+4);
+            ans+=min(low,high);
+            ans = (ans+mod)%mod;
+            st.update(x);
+        }
+        return ans;
+    }
+};
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);

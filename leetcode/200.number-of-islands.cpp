@@ -1,120 +1,149 @@
-/*
- * @lc app=leetcode id=200 lang=cpp
- *
- * [200] Number of Islands
- *
- * https://leetcode.com/problems/number-of-islands/description/
- *
- * algorithms
- * Medium (43.45%)
- * Likes:    3468
- * Dislikes: 128
- * Total Accepted:    468.7K
- * Total Submissions: 1.1M
- * Testcase Example:  '[["1","1","1","1","0"],["1","1","0","1","0"],["1","1","0","0","0"],["0","0","0","0","0"]]'
- *
- * Given a 2d grid map of '1's (land) and '0's (water), count the number of
- * islands. An island is surrounded by water and is formed by connecting
- * adjacent lands horizontally or vertically. You may assume all four edges of
- * the grid are all surrounded by water.
- * 
- * Example 1:
- * 
- * 
- * Input:
- * 11110
- * 11010
- * 11000
- * 00000
- * 
- * Output: 1
- * 
- * 
- * Example 2:
- * 
- * 
- * Input:
- * 11000
- * 11000
- * 00100
- * 00011
- * 
- * Output: 3
- * 
- */
-#include "cpp.h"
+#include <bits/stdc++.h>
 using namespace std;
 
-typedef std::vector<int> vi;
-typedef std::vector<vector<int>> vvi;
-
-// @lc code=start
-// Optimization: instead of using visited for dfs, grid itself can be used
-class Solution {
+class DSU{
+	int n; 
+	vector<int> par, rank;
 public:
-    int numIslands(vector<vector<int>>& grid) {
-        int n = grid.size();
-        if(!n) return 0;
-        int m = grid[0].size();
-        if(!m) return 0;
+	DSU(int N){
+		n = N;
+		par.resize(n);
+		for(int i=0; i<n; ++i)
+			par[i] = i;
+		rank.assign(n,0);
+	}
 
-        int islands = 0;
-        for(int i=0; i<n; i++){
-            for(int j=0; j<m; j++){
-                if(grid[i][j]){
-                    dfs(i,j,grid);
-                    islands++;
+	int find_par(int node){
+		if(node==par[node]) return node;
+		return par[node] = find_par(par[node]);
+	}
+		
+	void unite(int a, int b){
+		a = find_par(a);
+		b = find_par(b);
+		if(a==b) return;
+		if(rank[a]<rank[b])
+			swap(a,b);
+		par[b] = a;
+		if(rank[a]==rank[b])
+			rank[a]++;	
+	}	
+};
 
-                }
-            }
-        }
-
-        return islands;
-    }
-
-    void dfs(int x, int y, vector<vector<int>>& grid){
-        int n = grid.size();
-        int m = grid[0].size();
-        grid[x][y]=0;
-
-        if(x-1>=0 && grid[x-1][y]==1)
-            dfs(x-1,y,grid);
-        if(x+1<n && grid[x+1][y]==1)
-            dfs(x+1,y,grid);
-        if(y-1>=0 && grid[x][y-1]==1)
-            dfs(x,y-1,grid);
-        if(y+1<m && grid[x][y+1]==1)
-            dfs(x,y+1,grid);
-
-        
-                
-        return;
+class Solution {
+	const vector<vector<int>> dirs = {{0,1},{1,0},{0,-1},{-1,0}};
+public:
+    int numIslands(vector<vector<char>>& grid) {
+        int n = grid.size(); if(!n) return 0;
+		int m = grid[0].size(); if(!m) return 0;
+		
+		DSU ds(n*m);
+		for(int i=0; i<n; ++i){
+			for(int j=0; j<m; ++j){
+				if(grid[i][j]=='1'){
+					int id = i*m + j;
+					for(auto &dir: dirs){
+						int nx = i + dir[0], ny = j + dir[1];
+						if(nx<0 || nx>=n || ny<0 || ny>=m || grid[nx][ny]!='1') continue;
+						int adj_id = nx*m + ny;
+						ds.unite(id, adj_id); 
+					}									
+				}
+			}	
+		}
+		
+		int comps = 0;
+		for(int i=0; i<n; ++i){
+			for(int j=0; j<m; ++j){
+				if(grid[i][j]=='1'){
+					int id = i*m + j;
+					if(ds.find_par(id)==id)
+						++comps;
+				}
+			}		
+		}
+		
+		return comps;
     }
 };
-// @lc code=end
+
+
+// DFS + BFS
+class Solution0 {
+public:
+    int numIslands(vector<vector<char>>& grid) {
+        int n = grid.size(); if(!n) return 0;
+		int m = grid[0].size(); if(!m) return 0;
+		
+		int comps = 0;
+		
+		// for(int i=0; i<n; ++i){
+		// 	for(int j=0; j<m; ++j){
+		// 		if(grid[i][j]=='1'){
+		// 			dfs(i,j,grid,n,m);
+		// 			++comps;
+		// 		}	
+		// 	}
+		// }		
+
+		for(int i=0; i<n; ++i){
+			for(int j=0; j<m; ++j){
+				if(grid[i][j]=='1'){
+					++comps;
+					queue<pair<int,int>> q;
+					grid[i][j] = '2';
+					q.push({i,j});
+					
+					while(!q.empty()){
+						auto [x,y] = q.front(); q.pop();
+
+						if(x+1<n && grid[x+1][y]=='1'){
+							grid[x+1][y] = '2';
+							q.push({x+1,y});
+						}	
+						
+						if(y+1<m && grid[x][y+1]=='1'){
+							grid[x][y+1] = '2';
+							q.push({x,y+1});
+						}	
+						
+						if(x-1>=0 && grid[x-1][y]=='1'){
+							grid[x-1][y] = '2';
+							q.push({x-1,y});
+						}	
+						
+						if(y-1>=0 && grid[x][y-1]=='1'){
+							grid[x][y-1] = '2';
+							q.push({x,y-1});
+						}			
+					}					
+				}	
+			}
+		}
+		
+		for(int i=0; i<n; ++i){
+			for(int j=0; j<m; ++j){
+				if(grid[i][j]=='2')
+					grid[i][j] = '1';
+			}
+		}	
+
+		return comps;
+    }
+
+	void dfs(int x, int y, vector<vector<char>> &grid, int &n, int &m){
+		if(x<0 || x>=n || y<0 || y>=m || grid[x][y]!='1') return;
+		grid[x][y] = '2'; // mark as visited
+
+		dfs(x+1,y,grid,n,m);
+		dfs(x,y+1,grid,n,m);
+		dfs(x-1,y,grid,n,m);
+		dfs(x,y-1,grid,n,m);
+	}
+};
+
 int main(){
-    Solution sol;
-    vector<vector<int>> grid;
-    grid = {
-        {1,1,1,1,0},
-        {1,1,0,1,0},
-        {1,1,0,0,0},
-        {0,0,0,0,0},
-    };
-
-    cout<<sol.numIslands(grid)<<endl;
-
-    grid = {
-        {1,1,0,0,0},
-        {1,1,0,0,0},
-        {0,0,1,0,0},
-        {0,0,0,1,1}
-        };
-    cout<<sol.numIslands(grid)<<endl;
-
-    grid = {};
-    cout<<sol.numIslands(grid)<<endl;
-
-
-
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    
+    return 0;
 }

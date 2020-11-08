@@ -42,6 +42,7 @@ void dfs(int node){
     ord.pb(node);
 }
  
+// Reverse representation 
 void dfs2(int node){
     vis[node] = 1;
     ans[node] = cnt;

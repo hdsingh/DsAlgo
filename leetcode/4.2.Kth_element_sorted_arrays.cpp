@@ -32,50 +32,94 @@ template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m)
 template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
 template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+
+int getRand(int l, int r){
+	uniform_int_distribution<int> uid(l, r);
+	return uid(rng);
+}
+
+vi getRandSeq(int l, int r, int len){
+    vi a(len);
+    for(int i=0; i<len; ++i)
+        a[i] = getRand(l,r);
+    return a;
+}
+
+// not optimal
+vi getUniqRandSeq(int l, int r, int len){
+    if(r-l+1<len) return {};
+    vi a(len);
+    set<int> seen;
+    for(int i=0; i<len; ++i) {
+        a[i] = getRand(l,r);
+        if(seen.count(a[i])) --i;
+        else seen.insert(a[i]);
+    }
+    return a;
+}
+
 class Solution {
 public:
-    int superEggDrop(int K, int N) {
-		vector<vector<int>> dp(K+1, vector<int>(N+1,-1));
-        return find_moves(K, N, dp);
-    }
-	
-	int find_moves(int K, int n, vector<vector<int>> &dp){
-		if(n==0 || n==1) return n;
-		if(K==1) return n;
-		if(!K) return 1e6;
-
-		int &ans = dp[K][n];	
-		if(~ans) return ans;
-		ans = 1e6;
-
-        // DP
-		// for(int i=1; i<=n; ++i){
-		// 	int breaks = find_moves(K-1,i-1, dp);
-		// 	int not_breaks = find_moves(K,n-i, dp);
-		// 	ans = min(ans, 1 + max(breaks, not_breaks));
-		// }
-
-        int lt = 1, rt = n;
-        while(lt<=rt){
-            int mid = (lt+rt)/2;
-            int breaks = find_moves(K-1,mid-1, dp);
-            int not_breaks = find_moves(K,n-mid,dp);
-            // I want to go on the side where I can get max ans, for worst case
-            if(breaks>not_breaks){
-                rt = mid - 1;
-            }else{
-                lt = mid + 1;
-            }
-			ans = min(ans, 1 + max(breaks, not_breaks));
+    double findKthSortedArrays(vector<int>& nums1, vector<int>& nums2, int K) {
+        int n = nums1.size(), m = nums2.size();
+        // We want the greater array
+        if(n<m){
+            return findKthSortedArrays(nums2, nums1, K);
         }
+        // deb(n+m,K);
+        int lt = max(0,K-m), rt = min(K,n);
+        while(lt<=rt){
+            int partX = (lt+rt)/2;
+            int y = K - partX;
+            // deb(partX, y);
+        
+            int maxLeftX = (partX-1>=0 ? nums1[partX-1] : INT_MIN);
+            int minRightX = (partX<n ? nums1[partX] : INT_MAX);
 
-		return ans;
-	}
+            int maxLeftY = (y-1>=0 ? nums2[y-1] : INT_MIN); 
+            int minRightY = (y<m ? nums2[y] : INT_MAX);
+
+            if(maxLeftX<=minRightY && maxLeftY<=minRightX){
+                return max(maxLeftX, maxLeftY);
+            }else if(maxLeftX>minRightY){
+                rt = partX-1;
+            }else{
+                lt = partX+1;
+            }
+
+        }
+    
+        return -1;
+    }
 };
 
+int find2(vi &a, vi &b, int K){
+    vi c = a;
+    for(auto x: b) c.pb(x);
+    sort(all(c));
+    // print(c,1);
+    return c[K-1];
+}
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    
+    srand(0);
+    forn(T,100){
+        Solution sol;
+        int n, m, K; 
+        n = getRand(0,1000);
+        m = getRand(0,1000);
+        K = getRand(1,n+m);
+        vi a = getRandSeq(0,1e4,n);
+        vi b = getRandSeq(0,1e4,m);
+        sort(all(a)); sort(all(b));
+
+        int out = sol.findKthSortedArrays(a,b,K);
+        int out2 = find2(a,b,K);
+        // deb(out,out2);
+        assert(out==out2);
+
+    } 
     return 0;
 }
