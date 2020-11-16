@@ -41,7 +41,7 @@ void bellmanFord(int src){
     vi par(n+1,-1);
     dist[src] = 0;
     int x;
-    for(int times=0; times<n; ++times){
+    for(int times=0; times<n-1; ++times){
         x = -1;
         // bool any = false;
         for(auto e: edges){

@@ -27,44 +27,89 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
-class Solution {
-    string s1, s2, s3;
-    int n, m;
-    vector<vector<int>> dp;
+class Solution{
 public:
-    bool isInterleave(string s1, string s2, string s3) {
-        this->s1 = s1, this->s2 = s2, this->s3 =s3;
-        n = s1.size(), m = s2.size();
-        dp.assign(n+1, vi(m+1,-1));
-        if(n+m!=s3.size()) return false;
-        if(!n) return s2==s3;
-        if(!m) return s1==s3;
-        return can(0,0);
-    }
-    
-    int can(int p1, int p2){
-        int &ans = dp[p1][p2];
-        if(~ans) return ans;
-        ans = 0;
-        if(p1==n && p2==m){
-            return ans = 1;
-        }else if(p1==n){
-            return ans = s3.substr(n+p2)==s2.substr(p2);
-        }else if(p2==m){
-            return ans = s3.substr(m+p1)==s1.substr(p1);
+    bool isInterleave(string &a, string &b, string &c){
+        int n = a.size(), m = b.size(), cs = c.size();
+        if(n+m!=cs) return false;
+        if(!n) return b==c;
+        if(!m) return a==c;
+        vector<int> dp(m+1);
+        
+        dp[0] = 1;
+        for(int y=1; y<=m; ++y)
+            dp[y] = (dp[y-1] && b[y-1]==c[y-1]);
+
+        for(int x=1; x<=n; ++x){
+            vector<int> ndp(m+1);
+            ndp[0] = (dp[0] && a[x-1]==c[x-1]);
+            
+            for(int y=1; y<=m; ++y){
+                ndp[y] = (a[x-1]==c[x+y-1] && dp[y]);
+                if(!ndp[y]){
+                    ndp[y] = (b[y-1]==c[x+y-1] && ndp[y-1]);
+                }
+            }
+            
+            dp = ndp;
         }
         
-        if(s1[p1]==s3[p1+p2] && can(p1+1,p2))
-            return ans = 1;
+        return dp[m];
+    }
+    
+    bool solve2d(string &a, string &b, string &c){
+        int n = a.size(), m = b.size(), cs = c.size();
+        if(n+m!=cs) return false;
+        if(!n) return b==c;
+        if(!m) return a==c;
+        vector<vector<int>> dp(n+1,vector<int>(m+1));
         
-        if(s2[p2]==s3[p1+p2] && can(p1,p2+1))
-            return ans = 1;
+        dp[0][0] = 1;
+        for(int x=1; x<=n; ++x)
+            dp[x][0] = (dp[x-1][0] && a[x-1]==c[x-1]);
+        
+        for(int y=1; y<=m; ++y)
+            dp[0][y] = (dp[0][y-1] && b[y-1]==c[y-1]);
 
-        return ans;
+        for(int x=1; x<=n; ++x){
+            for(int y=1; y<=m; ++y){
+                dp[x][y] = (a[x-1]==c[x+y-1] && dp[x-1][y]);
+                if(!dp[x][y]){
+                    dp[x][y] = (b[y-1]==c[x+y-1] && dp[x][y-1]);
+                }
+            }
+        }
+        
+        return dp[n][m];
+    }
+    
+    bool is_merged(int x, int y, string &a, string &b, string &c, vector<vector<int>> &dp){
+        int &ans = dp[x][y];
+        if(~ans) return ans;
+        ans = false;
+        if(x>=a.size() && y>=b.size()){
+            return ans = true;
+        }
+        if(x>=a.size()){
+            while(y<b.size() && b[y]==c[x+y])
+                ++y;
+            return ans = (y==b.size());
+        }
+        if(y>=b.size()){
+            while(x<a.size() && a[x]==c[x+y]) 
+                ++x;
+            return ans = (x==a.size());
+        }
+        if(a[x]==c[x+y] && is_merged(x+1,y,a,b,c,dp))
+            return ans = true;
+        if(b[y]==c[x+y] && is_merged(x,y+1,a,b,c,dp))
+            return ans = true;
+        
+        return false;
     }
 };
 
-class Solution {
+class Solution0 {
 public:
     bool isInterleave(string s1, string s2, string s3) {
         int l1 = sz(s1), l2 = sz(s2), l3 = sz(s3);

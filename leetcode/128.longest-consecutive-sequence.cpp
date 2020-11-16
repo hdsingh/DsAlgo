@@ -80,6 +80,27 @@ public:
     }
 };
 
+// update the len at element, left and right ends
+// If an element reappears skip it.
+int solve(vector<int>& nums) {
+    int n = nums.size();
+    int ans = 0;
+    unordered_map<int,int> lens;
+    for(auto num: nums){
+        if(lens.count(num)) continue;
+        int lt = lens.count(num-1) ? lens[num-1] : 0;
+        int rt = lens.count(num+1) ? lens[num+1] : 0;
+        int now = lt + 1 + rt;
+        lens[num] = now;
+        lens[num-lt] = now;
+        if(now!=1)
+            lens[num+rt] = now;
+        ans = max(ans, now);
+    }
+    return ans;
+}
+
+
 class Solution0 {
 public:
     int longestConsecutive(vector<int>& nums) {

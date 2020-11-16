@@ -118,6 +118,56 @@ public:
         return out;        
     }
 };
+
+int solve(string s) {
+    int n = s.size();
+    if(!n) return 1;
+    if(s[0]=='0') return 0;
+
+    int prev2 = 1, prev1 = 1;
+    for(int i=1; i<n; ++i){
+        int cur = 0;
+        if(s[i]=='0' && s[i-1]>='3')  // 30, 40
+            return 0;
+        
+        // 110
+        if(s[i]!='0')
+            cur+=prev1;
+
+        string sub = s.substr(i-1,2);
+        if("10"<=sub && sub<="26")
+            cur+=prev2;
+            
+        prev2 = prev1;
+        prev1 = cur;
+    }
+
+    return prev1;
+}
+
+int solve1(string s) {
+    int n = s.size();
+    if(!n) return 1;
+    if(s[0]=='0') return 0;
+    vector<int> ways(n);
+    ways[0] = 1;
+
+    for(int i=1; i<n; ++i){
+        if(s[i]=='0' && (s[i-1]>='3'))  // 30
+            return 0;
+        
+        // 110
+        if(s[i]!='0')
+            ways[i] = ways[i-1];
+
+        string sub = s.substr(i-1,2);
+        if("10"<=sub && sub<="26")
+            ways[i]+=(i-2>=0 ? ways[i-2] : 1);
+    }
+
+    return ways[n-1];
+}
+
 // @lc code=end
 int main(){
     Solution s;

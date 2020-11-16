@@ -43,6 +43,34 @@ public:
     }
 };
 
+// every k congiguous grp
+// node = 1 → 2 → 3 → 4 → 5
+// k = 3
+// out = 3 → 2 → 1 → 5 → 4
+ListNode* solve(ListNode* node, int k) {
+    if(!node || k<=1) return node;
+    ListNode *head = new ListNode(0, node);
+    ListNode *cur = node, *last = head;
+    
+    while(cur){
+        ListNode *prev = NULL, *nextNode = NULL, *beg = cur;
+        
+        int count =  k;
+        while(count-- > 0 && cur){
+            nextNode = cur->next;
+            cur->next = prev;
+            prev = cur;
+            cur = nextNode;
+        }
+        
+        beg->next = cur;
+        last->next = prev;
+        last = beg;
+    }
+    
+    return head->next;
+}
+
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
     

@@ -44,7 +44,56 @@ using namespace std;
 typedef std::vector<int> vi;
 typedef std::vector<vector<int>> vvi;
 
-// @lc code=start
+
+// inplace
+class Solution {
+public:
+    vector<vector<int>> insert(vector<vector<int>>& ivals, vector<int>& target) {
+            int st = target[0],  ed = target[1];
+    int n = ivals.size();
+    int pos = 0;
+    while(pos<n && ivals[pos][1]<st){
+        ++pos;
+    }
+
+    if(pos==n){
+        ivals.push_back(target);
+    }else if(ed<ivals[pos][0]){
+        // no overlap [10,30]   [60,70] and we need to insert [40,50]
+        ivals.push_back(target);
+        int loc = ivals.size()-1;
+        while(pos<loc){
+            swap(ivals[loc-1], ivals[loc]);
+            --loc;
+        }
+    }else{
+        // there is overlap bw some
+        ivals[pos][0] = min(ivals[pos][0], st);
+        ivals[pos][1] = max(ivals[pos][1], ed);
+        
+        int next_pos = pos+1;
+        while(next_pos<n && ivals[next_pos][0]<=ivals[pos][1]){
+            ivals[pos][0] = min(ivals[next_pos][0], ivals[pos][0]);
+            ivals[pos][1] = max(ivals[next_pos][1], ivals[pos][1]);
+            ++next_pos;
+        }
+        
+        ++pos;
+        while(next_pos<n && pos<n){
+            ivals[pos] = ivals[next_pos];
+            ++pos; ++next_pos;
+        }
+        
+        while(ivals.size()>pos){
+            ivals.pop_back();
+        }
+    }
+    
+    return ivals;
+    }
+};
+
+
 class Solution {
 public:
     vector<vector<int>> insert(vector<vector<int>>& ivals, vector<int>& nval) {

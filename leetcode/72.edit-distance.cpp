@@ -81,6 +81,49 @@ public:
     }
 };
 
+int solve(string a, string b) {
+    int n = a.size(), m = b.size();
+    vector<int> cost(m+1);
+    for(int j=1; j<=m; ++j)
+        cost[j] = j;
+    
+    for(int i=1; i<=n; ++i){
+        vector<int> ncost(m+1);
+        ncost[0] = i;
+        
+        for(int j=1; j<=m; ++j){
+            int rep = cost[j-1] + (a[i-1]!=b[j-1]);
+            int ins = ncost[j-1] + 1;
+            int del = cost[j] + 1;
+            ncost[j] = min({rep, ins, del});
+        }
+        
+        cost = ncost;
+    }
+    
+    return cost[m];
+}
+
+int solve0(string a, string b) {
+    int n = a.size(), m = b.size();
+    vector<vector<int>> cost(n+1, vector<int>(m+1));
+    for(int j=1; j<=m; ++j)
+        cost[0][j] = j;
+    for(int i=1; i<=n; ++i)
+        cost[i][0] = i;
+    
+    for(int i=1; i<=n; ++i){
+        for(int j=1; j<=m; ++j){
+            int rep = cost[i-1][j-1] + (a[i-1]!=b[j-1]);
+            int ins = cost[i][j-1] + 1;
+            int del = cost[i-1][j] + 1;
+            cost[i][j] = min({rep, ins, del});
+        }
+    }
+    
+    return cost[n][m];
+}
+
 // @lc code=end
 int main(){
     Solution s;

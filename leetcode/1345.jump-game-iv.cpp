@@ -105,47 +105,54 @@ template <typename T>void print(T v, bool show_index = false){int w = 2;if(show_
 template <typename T>void print_vv(T v){if(v.size()==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<v[0].size(); j++)cout<<setw(w)<<j<<" ";cout<<endl;for(auto i= 0; i<v.size(); i++){cout<<i<<" {";for(auto j = 0; j!=v[i].size(); j++){cout<<setw(w)<<v[i][j]<<",";}cout<<"},"<<endl;}cout<<endl;}
 template <class T, class U> void print_m(map<T,U> m, int w=3){if(m.empty()){cout<<"Empty"<<endl; return;}for(auto x: m)cout<<"("<<x.first<<": "<<x.second<<"),"<<endl;cout<<endl;}
 
-// TLE (1 1 1 1 1 1 1 1 1 1 1 2)
-class Solution0 {
+class Solution {
 public:
     int minJumps(vector<int>& arr) {
         int n = arr.size();
-        vector<set<int>> adj(n);
-        unordered_map<int,vi> save;
-        for(int i=0; i<n; ++i)
-            save[arr[i]].push_back(i);
-        
+        if(n==1) return 0;
+        unordered_map<int,vector<int>> locs;
         for(int i=0; i<n; ++i){
-            for(auto j: save[arr[i]])
-                if(i!=j)
-                    adj[i].insert(j);
-            if(i+1<n) adj[i].insert(i+1);
-            if(i-1>=0) adj[i].insert(i-1);
+            int j = i;
+            while(j+1<n && arr[j+1]==arr[i]){
+                ++j;
+            }
+            locs[arr[i]].push_back(i);
+            if(i!=j) locs[arr[i]].push_back(j);
+            i = j;
         }
-
-        vector<bool> vis(n);
+    
         queue<int> q;
         q.push(0);
-        vis[0] = true;
-
-        int dist = -1;
+        vector<bool> vis(n);
+        vis[0] = 1;
+        int jumps = 0;
+    
         while(q.size()){
-            ++dist;
-            int sz = q.size();
-            for(int i=0; i<sz; ++i){
-                int top = q.front(); q.pop();
-                if(top == n-1) return dist;
-            
-                for(auto ad: adj[top]){
+            queue<int> nq;
+            while(q.size()){
+                int pos =  q.front(); q.pop();
+                if(pos==n-1) return jumps;
+               
+                for(auto ad: locs[arr[pos]]){
                     if(!vis[ad]){
-                        vis[ad] = true;
-                        q.push(ad);
+                        nq.push(ad);
+                        vis[ad] = 1;
                     }
                 }
+                locs[arr[pos]].clear();
+            
+                for(auto ad: {pos-1, pos+1}){
+                    if(ad<0 || ad>=n || vis[ad]) continue;
+                    nq.push(ad);
+                    vis[ad] = 1;
+                }
+    
             }
+            q = nq;
+            ++jumps;
         }
-
-        return dist;        
+        
+        return jumps;
     }
 };
 

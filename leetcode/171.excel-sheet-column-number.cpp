@@ -58,6 +58,35 @@ public:
     }
 };
 
+class Solution{
+public:
+    int encode(string s){
+        int n = s.size(), ans = 0;
+        int pw = 1;
+        for(int i=n-1; i>=0; --i){
+            ans+=(pw*(s[i]-'A'+1));
+            pw*=26;
+        }
+        return ans;
+    }
+
+    string decode(int val){
+        string s;
+        while(val>0){
+            int rem = val%26;
+            if(rem==0){
+                s+='Z';
+                --val;
+            }else{
+                s+='A'+(rem-1);
+            }
+            val/=26;
+        }
+        reverse(s.begin(), s.end());
+        return s;
+    }
+};
+
 // Here in this conversion, there is no 0 digit
 // every thing is shifted by 1. (A->1, B->2.... Z->26)
 // So when the rem is 0 it means that the number is 'Z',
