@@ -27,6 +27,56 @@ template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cou
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
 
+// MergeSort Inversion count
+class Solution{
+public:
+    vector<int> countSmaller(vector<int> &a){
+        int n = a.size();
+        vector<int> ans(n);
+        vector<int> indices(n);
+        for(int i=0; i<n; ++i)
+            indices[i] = i;
+        mergeSort(0,n-1,indices,a,ans);
+        return ans;
+    }
+    
+    void mergeSort(int lt, int rt, vector<int> &indices, vector<int> &a, vector<int> &ans){
+        if(lt>=rt) return;
+        int mid = (lt+rt)/2;
+        mergeSort(lt,mid,indices,a,ans);
+        mergeSort(mid+1,rt,indices,a,ans);
+        
+        merge(lt,mid,rt,indices,a,ans);
+    }
+    
+    void merge(int lt, int mid, int rt, vector<int> &indices, vector<int> &a, vector<int> &ans){
+        int n1 = (mid-lt+1);
+        int n2 = (rt-mid);
+        vector<int> L(n1), R(n2);
+        for(int i=0; i<n1; ++i)
+            L[i] = indices[lt+i];
+        for(int j=0; j<n2; ++j)
+            R[j] = indices[mid + 1 + j];
+        
+        int ptr = n2-1;
+        for(int i=n1-1; i>=0; --i){
+            while(ptr>=0 && a[R[ptr]]>=a[L[i]])
+                --ptr;
+            ans[L[i]]+=(ptr+1);
+        }
+        
+        int i = 0, j = 0, k = lt;
+        while(i<n1 && j<n2){
+            if(a[L[i]]<a[R[j]])
+                indices[k++] = L[i++];
+            else 
+                indices[k++] = R[j++];
+        }
+        while(i<n1) indices[k++] = L[i++];
+        while(j<n2) indices[k++] = R[j++];
+    }
+};
+
 const int nax = 1e4+10;
 
 class SegmentTree{
