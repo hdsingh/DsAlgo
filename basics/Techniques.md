@@ -2,6 +2,7 @@
 
 `0-1 BFS`:
 1. [Minimum Cost to Make at Least One Valid Path in a Grid](https://leetcode.com/problems/minimum-cost-to-make-at-least-one-valid-path-in-a-grid/description/)
+2. [Cheapest Bus Route] https://binarysearch.com/problems/Cheapest-Bus-Route
 
 
 `Binary Search`:

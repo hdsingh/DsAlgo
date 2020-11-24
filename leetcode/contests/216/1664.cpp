@@ -26,97 +26,54 @@ template<class T, class U>void debp(const pair<T, U> &pr, bool end_line=1){cout<
 template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cout<<"Empty"<<endl; return;}if(!sep_line) cout<<"{ ";for(auto x: vp) debp(x,sep_line);if(!sep_line) cout<<"}\n";cout<<endl;}
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
+template <typename T> ostream& operator<<(ostream &os, const vector<T> &v){print(v); return os;};
+template <typename T> ostream& operator<<(ostream &os, const vector<vector<T>> &vv){print_vv(vv); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m){print_m(m); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
 class Solution {
 public:
-    vector<double> medianSlidingWindow(vector<int>& a, int k) {
-        multiset<int> window(a.begin(), a.begin()+k);
-        auto mid = next(window.begin(), k/2);
-        int n = a.size();
-        vector<double> medians;
-        for(int i=k; ; ++i){
-            double med = ((double)*mid + *prev(mid, 1 - k%2))/2;
-            medians.push_back(med);
-
-            if(i==n) return medians;
-            // insert first because incase of single element we need sth to shift to
-            window.insert(a[i]);
-            if(a[i]<*mid)
-                --mid;
-            
-            if(a[i-k]<=*mid)
-                ++mid;
-            window.erase(window.lower_bound(a[i-k]));
-        }
-
-    }
-};
-
-class Solution {
-    multiset<int> lo, hi;
-public:
-    vector<double> medianSlidingWindow(vector<int>& a, int k) {
-        int n = a.size();
-        vector<double> out;
-
-        for(int i=0; i<=n; ++i){
-            if(i>=k){
-                out.push_back(median());
-                remove(a[i-k]);
+    int waysToMakeFair(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> le(n+2), lo(n+2), re(n+2), ro(n+2);
+        for(int i=0; i<n; ++i){
+            if(i-1>=0){
+                lo[i] = lo[i-1];
+                le[i] = le[i-1];
             }
-            if(i==n) break;
-            add(a[i]);
-        }
-
-        return out;
-    }
-
-    void add(int x){
-        if(lo.empty()){
-            lo.insert(x);
-            return;
+            if(i&1) lo[i]+=nums[i];
+            else le[i]+=nums[i];
         }
         
-        if(x<*lo.rbegin()){
-            lo.insert(x);
-        }else{
-            hi.insert(x);
+        for(int i=n-1; i>=0; --i){
+            ro[i] = ro[i+1];
+            re[i] = re[i+1];
+            if(i&1) ro[i]+=nums[i];
+            else re[i]+=nums[i];
         }
-
-        balance();
-    }
-
-    void remove(int x){
-        if(x<=*lo.rbegin()){
-            assert(lo.find(x)!=lo.end());
-            lo.erase(lo.find(x));
-        }else{
-            assert(hi.find(x)!=hi.end());
-            hi.erase(hi.find(x));
+        
+        int ans = 0;
+        for(int i=0; i<n; ++i){
+            int odd = 0, even =0;
+            if(i&1){
+                odd = lo[i] - nums[i] + re[i+1];
+                even = le[i] + ro[i] - nums[i];
+                ans+=(odd==even);
+            }else{
+                odd = lo[i] + re[i] - nums[i];
+                even = le[i] - nums[i] + ro[i+1];
+                ans+=(odd==even);
+            }
         }
-        balance();
-    }
-
-    void balance(){
-        if(lo.size()){
-            hi.insert(*lo.rbegin());
-            lo.erase(lo.find(*lo.rbegin()));
-        }
-
-        while(hi.size()>lo.size()){
-            lo.insert(*hi.begin());
-            hi.erase(hi.begin());
-        }
-    }
-
-    double median(){
-        if(lo.size()>hi.size())
-            return *lo.rbegin();
-        return ((double)*lo.rbegin() + *hi.begin())/2;
+        return ans;
     }
 };
 
 int main(){
-    
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    vi a = {2,1,6,4};
+    Solution sol; int out;
+    out = sol.waysToMakeFair(a); deb(out);
     return 0;
 }

@@ -125,41 +125,42 @@ public:
 class MedianFinder {
     multiset<int> data;
     multiset<int>::iterator lo, hi;
-    
 public:
-    /** initialize your data structure here. */
     MedianFinder() {
-        data.clear();
+        
     }
-    
-    void addNum(int num) {
+
+    void addNum(int val) {
         int n = data.size();
-        data.insert(num);
         if(!n){
+            data.insert(val);
             lo = hi = data.begin();
+            return;
         }
-        // odd size before, even now
-        // so separate lo, hi
-        else if(n&1){
-            if(num<*lo) 
-                --lo;
-            else  // num>=*lo
-                ++hi;
+        
+        // 1  3  4   6
+        //         5 
+        data.insert(val);
+        if(n&1){
+            if(val<*lo) --lo;
+            else ++hi;
         }else{
-            if(*lo<num && num<*hi)
+            if(*lo<=val && val<*hi){
                 ++lo, --hi;
-            else if(num>=*hi)
+            }else if(val<*lo){
+                --hi;
+            }else{
                 ++lo;
-            else
-                lo = --hi;
+            }
         }
     }
-    
+
     double findMedian() {
-        return (double)(*lo + *hi)/2;
+        if(data.empty()) return 0;
+        double out = *lo + *hi;
+        return out/2;
     }
 };
-
 // @lc code=end
 
 int main(){

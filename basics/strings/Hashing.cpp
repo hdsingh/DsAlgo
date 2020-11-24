@@ -14,7 +14,7 @@ class Hashs{
 public:
     Hashs(string &s){
         n = s.size();
-        p_pow.assign(n+1,0); h.assign(n+1,0);
+        p_pow.assign(n,0); h.assign(n+1,0);
         p_pow[0] = 1;
         for(int i=1; i<n; ++i)
             p_pow[i] = (p_pow[i-1]*p)%m;

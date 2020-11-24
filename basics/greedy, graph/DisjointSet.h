@@ -11,7 +11,7 @@ public:
 		iota(par.begin(),par.end(), 0); // make a node par of itself
 	}
 
-	bool union_sets(int a, int b){
+	bool unite(int a, int b){
 		a = find_par(a);
 		b = find_par(b);
 		if(a==b) return false; // already united, since having same par
