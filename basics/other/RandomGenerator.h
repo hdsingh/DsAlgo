@@ -1,7 +1,3 @@
-#include <bits/stdc++.h>
-using namespace std;
-typedef vector<int> vi;
-
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
 int getRand(int l, int r){
@@ -27,12 +23,4 @@ vi getUniqRandSeq(int l, int r, int len){
         else seen.insert(a[i]);
     }
     return a;
-}
-
-int main(){
-    int n = 10;
-    vi a = getUniqRandSeq(1,10,10);
-    for(auto x: a) cout<<x<<" "; 
-    cout<<"\n";
-    return 0;
 }
