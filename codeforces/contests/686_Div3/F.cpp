@@ -26,6 +26,11 @@ template<class T, class U>void debp(const pair<T, U> &pr, bool end_line=1){cout<
 template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cout<<"Empty"<<endl; return;}if(!sep_line) cout<<"{ ";for(auto x: vp) debp(x,sep_line);if(!sep_line) cout<<"}\n";cout<<endl;}
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
+template <typename T> ostream& operator<<(ostream &os, const vector<T> &v){print(v); return os;};
+template <typename T> ostream& operator<<(ostream &os, const vector<vector<T>> &vv){print_vv(vv); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m){print_m(m); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
 class RMQ{
     int n;
@@ -46,34 +51,70 @@ public:
                 if(curLen==1)
                     table[i][j] = a[j];
                 else 
-                    table[i][j] = max(table[i-1][j], table[i-1][j + curLen/2]);
+                    table[i][j] = min(table[i-1][j], table[i-1][j + curLen/2]);
             }
         }
     }
 
     int query(int l, int r){
+        if(l>r){
+            // deb(l,r);
+            return 1e9+100;
+        }
         int p = logs[r-l+1];
         int plen = 1<<p;
-        return max(table[p][l], table[p][r-plen+1]);
+        return min(table[p][l], table[p][r-plen+1]);
     }
 };
 
-int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n, m; cin>>n>>m;
-    vi a(n); forn(i,n) cin>>a[i];
+// lmax is increasing from lt to rt
+// for a fixed rt and moving to lt, rmq is decreasing
+// So for a fixed value of rt, find the places in lmax having same rmax.
+// Now Find if the min of elements bw lt and fixed rt satifies the condition.
+// Since RMQ inside is sorted, binary search could be applied.
+void solve(vi &a){
+    int n = a.size();
     RMQ rmq(a);
-    int ans = 0 ;
-    forn(i,m){
-        int x, y; cin>>x>>y; --x,--y;
-        if(x<=y){
-            if(rmq.query(x,y-1)<=a[x]) 
-                ++ans;
-        }else{
-            if(rmq.query(y+1,x)<=a[x])
-                ++ans;
+    vi lmax(n), rmax(n);
+    lmax[0] = a[0];
+    fore(i,1,n) lmax[i] = max(a[i], lmax[i-1]);
+    rmax[n-1] = a[n-1];
+    for(int i=n-2; i>=0; --i)
+        rmax[i] = max(a[i], rmax[i+1]);
+    
+    for(int i=n-1; i>=2; --i){
+        int val = rmax[i];
+        int lpos = lower_bound(all(lmax), val) - lmax.begin();
+        int rpos = upper_bound(all(lmax), val) - lmax.begin();
+        if(lpos==rpos || lpos>=i) continue;
+
+        int lt = lpos, rt = min(rpos-1, i-1);
+        while(lt<=rt){
+            int mid = (lt+rt)/2;
+            int cur = rmq.query(mid+1,i-1);
+            if(cur==val){
+                cout<<"YES\n";
+                cout<<mid+1<<" "<<n - (mid+1) - (n-i)<<" "<<n-i<<"\n";
+                return;
+            }else if(cur<val){
+                lt = mid+1;
+            }else{
+                rt = mid-1;
+            }
         }
     }
-    cout<<ans<<"\n";
+
+    cout<<"NO\n";
+}   
+
+int main(){
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    int T;
+    cin>>T;
+    while(T--){
+        int n; cin>>n; 
+        vi a(n); forn(i,n) cin>>a[i];
+        solve(a);
+    } 
     return 0;
 }

@@ -26,54 +26,71 @@ template<class T, class U>void debp(const pair<T, U> &pr, bool end_line=1){cout<
 template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cout<<"Empty"<<endl; return;}if(!sep_line) cout<<"{ ";for(auto x: vp) debp(x,sep_line);if(!sep_line) cout<<"}\n";cout<<endl;}
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
+template <typename T> ostream& operator<<(ostream &os, const vector<T> &v){print(v); return os;};
+template <typename T> ostream& operator<<(ostream &os, const vector<vector<T>> &vv){print_vv(vv); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m){print_m(m); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
+typedef pair<ll,ll> pll;
 
-class RMQ{
-    int n;
-    vi logs;
-    vvi table;
-public:
-    RMQ(vi &a){
-        n = a.size();
-        logs.assign(n+1,0);
-        for(int i=2; i<=n; ++i)
-            logs[i] = logs[i/2]+1;
-    
-        table.assign(logs[n]+1, vi(n));
 
-        for(int i=0; i<=logs[n]; ++i){
-            int curLen = 1<<i;
-            for(int j=0; j+curLen<=n; ++j){
-                if(curLen==1)
-                    table[i][j] = a[j];
-                else 
-                    table[i][j] = max(table[i-1][j], table[i-1][j + curLen/2]);
-            }
-        }
-    }
-
-    int query(int l, int r){
-        int p = logs[r-l+1];
-        int plen = 1<<p;
-        return max(table[p][l], table[p][r-plen+1]);
-    }
-};
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n, m; cin>>n>>m;
-    vi a(n); forn(i,n) cin>>a[i];
-    RMQ rmq(a);
-    int ans = 0 ;
-    forn(i,m){
-        int x, y; cin>>x>>y; --x,--y;
-        if(x<=y){
-            if(rmq.query(x,y-1)<=a[x]) 
-                ++ans;
-        }else{
-            if(rmq.query(y+1,x)<=a[x])
-                ++ans;
+    int T;
+    cin>>T;
+    while(T--){
+        int n; cin>>n;
+        ll C; cin>>C;
+        vector<pll> a(n);
+        forn(i,n){
+            cin>>a[i].first;
+            a[i].second =  i+1;
         }
+        sort(all(a));
+        while(sz(a) && a.back().first>C) a.pop_back();
+        n = sz(a);
+        bool found = 0; int at = -1;
+        ll sum = 0;
+        forn(i,n){
+            sum+=a[i].first;
+
+            if((C+1)/2<=sum && sum<=C){
+                found = 1;
+                at = i+1;
+                break;
+            }
+        } 
+        
+        if(found){
+            cout<<at<<"\n";
+            forn(i,at){
+                cout<<a[i].second<<" ";
+            }
+            cout<<"\n";
+            continue;
+        }
+
+        sum = 0;
+        for(int i=n-1; i>=0; --i){
+            sum+=a[i].first;
+            if((C+1)/2<=sum && sum<=C){
+                found = 1;
+                at = i;
+                break;
+            }
+        }
+
+        if(found){
+            cout<<n-at<<"\n";
+            for(int i=n-1; i>=at; --i){
+                cout<<a[i].second<<" ";
+            }
+            cout<<"\n";
+        }else{
+            cout<<"-1\n";
+        }
+
     }
-    cout<<ans<<"\n";
     return 0;
 }

@@ -26,54 +26,52 @@ template<class T, class U>void debp(const pair<T, U> &pr, bool end_line=1){cout<
 template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cout<<"Empty"<<endl; return;}if(!sep_line) cout<<"{ ";for(auto x: vp) debp(x,sep_line);if(!sep_line) cout<<"}\n";cout<<endl;}
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
+template <typename T> ostream& operator<<(ostream &os, const vector<T> &v){print(v); return os;};
+template <typename T> ostream& operator<<(ostream &os, const vector<vector<T>> &vv){print_vv(vv); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m){print_m(m); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
-class RMQ{
-    int n;
-    vi logs;
-    vvi table;
-public:
-    RMQ(vi &a){
-        n = a.size();
-        logs.assign(n+1,0);
-        for(int i=2; i<=n; ++i)
-            logs[i] = logs[i/2]+1;
-    
-        table.assign(logs[n]+1, vi(n));
-
-        for(int i=0; i<=logs[n]; ++i){
-            int curLen = 1<<i;
-            for(int j=0; j+curLen<=n; ++j){
-                if(curLen==1)
-                    table[i][j] = a[j];
-                else 
-                    table[i][j] = max(table[i-1][j], table[i-1][j + curLen/2]);
-            }
-        }
-    }
-
-    int query(int l, int r){
-        int p = logs[r-l+1];
-        int plen = 1<<p;
-        return max(table[p][l], table[p][r-plen+1]);
-    }
+struct node{
+    node* ch[2] = {};
 };
+
+node *root;
+
+void insert(int val){
+    auto cur = root;
+    for(int i=31; i>=0; --i){
+        int b = (val>>i)&1;
+        if(!cur->ch[b])
+            cur->ch[b] = new node();
+        cur = cur->ch[b];
+    }
+}
+
+// We can keep all from lt side since they are connected
+// and take only 1 from rt. (same for rt).
+int dfs(node* cur){
+    if(!cur) return 0;
+    if(!cur->ch[0] && !cur->ch[1])
+        return 1;
+    int lt = dfs(cur->ch[0]);
+    int rt = dfs(cur->ch[1]);
+    return max(lt + min(1, rt),
+               rt + min(1, lt));
+}
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n, m; cin>>n>>m;
-    vi a(n); forn(i,n) cin>>a[i];
-    RMQ rmq(a);
-    int ans = 0 ;
-    forn(i,m){
-        int x, y; cin>>x>>y; --x,--y;
-        if(x<=y){
-            if(rmq.query(x,y-1)<=a[x]) 
-                ++ans;
-        }else{
-            if(rmq.query(y+1,x)<=a[x])
-                ++ans;
+    int n;
+    while(cin>>n){
+        root = new node();
+        forn(i,n){
+            int x; cin>>x;
+            insert(x);
         }
-    }
-    cout<<ans<<"\n";
+        int keep = dfs(root);
+        cout<<n-keep<<"\n";
+    } 
+
     return 0;
 }
