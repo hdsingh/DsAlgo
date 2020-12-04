@@ -26,37 +26,23 @@ template<class T, class U>void debp(const pair<T, U> &pr, bool end_line=1){cout<
 template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cout<<"Empty"<<endl; return;}if(!sep_line) cout<<"{ ";for(auto x: vp) debp(x,sep_line);if(!sep_line) cout<<"}\n";cout<<endl;}
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
-
-const int lg = 30;
+template <typename T> ostream& operator<<(ostream &os, const vector<T> &v){print(v); return os;};
+template <typename T> ostream& operator<<(ostream &os, const vector<vector<T>> &vv){print_vv(vv); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m){print_m(m); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n, q;
-    cin>>n>>q;
-    vvi succ(lg, vi(n+1)); // ith succ of node j
-    fore(i,1,n+1){
-        cin>>succ[0][i];
-    }
-
-    fore(i,1,lg){
-        fore(node, 1, n+1){
-            succ[i][node] = succ[i-1][succ[i-1][node]];
+    int T;
+    cin>>T;
+    while(T--){
+        ll n, m; cin>>n>>m;
+        ll sum = 0;
+        forn(i,n){
+            ll x; cin>>x; sum+=x;
         }
+        cout<<(sum==m ? "YES\n" : "NO\n");
     }
-
-    auto walk = [&](int node, int dist){
-        for(int i=lg-1; i>=0; --i)
-            if((dist>>i)&1)
-                node = succ[i][node];
-        return node;
-    };
-
-    forn(i,q){
-        int node, dist; cin>>node>>dist;
-        cout<<walk(node, dist)<<"\n";
-    }
-
     return 0;
 }
-
-// https://codeforces.com/problemset/problem/739/B (Binary Lifting + Prefix Sums)

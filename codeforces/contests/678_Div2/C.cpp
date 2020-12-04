@@ -17,7 +17,7 @@ const int mod = 1e9 + 7;
 template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
 template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
 template<class T, class U> inline void max_self(T &x, U y) { if (y > x) x = y; }
- 
+
 #define _deb(x) cout<<x;
 void _print() {cerr << "]\n";} template <typename T, typename... V>void _print(T t, V... v) {_deb(t); if (sizeof...(v)) cerr << ", "; _print(v...);}
 #define deb(x...) cerr << "[" << #x << "] = ["; _print(x)
@@ -26,63 +26,57 @@ template<class T, class U>void debp(const pair<T, U> &pr, bool end_line=1){cout<
 template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cout<<"Empty"<<endl; return;}if(!sep_line) cout<<"{ ";for(auto x: vp) debp(x,sep_line);if(!sep_line) cout<<"}\n";cout<<endl;}
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
- 
-int n, m;
-const int nax = 1e5 + 10;
-vi ord, ans(nax), comp;
-vvi adj(nax), radj(nax);
-vb vis(nax);
-int cnt = 0;
- 
-void dfs(int node){
-    vis[node] = 1;
-    for(auto ad: adj[node])
-        if(!vis[ad])
-            dfs(ad);
-    ord.pb(node);
-}
- 
-// Reverse representation 
-void dfs2(int node){
-    vis[node] = 1;
-    ans[node] = cnt;
-    // comp.pb(node);
-    for(auto ad: radj[node])
-        if(!vis[ad])
-            dfs2(ad);
-}
- 
-void kosaraju(){
-    fore(i,1,n+1)
-        if(!vis[i])
-            dfs(i);
-    vis.assign(n+1,0);
-    reverse(all(ord));
- 
-    for(auto x: ord){
-        if(!vis[x]){
-            ++cnt;
-            // comp.clear();
-            dfs2(x);
-            // print(comp);
-        }
+template <typename T> ostream& operator<<(ostream &os, const vector<T> &v){print(v); return os;};
+template <typename T> ostream& operator<<(ostream &os, const vector<vector<T>> &vv){print_vv(vv); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m){print_m(m); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
+
+const int MAXN = 2e4+10;
+vl fact(MAXN), inv(MAXN), finv(MAXN);
+
+void precalc(){
+    int n = MAXN;
+    fact[0] = finv[0] = inv[1] = 1;
+    fore(i, 2, n)
+        inv[i] = (mod - (mod/i) * inv[mod%i] % mod) % mod;
+    fore(i, 1, n){
+        fact[i] = fact[i-1] * i % mod;
+        finv[i] = finv[i-1] * inv[i] % mod;
     }
-}
- 
-int main(){
-    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    cin>>n>>m;
-    forn(i,m){
-        int x, y; cin>>x>>y;
-        adj[x].pb(y);
-        radj[y].pb(x);
-    }
-    kosaraju();
-    cout<<cnt<<"\n";
-    fore(i,1,n+1) cout<<ans[i]<<" ";
-    return 0;
 }
 
-// https://cses.fi/problemset/task/1682 (CSES - Flight Routes Check)
-// https://cses.fi/problemset/task/1683 (CSES - Planets and Kingdoms)
-// https://cses.fi/problemset/task/1686 (CSES -Coin Collector)
+ll C(int n, int r){
+    if(n<r || r<0) return 0;
+    return fact[n] * finv[r]%mod * finv[n-r]%mod;
+}
+
+int main(){
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    precalc();
+    int n, X, pos;
+    while(cin>>n>>X>>pos){
+        int L = 0, R = 0;
+
+        int lt = 0, rt = n;
+        while(lt<rt){
+            int mid = (lt+rt)/2;
+            if(mid<=pos){
+                lt = mid + 1;
+                ++L;
+            }else{
+                rt = mid;
+                ++R;
+            }
+        }
+
+        ll ans = 0;
+        --L;
+        if(lt-1==pos){
+            ans = C(X-1,L) * C(n-X, R)%mod * fact[L] %mod * fact[R]%mod * fact[n-(L+R+1)] %mod;
+        }
+        cout<<ans<<"\n";        
+
+    }
+    return 0;
+}
