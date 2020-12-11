@@ -95,3 +95,57 @@ int main(){
 
     return 0;
 }
+
+// Form a graph, where doors are represented by edges, switch by nodes
+// Check if such a graph is 2 colorable
+// such that edges with val 0 have nodes with diff color 
+int main1(){
+    ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    int n, m;
+    while(cin>>n>>m){
+        vi a(nax);
+        fore(i,1,n+1){
+            cin>>a[i];
+        }
+
+        vvi locs(nax);
+        fore(i,1,m+1){
+            int cnt; cin>>cnt;
+            forn(j,cnt){
+                int x; cin>>x;
+                locs[x].pb(i);
+            }
+        }
+
+        vector<vector<pii>> adj(nax); //{ad,p}
+        fore(i,1,n+1){
+            int p = a[i], x = locs[i][0], y = locs[i][1];
+            adj[x].pb({y,p}); adj[y].pb({x,p});
+        }
+
+        bool good = 1;
+        vector<int> cols(nax,-1);
+        fore(node,1,m+1){
+            if(cols[node]!=-1) continue;
+            cols[node] = 1;
+            queue<int> q;
+            q.push(node);
+        
+            while(!q.empty()){
+                auto top = q.front(); q.pop();
+                for(auto [ad,p]: adj[top]){
+                    if(cols[ad]==-1){
+                        cols[ad] = (p==0 ? cols[top]^1 : cols[top]);
+                        q.push(ad);
+                    }else{
+                        int req = (p==0 ? cols[top]^1 : cols[top]);
+                        good&=(cols[ad]==req);
+                    }
+                }
+            }
+        }
+
+        cout<<(good ? "YES\n" : "NO\n");   
+    }
+    return 0;
+}

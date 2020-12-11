@@ -53,21 +53,21 @@ public:
         return cur;
     }
 
-    void build(int pos, int l, int r){
-        if(l==r){
+    void build(int pos, int lt, int rt){
+        if(lt==rt){
             st[pos]  = node(); // allocate specific values
             return;
         }
-        int mid = (l+r)/2;
-        build(2*pos, l, mid);
-        build(2*pos+1, mid+1, r);
+        int mid = (lt+rt)/2;
+        build(2*pos, lt, mid);
+        build(2*pos+1, mid+1, rt);
         st[pos] = merge(st[2*pos], st[2*pos+1]);
     }
 
-    void update(int pos, int sl, int sr, int l, int r, int val){
+    void update(int pos, int sl, int sr, int lt, int rt, int val){
         propagate(pos, sl, sr);
-        if(r<sl || sr<l) return;
-        else if(l<=sl && sr<=r){
+        if(rt<sl || sr<lt) return;
+        else if(lt<=sl && sr<=rt){
             st[pos].clazy = 1;
             // handle
 
@@ -75,19 +75,30 @@ public:
             return;
         }
         int mid = (sl+sr)/2;
-        update(2*pos, sl, mid, l, r, val);
-        update(2*pos+1, mid+1, sr, l, r, val);
+        update(2*pos, sl, mid, lt, rt, val);
+        update(2*pos+1, mid+1, sr, lt, rt, val);
         st[pos] = merge(st[2*pos], st[2*pos+1]);
     }
 
-    node query(int pos, int sl, int sr, int l, int r){
+    node query(int pos, int sl, int sr, int lt, int rt){
         propagate(pos, sl, sr);
-        if(r<sl || sr<l) return node();
-        else if(l<=sl && sr<=r) return st[pos];
+        if(rt<sl || sr<lt) return node();
+        else if(lt<=sl && sr<=rt) return st[pos];
         int mid = (sl+sr)/2;
-        node left = query(2*pos, sl, mid, l, r);
-        node right = query(2*pos+1, mid+1, sr, l, r);
+        node left = query(2*pos, sl, mid, lt, rt);
+        node right = query(2*pos+1, mid+1, sr, lt, rt);
         return merge(left, right);        
+    }
+
+    node query(int pos, int sl, int sr, int idx){
+        propagate(pos, sl, sr);
+        if(sl==sr) return st[pos];
+        int mid = (sl+sr)/2;
+        if(idx<=mid){
+            return query(2*pos,sl,mid,idx);
+        }
+        return query(2*pos+1,mid+1,sr,idx);
+        
     }
 
     void propagate(int pos, int sl, int sr){
@@ -102,14 +113,13 @@ public:
         st[pos].clazy = 0;
     }
 
-    void update(int l, int r, int v){
-        update(1,0,n-1,l,r,v);
+    void update(int lt, int rt, int v){
+        update(1,0,n-1,lt,rt,v);
     }
 
-    ll query(int l, int r){
+    ll query(int lt, int rt){
         // return query(1,0,n-1,l,r); // query.val
     }
-
 };
 
 int main(){
@@ -134,3 +144,4 @@ int main(){
 
 // https://codeforces.com/problemset/problem/914/D (Not lazy)
 // https://atcoder.jp/contests/abc179/tasks/abc179_f
+// https://codeforces.com/problemset/problem/1216/F

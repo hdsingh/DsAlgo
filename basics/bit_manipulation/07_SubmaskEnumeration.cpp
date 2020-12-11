@@ -25,3 +25,5 @@ int main(){
     }
     return 0;
 }
+
+// https://leetcode.com/problems/minimum-incompatibility/
