@@ -122,6 +122,27 @@ public:
     }
 };
 
+// // non Lazy Point updates
+// void pUpdate(int pos, int sl, int sr, int idx, int val){
+//     if(sl==sr){
+//         // st[pos] = 
+//         return;
+//     }
+
+//     int mid = (sl+sr)/2;
+//     if(idx<=mid){
+//         pUpdate(2*pos, sl, mid, idx, val);
+//     }else{
+//         pUpdate(2*pos+1, mid+1,sr, idx, val);
+//     }
+
+//     st[pos] = merge(st[2*pos], st[2*pos+1]);
+// }
+
+// void pUpdate(int id, int val){
+//     pUpdate(1,0,n-1,id,val);   
+// }
+
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
     int n, m;
