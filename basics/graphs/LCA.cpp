@@ -87,3 +87,5 @@ int main(){
 
 // https://leetcode.com/problems/kth-ancestor-of-a-tree-node/
 // https://codeforces.com/problemset/problem/609/E
+// https://codeforces.com/gym/102694/problem/C (C. Sloth Naptime)
+// https://codeforces.com/gym/102694/problem/D (D. Cycle Free Flows)
