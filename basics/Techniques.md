@@ -38,6 +38,11 @@
 3. [GONE](https://www.spoj.com/problems/GONE/)
 
 
+`Euler Tour`:
+1. [Filthy Rich Trees](https://codeforces.com/gym/102694/problem/E)
+2. [The Lorax](https://codeforces.com/gym/102694/problem/F)
+
+
 `Hashing`:
 1. [1044. Longest Duplicate Substring](https://leetcode.com/problems/longest-duplicate-substring)
 
