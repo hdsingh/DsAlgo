@@ -13,6 +13,10 @@
 1. [Little Pony and Harmony Chest](https://codeforces.com/contest/453/problem/B)
 
 
+`Centroids`:
+1. [Problem - D - Codeforces](https://codeforces.com/contest/686/problem/D)
+
+
 `Combinatorics`:
 1. [Notes 1](https://www.askiitians.com/maths/permutation-and-combination.html)
 2. [Notes 2](https://www.careerbless.com/aptitude/qa/permutations_combinations_imp7.php)
@@ -20,6 +24,7 @@
 4. [D. New Year and the Permutation Concatenation](https://codeforces.com/problemset/problem/1091/D)
 5. [Christmas Stocking Theorem](https://mathworld.wolfram.com/ChristmasStockingTheorem.html) (Sum on Diagonal).
 6. [Combinatorial_identity](https://artofproblemsolving.com/wiki/index.php/Combinatorial_identity)
+7. [Binomial Coefficient is Fun](https://atcoder.jp/contests/arc110/tasks/arc110_d)
 
 
 `Connected Components of Complement Graph`:
