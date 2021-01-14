@@ -2,46 +2,45 @@
 using namespace std;
 #define forn(i, n) for(int i = 0; i < int(n); i++)
 #define fore(i, l, r) for(int i = int(l); i < int(r); i++)
-#define pb push_back
-#define all(x) x.begin(), x.end()
-#define sz(a) int((a).size())
 typedef long long ll;
-typedef vector<int> vi;
+typedef vector<ll> vl;
+typedef vector<vector<ll>> vvl;
 const int mod = 1e9 + 7;
 
-
-const int N = 2; // size of matrix
-struct matrix{
-    ll arr[N][N];  
-    void reset(){
-        memset(arr, 0, sizeof(arr));
+class Matrix{
+public:
+    int n; // size of Matrix
+    vector<vector<ll>> a;
+    Matrix(int N){
+        n = N;
+        a.assign(n, vl(n));
     }
 
     void makeIdentity(){
-        reset();
-        forn(i,N) arr[i][i] = 1;
+        a.assign(n, vl(n));
+        forn(i,n) a[i][i] = 1;
     }
 
-    matrix operator+(const matrix &oth) const{
-        matrix res; 
-        forn(i,N) forn(j,N){
-            res.arr[i][j] = arr[i][j] + oth.arr[i][j];
-            if(res.arr[i][j]>=mod) res.arr[i][j]-=mod;
-        }   
+    Matrix operator*(const Matrix &oth) const{
+        Matrix res(n);
+        forn(i,n) forn(k,n) forn(j,n){
+            res.a[i][j] = (res.a[i][j] + a[i][k]*oth.a[k][j])%mod;
+        }
         return res;
     }
 
-    matrix operator*(const matrix &oth) const{
-        matrix res; res.reset();
-        forn(k,N) forn(i,N) forn(j,N){
-            (res.arr[i][j]+=arr[i][k]*oth.arr[k][j]%mod)%=mod;
-        }
+    Matrix operator+(const Matrix &oth) const{
+        Matrix res(n); 
+        forn(i,n) forn(j,n){
+            res.a[i][j] = a[i][j] + oth.a[i][j];
+            if(res.a[i][j]>=mod) res.a[i][j]-=mod;
+        }   
         return res;
     }
 };
 
-matrix pow(matrix a, ll p){
-    matrix c; c.makeIdentity();
+Matrix pow(Matrix a, ll p){
+    Matrix c(a); c.makeIdentity();
     while(p){
         if(p&1) c = c*a;
         a = a*a;
@@ -51,18 +50,6 @@ matrix pow(matrix a, ll p){
 }
 
 
-int main(){
-    ll a,b,n,x;
-    while(cin>>a>>b>>n>>x){
-        matrix ans;
-        ans.arr[0][0] = a, ans.arr[0][1] = b;
-        ans.arr[1][0] = 0, ans.arr[1][1] = 1;
-        ans = pow(ans,n);
-        ll res = (ans.arr[0][0]*x + ans.arr[0][1])%mod;
-        cout<<res<<endl;
-    }
-    return 0;
-}
-
+// https://codeforces.com/gym/102644/ (by Errichto)
 // https://codeforces.com/problemset/problem/678/D
 // https://codeforces.com/edu/course/2/lesson/4/4/practice/contest/274684/problem/B
