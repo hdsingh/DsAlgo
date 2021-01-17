@@ -32,87 +32,96 @@ template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m)
 template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
 template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
-class Solution0 {
-    int n;
-    vector<int> jobs;
-    const int inf = 1e9;
-    vvi dp;
-public:
-    int minimumTimeRequired(vector<int>& J, int K) {
-        jobs = J;
-        n = jobs.size();
-        dp.assign(1<<n, vi(K+1,-1));
-        return dfs((1<<n)-1,K);
-    }
-    
-    int dfs(int rem, int K){
-        if(rem==0 || K==0){
-            if(rem==0 && K==0) return 0;
-            return inf;
-        }
-        
-        int &mn = dp[rem][K];
-        if(~mn) return mn;
-        mn = inf;
-        // iterate on submasks of rem mask
-        for(int sub=rem; sub; sub = (sub-1)&rem){
-            int sum = 0;
-            for(int i=0; i<n; ++i){
-                if((sub>>i)&1){
-                    sum+=jobs[i];
-                }
-            }
-            mn = min(mn, max(sum, dfs(rem^sub, K-1)) );
-        }
-        return mn;
+struct node{
+    int mn = INT_MAX, mx = INT_MIN;
+    node(){};
+    node(int v){
+        mn = mx = v;
     }
 };
 
-class Solution {
-    int n;
-    vi dp, jobs;
-    int mx, k;
+class SegmentTree{
 public:
-    int minimumTimeRequired(vector<int>& Jobs, int K) {
-        jobs = Jobs;
-        n = jobs.size(); k = K;
-        sort(all(jobs), greater<int>()); 
-        dp.assign(k,0); 
-        mx = accumulate(all(jobs),0);
-    
-        dfs(0,0);
-        return mx;
+    int n;
+    vector<node> st;
+
+    SegmentTree(vi &a){
+        n = sz(a);
+        st.resize(4*n);
+        build(1,0,n-1, a);
+    }    
+
+    node merge(node &lt, node &rt){
+        node cur;
+        cur.mn = min({lt.mn, rt.mn});
+        cur.mx = max({lt.mx, rt.mx});
+        return cur;
     }
 
-    void dfs(int pos, int cmx){
-        if(pos>=n){
-            if(cmx<mx){
-                mx = cmx;
-            }
+    void build(int pos, int l, int r, vi &a){
+        if(l==r){
+            st[pos] = node(a[l]);
             return;
         }
-        if(cmx>=mx) return;
-        unordered_set<int> seen;
+        int mid = (l+r)/2;
+        build(2*pos, l, mid, a);
+        build(2*pos+1, mid+1, r, a);
+        st[pos] = merge(st[2*pos], st[2*pos+1]);
+    }
 
-        for(int block=0; block<k; ++block){
-            if(!seen.insert(dp[block]).second) continue;
+    node query(int pos, int sl, int sr, int l, int r){
+        if(sr<l || r<sl) return node();
+        else if(l<=sl && sr<=r) return st[pos];
+        int mid = (sl+sr)/2;
+        node lt = query(2*pos, sl, mid, l, r);
+        node rt = query(2*pos+1, mid+1, sr, l, r);
+        return merge(lt, rt);
+    }
 
-            if(dp[block]+jobs[pos]<mx){
-                dp[block]+=jobs[pos];
-                dfs(pos+1, max(cmx, dp[block]));
-                dp[block]-=jobs[pos];
-            }
-        }
+    pii query(int l, int r){
+        node q = query(1,0,n-1, l, r);
+        return {q.mn, q.mx};
     }
 };
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    vi jobs; int k; int out;
-    Solution0 sol;
-    jobs = {1,2,4,7,8,1,4,7,3,9,7,4}, k = 6;
-    // jobs = {3,2,3}, k = 3;
-    // jobs = {1,2,4,7,8}, k = 2;
-    out = sol.minimumTimeRequired(jobs, k); deb(out);
+    int T;
+    cin>>T;
+    while(T--){
+        int n, m;
+        cin>>n>>m;
+
+        vi a(n+2);
+        fore(i,1,n+1){
+            char c; cin>>c;
+            a[i] = (c=='+' ? 1 : -1);
+        }
+        vi pre(a);
+        partial_sum(all(a), pre.begin());
+        auto csum = [&](int l, int r){
+            return pre[r] - (l>0 ? pre[l-1] : 0);
+        };  
+    
+        SegmentTree st(pre);
+        while(m--){
+            int l, r; cin>>l>>r;
+            auto [lmn, lmx] = st.query(0,l-1);
+            auto [rmn, rmx] = st.query(r,n+1);
+            auto msum = csum(l,r);
+
+            if(l==1 && r==n){
+                cout<<"1\n";
+            }else if(l==1){
+                cout<<rmx - rmn + 1<<"\n";
+            }else if(r==n){
+                cout<<lmx - lmn + 1<<"\n";
+            }else{
+                rmn-=msum; rmx-=msum;
+                ll ans = max(lmx, rmx) - min(lmn, rmn) + 1;
+                cout<<ans<<"\n";
+            }
+        }
+    } 
     return 0;
 }

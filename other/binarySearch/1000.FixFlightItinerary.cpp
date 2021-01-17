@@ -32,87 +32,59 @@ template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m)
 template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
 template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
-class Solution0 {
-    int n;
-    vector<int> jobs;
-    const int inf = 1e9;
-    vvi dp;
-public:
-    int minimumTimeRequired(vector<int>& J, int K) {
-        jobs = J;
-        n = jobs.size();
-        dp.assign(1<<n, vi(K+1,-1));
-        return dfs((1<<n)-1,K);
+const int inf = 1e9;
+int solve(vector<string>& order, vector<vector<string>>& edges) {
+    unordered_map<string,vector<string>> adj;
+    for(auto ed: edges){
+        adj[ed[0]].push_back(ed[1]);
     }
-    
-    int dfs(int rem, int K){
-        if(rem==0 || K==0){
-            if(rem==0 && K==0) return 0;
-            return inf;
-        }
-        
-        int &mn = dp[rem][K];
-        if(~mn) return mn;
-        mn = inf;
-        // iterate on submasks of rem mask
-        for(int sub=rem; sub; sub = (sub-1)&rem){
-            int sum = 0;
-            for(int i=0; i<n; ++i){
-                if((sub>>i)&1){
-                    sum+=jobs[i];
-                }
-            }
-            mn = min(mn, max(sum, dfs(rem^sub, K-1)) );
-        }
-        return mn;
-    }
-};
+    int n = order.size();
+    auto dif = [](const string &a, const string &b){
+        return int(a[0]!=b[0]) + (a[1]!=b[1]) + (a[2]!=b[2]);
+    };
 
-class Solution {
-    int n;
-    vi dp, jobs;
-    int mx, k;
-public:
-    int minimumTimeRequired(vector<int>& Jobs, int K) {
-        jobs = Jobs;
-        n = jobs.size(); k = K;
-        sort(all(jobs), greater<int>()); 
-        dp.assign(k,0); 
-        mx = accumulate(all(jobs),0);
-    
-        dfs(0,0);
-        return mx;
+    unordered_map<string,vector<int>> dp;
+    for(auto ed: edges){
+        dp[ed[0]].assign(n+1, -1);
+        dp[ed[1]].assign(n+1, -1);
     }
 
-    void dfs(int pos, int cmx){
-        if(pos>=n){
-            if(cmx<mx){
-                mx = cmx;
-            }
-            return;
+    // cost to visit from string to end,  if it it the ith station
+    function<int(string,int)> dfs = [&](string st, int idx){
+        // deb(st, idx);
+        if(idx==n-1) return 0;
+        int &ans = dp[st][idx];
+        if(~ans) return ans;
+        ans = inf;
+        for(auto ad: adj[st]){
+            min_self(ans, dif(ad, order[idx+1]) + dfs(ad, idx+1));
         }
-        if(cmx>=mx) return;
-        unordered_set<int> seen;
+        return ans;
+    };
 
-        for(int block=0; block<k; ++block){
-            if(!seen.insert(dp[block]).second) continue;
-
-            if(dp[block]+jobs[pos]<mx){
-                dp[block]+=jobs[pos];
-                dfs(pos+1, max(cmx, dp[block]));
-                dp[block]-=jobs[pos];
-            }
-        }
+    int ans = inf; 
+    for(auto &[st, _]: dp){
+        min_self(ans, dif(order[0], st) + dfs(st, 0));
     }
-};
+    return ans;
+}
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    vi jobs; int k; int out;
-    Solution0 sol;
-    jobs = {1,2,4,7,8,1,4,7,3,9,7,4}, k = 6;
-    // jobs = {3,2,3}, k = 3;
-    // jobs = {1,2,4,7,8}, k = 2;
-    out = sol.minimumTimeRequired(jobs, k); deb(out);
+    vs itinerary; vector<vs> edges; int out;
+    itinerary = {"YYZ", "SFO", "JFK"};
+    edges = {
+        {"YYZ", "SEA"},
+        {"SEA", "JAM"},
+        {"SEA", "JFL"}
+    };
+    itinerary = {"YYZ", "SFO", "JFK"};
+    edges = {
+        {"YYZ", "SFO"},
+        {"SFO", "JFK"}
+    };
+    out = solve(itinerary, edges); deb(out);
+
     return 0;
+
 }

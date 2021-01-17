@@ -66,6 +66,11 @@
 1. [Prefix-Suffix Palindrome](https://codeforces.com/contest/1326/problem/D2)
 
 
+`MiniMax`:
+1. [Cat and Mouse](https://leetcode.com/problems/cat-and-mouse/)
+2. [Cat and Mouse II](https://leetcode.com/problems/cat-and-mouse-ii)
+
+
 `Monotonic Queue/Deque`:
 1. [239. Sliding Window Maximum](https://leetcode.com/problems/sliding-window-maximum/)
 2. [1425. Constrained Subset Sum](https://leetcode.com/problems/constrained-subset-sum/)
@@ -100,6 +105,7 @@
 
 `Principle of Inclusion Exclusion`:
 1. [E - NEQ](https://atcoder.jp/contests/abc172/tasks/abc172_e)
+2. [Prime Multiples](https://cses.fi/problemset/task/2185)
 
 
 `Random`:

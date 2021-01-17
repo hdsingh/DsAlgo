@@ -32,87 +32,66 @@ template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m)
 template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
 template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
-class Solution0 {
-    int n;
-    vector<int> jobs;
-    const int inf = 1e9;
-    vvi dp;
-public:
-    int minimumTimeRequired(vector<int>& J, int K) {
-        jobs = J;
-        n = jobs.size();
-        dp.assign(1<<n, vi(K+1,-1));
-        return dfs((1<<n)-1,K);
-    }
-    
-    int dfs(int rem, int K){
-        if(rem==0 || K==0){
-            if(rem==0 && K==0) return 0;
-            return inf;
-        }
-        
-        int &mn = dp[rem][K];
-        if(~mn) return mn;
-        mn = inf;
-        // iterate on submasks of rem mask
-        for(int sub=rem; sub; sub = (sub-1)&rem){
-            int sum = 0;
-            for(int i=0; i<n; ++i){
-                if((sub>>i)&1){
-                    sum+=jobs[i];
-                }
-            }
-            mn = min(mn, max(sum, dfs(rem^sub, K-1)) );
-        }
-        return mn;
-    }
-};
+
+const int depth = 105;
+int dp[51][51][depth];
 
 class Solution {
-    int n;
-    vi dp, jobs;
-    int mx, k;
 public:
-    int minimumTimeRequired(vector<int>& Jobs, int K) {
-        jobs = Jobs;
-        n = jobs.size(); k = K;
-        sort(all(jobs), greater<int>()); 
-        dp.assign(k,0); 
-        mx = accumulate(all(jobs),0);
-    
-        dfs(0,0);
-        return mx;
-    }
+    int catMouseGame(vector<vector<int>>& adj) {
+        int n = adj.size();
+        memset(dp, -1, sizeof(dp));
 
-    void dfs(int pos, int cmx){
-        if(pos>=n){
-            if(cmx<mx){
-                mx = cmx;
+        function<int(int,int,int)> dfs = [&](int mnode, int cnode, int d){
+            // deb(mnode, cnode, d);
+            if(d==0) return 0; // draw
+            if(mnode==cnode) return 2;
+            if(mnode==0) return 1;
+            int mouseTurn = (d%2==0);
+            int &ans = dp[mnode][cnode][d]; // draw
+            if(~ans) return ans;
+
+            if(mouseTurn){
+                ans = 2;
+                for(auto ad: adj[mnode]){
+                    if(ad==cnode) continue; // mouse will not go to cat
+                    int val = dfs(ad, cnode, d-1);
+                    if(val==1){
+                        ans = 1; break;
+                    }
+                    else if(val==0) ans = 0;
+                }
+            }else{
+                // cat turn
+                ans = 1; // mouse wins
+                for(auto ad: adj[cnode]){
+                    if(ad==0) continue; // cat can't go to hole
+                    int val = dfs(mnode, ad, d-1);
+                    if(val==2){
+                        ans = 2; break;
+                    }
+                    else if(val==0) ans = 0;
+                }
             }
-            return;
-        }
-        if(cmx>=mx) return;
-        unordered_set<int> seen;
+        
+            return ans;
+        };
 
-        for(int block=0; block<k; ++block){
-            if(!seen.insert(dp[block]).second) continue;
-
-            if(dp[block]+jobs[pos]<mx){
-                dp[block]+=jobs[pos];
-                dfs(pos+1, max(cmx, dp[block]));
-                dp[block]-=jobs[pos];
-            }
-        }
+        return dfs(1,2,104);
     }
 };
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    vi jobs; int k; int out;
-    Solution0 sol;
-    jobs = {1,2,4,7,8,1,4,7,3,9,7,4}, k = 6;
-    // jobs = {3,2,3}, k = 3;
-    // jobs = {1,2,4,7,8}, k = 2;
-    out = sol.minimumTimeRequired(jobs, k); deb(out);
+    vvi graph; Solution sol; int out;
+    graph = {{2,5},{3},{0,4,5},{1,4,5},{2,3},{0,2,3}};
+    out = sol.catMouseGame(graph); deb(out);
+    graph = {{1,3},{0},{3},{0,2}};
+    out = sol.catMouseGame(graph); deb(out);
+    graph = {{2,3},{3,4},{0,4},{0,1},{1,2}};
+    out = sol.catMouseGame(graph); deb(out);
+    graph = {{2,5},{3},{0,4,5},{1,4,5},{2,3},{0,2,3}};
+    out = sol.catMouseGame(graph); deb(out);
+
     return 0;
 }

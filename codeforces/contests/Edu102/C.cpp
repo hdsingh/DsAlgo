@@ -32,87 +32,16 @@ template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m)
 template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
 template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
-class Solution0 {
-    int n;
-    vector<int> jobs;
-    const int inf = 1e9;
-    vvi dp;
-public:
-    int minimumTimeRequired(vector<int>& J, int K) {
-        jobs = J;
-        n = jobs.size();
-        dp.assign(1<<n, vi(K+1,-1));
-        return dfs((1<<n)-1,K);
-    }
-    
-    int dfs(int rem, int K){
-        if(rem==0 || K==0){
-            if(rem==0 && K==0) return 0;
-            return inf;
-        }
-        
-        int &mn = dp[rem][K];
-        if(~mn) return mn;
-        mn = inf;
-        // iterate on submasks of rem mask
-        for(int sub=rem; sub; sub = (sub-1)&rem){
-            int sum = 0;
-            for(int i=0; i<n; ++i){
-                if((sub>>i)&1){
-                    sum+=jobs[i];
-                }
-            }
-            mn = min(mn, max(sum, dfs(rem^sub, K-1)) );
-        }
-        return mn;
-    }
-};
-
-class Solution {
-    int n;
-    vi dp, jobs;
-    int mx, k;
-public:
-    int minimumTimeRequired(vector<int>& Jobs, int K) {
-        jobs = Jobs;
-        n = jobs.size(); k = K;
-        sort(all(jobs), greater<int>()); 
-        dp.assign(k,0); 
-        mx = accumulate(all(jobs),0);
-    
-        dfs(0,0);
-        return mx;
-    }
-
-    void dfs(int pos, int cmx){
-        if(pos>=n){
-            if(cmx<mx){
-                mx = cmx;
-            }
-            return;
-        }
-        if(cmx>=mx) return;
-        unordered_set<int> seen;
-
-        for(int block=0; block<k; ++block){
-            if(!seen.insert(dp[block]).second) continue;
-
-            if(dp[block]+jobs[pos]<mx){
-                dp[block]+=jobs[pos];
-                dfs(pos+1, max(cmx, dp[block]));
-                dp[block]-=jobs[pos];
-            }
-        }
-    }
-};
-
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    vi jobs; int k; int out;
-    Solution0 sol;
-    jobs = {1,2,4,7,8,1,4,7,3,9,7,4}, k = 6;
-    // jobs = {3,2,3}, k = 3;
-    // jobs = {1,2,4,7,8}, k = 2;
-    out = sol.minimumTimeRequired(jobs, k); deb(out);
+    int T;
+    cin>>T;
+    while(T--){
+        int n, K; cin>>n>>K;
+        vi ans(K); iota(all(ans),1);
+        int rev = n-K+1;
+        reverse(ans.begin()+K-rev, ans.end());
+        cout<<ans;
+    }
     return 0;
 }
