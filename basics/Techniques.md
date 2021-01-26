@@ -48,6 +48,10 @@
 2. [The Lorax](https://codeforces.com/gym/102694/problem/F)
 
 
+`Expected Value`:
+1. [F - Sugoroku2](https://atcoder.jp/contests/abc189/tasks/abc189_f) (Linear Expression)
+
+
 `Hashing`:
 1. [1044. Longest Duplicate Substring](https://leetcode.com/problems/longest-duplicate-substring)
 

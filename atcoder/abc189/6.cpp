@@ -13,6 +13,7 @@ typedef vector<vector<ll>> vvl;
 typedef vector<string> vs;
 typedef vector<bool> vb;
 typedef pair<int, int> pii;
+typedef pair<ll, ll> pll;
 const int mod = 1e9 + 7;
 template<class T, class U> inline void add_self(T &a, U b){a += b;if (a >= mod) a -= mod;if (a < 0) a += mod;}
 template<class T, class U> inline void min_self(T &x, U y) { if (y < x) x = y; }
@@ -26,75 +27,61 @@ template<class T, class U>void debp(const pair<T, U> &pr, bool end_line=1){cout<
 template <class T> void print_vp(const T &vp, int sep_line=0){if(vp.empty()){cout<<"Empty"<<endl; return;}if(!sep_line) cout<<"{ ";for(auto x: vp) debp(x,sep_line);if(!sep_line) cout<<"}\n";cout<<endl;}
 template <typename T>void print(const T &v, bool show_index = false){int w = 2;if(show_index){for(int i=0; i<sz(v); i++)cout<<setw(w)<<i<<" ";cout<<endl;}for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<endl;}
 template <typename T>void print_vv(const T &vv){if(sz(vv)==0) {cout<<"Empty"<<endl; return;} int w = 3;cout<<setw(w)<<" ";for(int j=0; j<sz(*vv.begin()); j++)cout<<setw(w)<<j<<" ";cout<<endl;int i = 0;for(auto &v: vv){cout<<i++<<" {";for(auto &el: v) cout<<setw(w)<<el<<" ";cout<<"},\n";}cout<<endl;}
+template <typename T> ostream& operator<<(ostream &os, const vector<T> &v){print(v); return os;};
+template <typename T> ostream& operator<<(ostream &os, const vector<vector<T>> &vv){print_vv(vv); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const map<T,U>  &m){print_m(m); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const pair<T, U> &pr){debp(pr); return os;};
+template <class T, class U> ostream& operator<<(ostream &os, const vector<pair<T, U>> &vp){ print_vp(vp); return os;};
 
-typedef pair<ll, ll> pll;
 
-void dijkstra(int n, int m, int src, int dest){
-    const ll inf = 1e18L;
-    vector<vector<pll>> adj(n+1); // {w, to}
-    int x, y; ll w;
-    forn(i,m){
-        cin>>x>>y>>w;
-        adj[x].push_back({w,y}); adj[y].push_back({w,x});
-    }
-
-    vi par(n+1,-1);
-    vl dist(n+1, inf);
-    vb vis(n+1);
-
-    priority_queue<pll, vector<pll>, greater<pll>> pq; // {w, to}
-    // int src  = 1;
-    dist[src] = 0;
-    pq.push({0, src});
-
-    while(!pq.empty()){
-        auto [d, node] = pq.top(); pq.pop();
-        vis[node] = 1;
-        if(d > dist[node]) continue;
-
-        for(auto [len, to]: adj[node]){
-            if(vis[to]) continue;
-
-            if(dist[node] + len < dist[to]){
-                dist[to] = dist[node] + len;
-                pq.push({dist[to], to});
-                par[to] = node;
-            }
-        }
-
-        if(node==dest) break;
-    }
-
-    if(!vis[dest]){
-        cout<<-1<<"\n"; return;
-    }
-
-    vi path;
-    int p = dest;
-    while(p!=-1){
-        path.push_back(p);
-        p = par[p];
-    }
-    reverse(all(path));
-    print(path);
-}
+// ans[0] = x
+// i is bad, ans[i] = ans[0] = x
+// else ans[i] = (ans[i+1]...ans[i+m])/M + 1
+// since this rel is cyclic, and depends on the val of ans[0], 
+// we can suppose ans[0] = x
+// and ans[i] = cof[i]*x + val[i]
+// ans[0] = cof[0]*x + val[0]
+// x = c*x + v
+// x(1-c) = v 
+// x = v/(1-c)
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    int n, m;
-    cin>>n>>m;
-    dijkstra(n,m,1,n);
+    int n, m, K;
+    while(cin>>n>>m>>K){
+        vi vis(n+m+1);
+        forn(i,K){
+            int x; cin>>x;
+            vis[x] = 1;
+        }
+
+        vector<double> cof(n+m+1), val(n+m+1);
+        double c = 0, v = 0, sum = 0;
+        bool ok = 1;
+        for(int i=n-1; i>=0; --i){
+            if(vis[i]){
+                // ans =  f[0]
+                cof[i] = 1, val[i] = 0;
+            }else{
+                cof[i] = c/m;
+                val[i] = v/m + 1;
+            }
+
+            sum += vis[i] - vis[i+m];
+            if(sum==m){
+                ok = 0;
+                break;
+            }
+            c+=cof[i] - cof[i+m]; // sliding window
+            v+=val[i] - val[i+m];
+        }
+
+        if(!ok){
+            cout<<"-1\n";
+        }else{
+            cout<<fixed<<setprecision(10)<<val[0]/(1-cof[0])<<"\n";
+        }
+
+    }
     return 0;
 }
-
-// https://codeforces.com/problemset/problem/20/C 
-// https://codeforces.com/problemset/problem/1076/D
-// https://cses.fi/problemset/task/1195/ (Flight Discounts)
-// https://cses.fi/problemset/task/1671 (Shortest Routes)
-// https://cses.fi/problemset/task/1196/ (Flight Routes)
-// https://cses.fi/problemset/task/1202 (Investigation) (Djkstra + DP)
-// https://codeforces.com/problemset/problem/449/B (Priority Based + Inqueue distance update) (implemented Sets + PQ both)
-// https://codeforces.com/problemset/problem/938/D (Multiple starting points)
-// https://codeforces.com/contest/1433/problem/G
-// https://binarysearch.com/problems/Pick-Up-Gold-in-Two-Locations
-// https://codeforces.com/contest/1473/problem/E
