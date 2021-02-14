@@ -52,6 +52,10 @@
 1. [F - Sugoroku2](https://atcoder.jp/contests/abc189/tasks/abc189_f) (Linear Expression)
 
 
+`Hamiltonian`:
+1. [Magical Ornament](https://atcoder.jp/contests/abc190/tasks/abc190_e)
+
+
 `Hashing`:
 1. [1044. Longest Duplicate Substring](https://leetcode.com/problems/longest-duplicate-substring)
 
@@ -68,6 +72,10 @@
 
 `KMP`:
 1. [Prefix-Suffix Palindrome](https://codeforces.com/contest/1326/problem/D2)
+
+
+`Meet-In-Middle`:
+1. [1755. Closest Subsequence Sum](https://leetcode.com/problems/closest-subsequence-sum/)
 
 
 `MiniMax`:
