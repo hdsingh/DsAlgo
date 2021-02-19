@@ -40,9 +40,7 @@ public:
 
         // partial overlap
         int mid = (l+r)/2;
-        return max(query(2*pos, l, mid, i,j),
-                   query(2*pos+1, mid+1, r, i, j));
-        
+
         int cur;
         int left = query(2*pos, l, mid, i, j);
         int right = query(2*pos+1, mid+1, r, i, j);
